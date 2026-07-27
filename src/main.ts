@@ -577,6 +577,9 @@ function showResult(): void {
 const PERFHUD_ON = new URLSearchParams(window.location.search).get('perfhud') === '1';
 // 専用実測ハーネスだけが付けるクエリ。通常URLではfalseで、ゲームバランスへ影響しない。
 const REALBENCH_ON = new URLSearchParams(window.location.search).has('realbench');
+const ENEMY_AUDIT_ON = new URLSearchParams(window.location.search).has('enemyaudit');
+const STAGE_AUDIT_ON = new URLSearchParams(window.location.search).has('stageaudit');
+const ARM_AUDIT_ON = new URLSearchParams(window.location.search).has('armaudit');
 const PERFHUD_BUF_SIZE = 256;
 const perfhudBuf = PERFHUD_ON ? new Float32Array(PERFHUD_BUF_SIZE) : null;
 let perfhudIdx = 0;
@@ -587,6 +590,8 @@ let perfhudLastNow = PERFHUD_ON ? performance.now() : 0;
 // 真の総alive数はmatch.tsに専用アクセサが無いため未提供(-1=非対象/非表示)。
 let perfhudZombieRound = -1;
 let perfhudZombieVisible = -1;
+let perfhudPlayerX = Number.NaN;
+let perfhudPlayerZ = Number.NaN;
 let perfhudEl: HTMLDivElement | null = null;
 if (PERFHUD_ON) {
   perfhudEl = document.createElement('div');
@@ -610,7 +615,11 @@ function perfhudSample(realDtS: number): void {
   const calls = renderer.info.render.calls;
   const zLine =
     perfhudZombieRound >= 0 ? `\nZ R${perfhudZombieRound} VIS${perfhudZombieVisible}` : '';
-  perfhudEl.textContent = `p50 ${pct(0.5).toFixed(2)}ms  p95 ${pct(0.95).toFixed(2)}ms\ncalls ${calls}${zLine}`;
+  const positionLine =
+    Number.isFinite(perfhudPlayerX) && Number.isFinite(perfhudPlayerZ)
+      ? `\npos ${perfhudPlayerX.toFixed(2)},${perfhudPlayerZ.toFixed(2)}`
+      : '';
+  perfhudEl.textContent = `p50 ${pct(0.5).toFixed(2)}ms  p95 ${pct(0.95).toFixed(2)}ms\ncalls ${calls}${zLine}${positionLine}`;
 }
 
 const loop = new GameLoop(
@@ -619,6 +628,11 @@ const loop = new GameLoop(
       // R100ベンチが死亡→リザルト遷移を測定しないよう、固定更新ごとに生存を保証する。
       // Match側でもゾンビ限定。クエリなしの製品プレイは分岐1回だけで完全に従来挙動。
       if (REALBENCH_ON) match.debugBenchmarkKeepPlayerAlive();
+      // 6兵種×14clipの近接撮影は実戦更新より長い。監査クエリ中のみ
+      // AI/物理を進めたままプレイヤーへの命中を抑制し、構図を固定する。
+      if (ENEMY_AUDIT_ON) match.debugPrepareEnemyAssetAudit();
+      // ステージ実機証跡のみBot描画を除外。AI/物理/コライダは稼働する。
+      if (STAGE_AUDIT_ON) match.debugPrepareStageAudit();
       match.update(dt);
     }
   },
@@ -726,6 +740,8 @@ const loop = new GameLoop(
         if (PERFHUD_ON) {
           perfhudZombieRound = snap.zombieRound ?? -1;
           perfhudZombieVisible = snap.zombieRound !== undefined ? snap.enemyBearings.length : -1;
+          perfhudPlayerX = snap.playerX;
+          perfhudPlayerZ = snap.playerZ;
         }
         // 被弾時の一瞬のクロマアベ(色相シフト)。競技性に配慮し省モーション時はスキップ
         if (snap.tookDamage && !effectiveReduceMotion()) {
@@ -781,8 +797,99 @@ loop.start();
 // 即座に終了させ、既存の over 検出経路でファイナルキルカム(一人称)を強制発火できる。
 // ?fkdemo が無ければ window.__fkDemo は一切登録されない(完全に無害)。
 if (new URLSearchParams(location.search).has('fkdemo')) {
-  (window as unknown as { __fkDemo?: () => boolean }).__fkDemo = () => {
+  (window as unknown as { __fkDemo?: (victimUid?: number) => boolean }).__fkDemo = (victimUid) => {
     if (mode !== 'playing' || !match) return false;
-    return match.debugForceFinalKill();
+    return match.debugForceFinalKill(victimUid);
+  };
+}
+
+// Blenderステージの入口・内部を再現可能な座標から撮る実シーンQA用。
+// 通常URLにはグローバル自体を登録せず、`?stageaudit` のheadless監査だけが
+// プレイヤーの監査姿勢を固定できる。
+if (STAGE_AUDIT_ON) {
+  type StageAuditWindow = Window & {
+    __hibanaStageAudit?: {
+      snapshot: () => ReturnType<Match['debugStageAuditSnapshot']>;
+      setPose: (
+        x: number,
+        z: number,
+        targetX: number,
+        targetZ: number,
+      ) => ReturnType<Match['debugSetStageAuditPose']>;
+    };
+  };
+  (window as StageAuditWindow).__hibanaStageAudit = {
+    snapshot: () => match?.debugStageAuditSnapshot() ?? null,
+    setPose: (x, z, targetX, targetZ) =>
+      match?.debugSetStageAuditPose(x, z, targetX, targetZ) ?? null,
+  };
+}
+
+// 全武器の手指／リロード意味フレームを撮るheadless監査専用。通常URLには
+// グローバル自体が無く、Weaponの弾数・入力・ゲーム進行も変更しない。
+if (ARM_AUDIT_ON) {
+  type ArmAuditWindow = Window & {
+    __hibanaArmAudit?: {
+      setReloadRatio: (ratio: number | null) => number | null;
+      setLeftHandDelta: (
+        delta: readonly [number, number, number, number, number, number] | null,
+      ) => readonly [number, number, number, number, number, number] | null;
+    };
+  };
+  (window as ArmAuditWindow).__hibanaArmAudit = {
+    setReloadRatio: (ratio) => match?.debugSetArmAuditReloadRatio(ratio) ?? null,
+    setLeftHandDelta: (delta) => match?.debugSetArmAuditLeftHandDelta(delta) ?? null,
+  };
+}
+
+// Blender敵兵の実シーンQA用。通常URLではグローバルも分岐先の処理も
+// 存在せず、`?enemyaudit` を明示したheadless検証だけが読み取り/クリップ駆動を行う。
+if (ENEMY_AUDIT_ON) {
+  type EnemyAuditWindow = Window & {
+    __hibanaEnemyAudit?: {
+      snapshot: () => ReturnType<Match['debugEnemyAssetSnapshot']>;
+      playClip: (
+        clip: string,
+        variantId?: string,
+        holdS?: number,
+        startAt01?: number,
+        framingYawDeg?: number,
+        framingDistanceM?: number,
+        preferredUid?: number,
+      ) => number | null;
+      forceLod: (level: number, variantId?: string, holdS?: number) => number | null;
+      frameActor: (
+        uid: number,
+        yawDeg?: number,
+        distanceM?: number,
+        holdS?: number,
+        throughReplay?: boolean,
+      ) => number | null;
+    };
+  };
+  (window as EnemyAuditWindow).__hibanaEnemyAudit = {
+    snapshot: () => match?.debugEnemyAssetSnapshot() ?? null,
+    playClip: (
+      clip,
+      variantId,
+      holdS,
+      startAt01,
+      framingYawDeg,
+      framingDistanceM,
+      preferredUid,
+    ) =>
+      match?.debugEnemyAssetPlayClip(
+        clip,
+        variantId,
+        holdS,
+        startAt01,
+        framingYawDeg,
+        framingDistanceM,
+        preferredUid,
+      ) ?? null,
+    forceLod: (level, variantId, holdS) =>
+      match?.debugEnemyAssetForceLod(level, variantId, holdS) ?? null,
+    frameActor: (uid, yawDeg, distanceM, holdS, throughReplay) =>
+      match?.debugEnemyAssetFrameActor(uid, yawDeg, distanceM, holdS, throughReplay) ?? null,
   };
 }
