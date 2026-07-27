@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hibana.invalid/schema/stage-world.catalog.schema.json",
+  "title": "Hibana canonical 31-stage world catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "catalogSha256", "normalization", "coordinateSystem", "contracts", "stages"],
+  "properties": {
+    "$schema": {"const": "./stage-world.catalog.schema.json"},
+    "schemaVersion": {"type": "string", "minLength": 1},
+    "catalogSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "normalization": {"type": "string", "minLength": 1},
+    "coordinateSystem": {"type": "object"},
+    "contracts": {"type": "object"},
+    "stages": {
+      "type": "array",
+      "minItems": 31,
+      "maxItems": 31,
+      "items": {"$ref": "#/$defs/stage"}
+    }
+  },
+  "$defs": {
+    "positive": {"type": "number", "exclusiveMinimum": 0},
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "stringList": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/nonEmptyString"}},
+    "mapSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current", "recommended", "compactExceptionRequired"],
+      "properties": {
+        "current": {"$ref": "#/$defs/positive"},
+        "recommended": {"$ref": "#/$defs/positive"},
+        "compactExceptionRequired": {"type": "boolean"},
+        "exceptionReason": {"type": "string"},
+        "adoptionGate": {"type": "string"}
+      }
+    },
+    "facade": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roofGrammar", "nonGlassAlternatives", "entranceGrammar", "materials", "surfaceState", "blackWindowAvoidance", "maxIdenticalOpeningRun", "minimumPhysicalRecessM", "lod2WindowCards"],
+      "properties": {
+        "roofGrammar": {"$ref": "#/$defs/nonEmptyString"},
+        "nonGlassAlternatives": {"type": "array", "minItems": 4, "items": {"$ref": "#/$defs/nonEmptyString"}},
+        "entranceGrammar": {"$ref": "#/$defs/nonEmptyString"},
+        "materials": {"$ref": "#/$defs/stringList"},
+        "surfaceState": {"$ref": "#/$defs/nonEmptyString"},
+        "blackWindowAvoidance": {"$ref": "#/$defs/nonEmptyString"},
+        "maxIdenticalOpeningRun": {"type": "integer", "minimum": 1, "maximum": 3},
+        "minimumPhysicalRecessM": {"type": "number", "minimum": 0.12},
+        "lod2WindowCards": {"const": 0}
+      }
+    },
+    "lod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lod0Preserve", "lod1Preserve", "lod2Preserve"],
+      "properties": {
+        "lod0Preserve": {"$ref": "#/$defs/stringList"},
+        "lod1Preserve": {"$ref": "#/$defs/stringList"},
+        "lod2Preserve": {"$ref": "#/$defs/stringList"}
+      }
+    },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "depth"],
+      "properties": {
+        "width": {"$ref": "#/$defs/positive"},
+        "depth": {"$ref": "#/$defs/positive"}
+      }
+    },
+    "visualEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "depth", "height"],
+      "properties": {
+        "width": {"$ref": "#/$defs/positive"},
+        "depth": {"$ref": "#/$defs/positive"},
+        "height": {"$ref": "#/$defs/positive"}
+      }
+    },
+    "geometryGrammar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conceptPriority", "primarySilhouette", "roof", "facade", "entrance", "nonGlassAlternatives", "materials", "combatFlow"],
+      "properties": {
+        "conceptPriority": {"$ref": "#/$defs/nonEmptyString"},
+        "primarySilhouette": {"$ref": "#/$defs/nonEmptyString"},
+        "roof": {"$ref": "#/$defs/nonEmptyString"},
+        "facade": {"$ref": "#/$defs/nonEmptyString"},
+        "entrance": {"$ref": "#/$defs/nonEmptyString"},
+        "nonGlassAlternatives": {"type": "array", "minItems": 4, "items": {"$ref": "#/$defs/nonEmptyString"}},
+        "materials": {"$ref": "#/$defs/stringList"},
+        "combatFlow": {"$ref": "#/$defs/stringList"}
+      }
+    },
+    "landmark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "ordinal", "legacyProfileId", "conceptLabel", "visualSignature", "purpose", "placementIntent", "playableContract", "collision", "visualEnvelopeM", "geometryGrammar"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)+$"},
+        "ordinal": {"type": "integer", "minimum": 0, "maximum": 1},
+        "legacyProfileId": {"$ref": "#/$defs/nonEmptyString"},
+        "conceptLabel": {"$ref": "#/$defs/nonEmptyString"},
+        "visualSignature": {"$ref": "#/$defs/nonEmptyString"},
+        "purpose": {"$ref": "#/$defs/nonEmptyString"},
+        "placementIntent": {"$ref": "#/$defs/nonEmptyString"},
+        "playableContract": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["insideAuthoritativeBounds", "combatSpace", "entranceAndApproachRequired", "outsideVistaCannotSatisfyQuota"],
+          "properties": {
+            "insideAuthoritativeBounds": {"const": true},
+            "combatSpace": {"const": true},
+            "entranceAndApproachRequired": {"const": true},
+            "outsideVistaCannotSatisfyQuota": {"const": true}
+          }
+        },
+        "collision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["districtKind", "collisionTemplate", "collisionFootprintM", "heightM", "source"],
+          "properties": {
+            "districtKind": {"enum": ["arena", "hangar", "tower", "warehouse", "cathedral", "bunker", "terminal", "refinery", "villa", "pagoda", "fortress", "station", "checkpoint", "metro", "abbey"]},
+            "collisionTemplate": {"enum": ["abbey", "courtyard", "hall", "bridge", "vertical"]},
+            "collisionFootprintM": {"$ref": "#/$defs/dimensions"},
+            "heightM": {"$ref": "#/$defs/positive"},
+            "source": {"enum": ["stage.ts-proof7-exact", "migration-heuristic-explicit-review-required"]}
+          }
+        },
+        "visualEnvelopeM": {"$ref": "#/$defs/visualEnvelope"},
+        "geometryGrammar": {"$ref": "#/$defs/geometryGrammar"}
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "referenceImage", "mapSizeM", "identity", "districtGrammar", "routes", "facade", "lod", "legacyVista", "landmarks"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^(?:[a-z]+|z(?:0[1-9]|10))$"},
+        "name": {"$ref": "#/$defs/nonEmptyString"},
+        "referenceImage": {"type": "string", "pattern": "-reference-v1\\.png$"},
+        "mapSizeM": {"$ref": "#/$defs/mapSize"},
+        "identity": {"type": "object"},
+        "districtGrammar": {"type": "object"},
+        "routes": {"type": "object"},
+        "facade": {"$ref": "#/$defs/facade"},
+        "lod": {"$ref": "#/$defs/lod"},
+        "legacyVista": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["countedTowardLandmarkQuota", "policy", "rasterMatteAllowedAfterBlenderLoad"],
+          "properties": {
+            "countedTowardLandmarkQuota": {"const": false},
+            "policy": {"const": "may-remain-as-uncounted-layered-3d-vista-only"},
+            "rasterMatteAllowedAfterBlenderLoad": {"const": false}
+          }
+        },
+        "landmarks": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/landmark"}}
+      }
+    }
+  }
+}

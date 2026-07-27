@@ -8,9 +8,14 @@ import bpy
 from pathlib import Path
 
 
-PROJECT = Path("/Users/h_miruky/Library/Mobile Documents/com~apple~CloudDocs/develop/100リポジトリ作成計画トップ/hibana")
-DEFAULT_PATH = PROJECT / "tools/blender/screenshots/blender-progress.png"
 EXEC_ARGS = globals().get("args", {})
+if EXEC_ARGS.get("project_root"):
+    PROJECT = Path(EXEC_ARGS["project_root"]).expanduser().resolve()
+elif globals().get("__file__"):
+    PROJECT = Path(__file__).resolve().parents[2]
+else:
+    raise RuntimeError("project_root is required when Blender executes the script through MCP")
+DEFAULT_PATH = PROJECT / "tools/blender/screenshots/blender-progress.png"
 output = Path(EXEC_ARGS.get("output", str(DEFAULT_PATH))).resolve()
 allowed = (PROJECT / "tools/blender/screenshots").resolve()
 if allowed not in output.parents:

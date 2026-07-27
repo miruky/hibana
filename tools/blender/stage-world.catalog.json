@@ -1,0 +1,6241 @@
+{
+  "$schema": "./stage-world.catalog.schema.json",
+  "schemaVersion": "1.0.0-prototype",
+  "catalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+  "normalization": "recursive-key-sort UTF-8 JSON without whitespace; omit top-level catalogSha256",
+  "coordinateSystem": {
+    "authoring": "Blender Z-up metres",
+    "runtime": "glTF Y-up",
+    "origin": "stage centre ground Z=0"
+  },
+  "contracts": {
+    "exactStageCount": 31,
+    "exactLandmarksPerStage": 2,
+    "exactUniqueLandmarkIds": 62,
+    "visualEnvelopeSeparatedFromCollisionFootprint": true,
+    "legacyVistaUncounted": true,
+    "gameplayCollisionRemainsTypeScriptAuthoritative": true
+  },
+  "stages": [
+    {
+      "id": "kunren",
+      "name": "訓練場",
+      "referenceImage": "kunren-reference-v1.png",
+      "mapSizeM": {
+        "current": 310,
+        "recommended": 310,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "広大な現役軍事射撃場。管制塔、格納庫、レーダー、射線別のコンクリート防壁。",
+        "surface": "range-concrete",
+        "boundary": "range-earthworks",
+        "skyline": "military-campus",
+        "dominantSilhouette": "左の段状レーダー指揮堡と右の巨大半円アーチ格納庫が山稜を二分する軍事軸線",
+        "uniqueKit": "傾斜PC隅部、外階段塔、レーダー架台、装甲連絡橋"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の兵舎・整備棟を斜行射撃路へ段状配置し、3階の低棟は射線の肩だけに限定",
+        "targetBuildingCount": [
+          22,
+          28
+        ],
+        "blockPattern": "射線をずらした長方形兵舎ブロックと斜行する装甲サービス路",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          14,
+          18
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "中央射撃路→ランプ分岐→格納庫床・指揮堡車庫・屋上橋の三高度",
+        "openSpace": "射撃レーン2本と車両回頭地のみ"
+      },
+      "facade": {
+        "roofGrammar": "低勾配装甲屋根、鋸歯採光帯、巨大ヴォールト",
+        "nonGlassAlternatives": [
+          "分節格納扉",
+          "深いルーバー機械室",
+          "外階段踊場",
+          "射撃スリット",
+          "少数の奥まった管制窓"
+        ],
+        "entranceGrammar": "人用2.1m防爆扉と20m級格納ポータルを明確に分離",
+        "materials": [
+          "摩耗PC",
+          "亜鉛鋼",
+          "低反射ガラス",
+          "黄黒安全塗装"
+        ],
+        "surfaceState": "乾いた粉塵、タイヤ痕、局所油染み",
+        "blackWindowAvoidance": "ガラスは管制帯だけ。大面積はルーバー・扉・コンクリート凹部・開放架台へ置換",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "格納庫アーチと内部トラス",
+          "レーダー冠",
+          "接地階段・橋・入口"
+        ],
+        "lod1Preserve": [
+          "主リブ",
+          "大扉分節",
+          "建物段差"
+        ],
+        "lod2Preserve": [
+          "格納庫半円輪郭",
+          "指揮堡階段形",
+          "山岳境界"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "kunren-kurogane-command-bastion",
+          "ordinal": 0,
+          "legacyProfileId": "kunren-kurogane-command-bastion",
+          "conceptLabel": "Command Bastion",
+          "visualSignature": "横長の傾斜装甲基壇、非対称レーダー冠、道路を跨ぐ指揮橋",
+          "purpose": "訓練場全域を監視するC4ISR指揮・教育複合棟",
+          "placementIntent": "北西・射撃レーン終端",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "bunker",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 88,
+              "depth": 56
+            },
+            "heightM": 49,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 94,
+            "depth": 60,
+            "height": 49
+          },
+          "geometryGrammar": {
+            "conceptPriority": "横長の傾斜装甲基壇、非対称レーダー冠、道路を跨ぐ指揮橋",
+            "primarySilhouette": "段状の装甲基壇から非対称レーダー冠が立つ横長要塞",
+            "roof": "防爆フラットルーフと鋸歯状レーダーデッキ",
+            "facade": "傾斜PC防護板、深い管制窓、露出した耐震ブレース",
+            "entrance": "人用2.1m防爆扉と20m級格納ポータルを明確に分離",
+            "nonGlassAlternatives": [
+              "分節格納扉",
+              "深いルーバー機械室",
+              "外階段踊場",
+              "射撃スリット",
+              "少数の奥まった管制窓"
+            ],
+            "materials": [
+              "煤色プレキャスト",
+              "酸化亜鉛鋼",
+              "低反射管制ガラス",
+              "朱色識別塗装"
+            ],
+            "combatFlow": [
+              "地上車庫を貫く長射線",
+              "中央作戦室を囲む二階回廊",
+              "屋上レーダー基部へ上がる外階段"
+            ]
+          }
+        },
+        {
+          "id": "kunren-hakuen-aerostat-hall",
+          "ordinal": 1,
+          "legacyProfileId": "kunren-hakuen-aerostat-hall",
+          "conceptLabel": "Aerostat Vault Hangar",
+          "visualSignature": "航空機を呑む単大アーチ、厚い外骨格リブ、開放整備内部",
+          "purpose": "監視気球と大型標的機を整備する双胴高天井施設",
+          "placementIntent": "南東・整備道路沿い",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "hangar",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 112,
+              "depth": 70
+            },
+            "heightM": 55,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 120,
+            "depth": 74,
+            "height": 55
+          },
+          "geometryGrammar": {
+            "conceptPriority": "航空機を呑む単大アーチ、厚い外骨格リブ、開放整備内部",
+            "primarySilhouette": "二連ヴォールトと細い係留塔が交差する巨大シルエット",
+            "roof": "リブ付き双曲面ヴォールトと可動扉上の採光ランタン",
+            "facade": "巨大分節扉、外付け整備足場、基壇の連続ルーバー",
+            "entrance": "人用2.1m防爆扉と20m級格納ポータルを明確に分離",
+            "nonGlassAlternatives": [
+              "分節格納扉",
+              "深いルーバー機械室",
+              "外階段踊場",
+              "射撃スリット",
+              "少数の奥まった管制窓"
+            ],
+            "materials": [
+              "淡灰アルミ",
+              "濃紺構造鋼",
+              "曇りポリカーボネート",
+              "汚れたコンクリート"
+            ],
+            "combatFlow": [
+              "扉から扉へ抜ける一階主路",
+              "機体ピットを挟む左右側廊",
+              "トラス下キャットウォークの高所路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "souko",
+      "name": "倉庫区",
+      "referenceImage": "souko-reference-v1.png",
+      "mapSizeM": {
+        "current": 336,
+        "recommended": 336,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "雨上がりのコンテナ物流地区。高層倉庫、積層コンテナ、ガントリークレーン。",
+        "surface": "wet-logistics",
+        "boundary": "container-warehouses",
+        "skyline": "port-logistics",
+        "dominantSilhouette": "左の橋架けラック塔群と右の鋸歯屋根税関ターミナルが濡れた物流路を挟む門型景観",
+        "uniqueKit": "モニタールーフ、橋形搬送路、縦長荷役扉、雨樋大庇"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "荷役線へ15度ずつ振った4–6階倉庫を千鳥配置し、3階棟は交差点の視界抜きに使う",
+        "targetBuildingCount": [
+          24,
+          32
+        ],
+        "blockPattern": "倉庫を直交させず荷役線に沿って15度ずつ振る千鳥ブロック",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          16,
+          20
+        ],
+        "alleyM": [
+          7,
+          9
+        ],
+        "combatFlow": "二本のトラック路→検査ベイ→ラック脚サービス迷路→上部検査橋",
+        "openSpace": "コンテナ広場1つと車両旋回域"
+      },
+      "facade": {
+        "roofGrammar": "鋸歯・モニター・クレーン走行桁",
+        "nonGlassAlternatives": [
+          "開放荷役ベイ",
+          "縦ルーバー",
+          "メッシュラック空隙",
+          "巻上げシャッター",
+          "雨庇下の人扉"
+        ],
+        "entranceGrammar": "番号付き大型搬送口と黄色い税関門をランドマークごとに差別化",
+        "materials": [
+          "濡れた亜鉛鋼",
+          "赤煉瓦",
+          "半透明FRP",
+          "橙安全塗装"
+        ],
+        "surfaceState": "雨水膜、排水溝、泥タイヤ跡",
+        "blackWindowAvoidance": "黒ガラス帯を禁止し、奥行きあるラック・半開き扉・庇下照明・半透明FRPで暗部を作る",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "ラック塔の透過骨格",
+          "鋸歯稜線",
+          "橋と検査口"
+        ],
+        "lod1Preserve": [
+          "主ラック列",
+          "屋根歯形",
+          "大庇"
+        ],
+        "lod2Preserve": [
+          "門型ラック塔",
+          "鋸歯ターミナル外形",
+          "港湾低層線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "souko-shiosai-stackhouse",
+          "ordinal": 0,
+          "legacyProfileId": "souko-shiosai-stackhouse",
+          "conceptLabel": "Rack-Bridge Storehouse",
+          "visualSignature": "二枚の垂直ラック塔、上空クレーン橋、透ける搬送骨格",
+          "purpose": "無人クレーンが垂直搬送する超高層パレット倉庫",
+          "placementIntent": "西・コンテナ軸終端",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "warehouse",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 104,
+              "depth": 66
+            },
+            "heightM": 64,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 110,
+            "depth": 70,
+            "height": 64
+          },
+          "geometryGrammar": {
+            "conceptPriority": "二枚の垂直ラック塔、上空クレーン橋、透ける搬送骨格",
+            "primarySilhouette": "二枚の薄いラック塔を橋形クレーンが束ねる門型巨構",
+            "roof": "走行クレーンを露出した切欠きフラットルーフ",
+            "facade": "半透明メッシュ外皮、巨大スロット窓、番号付き搬送口",
+            "entrance": "番号付き大型搬送口と黄色い税関門をランドマークごとに差別化",
+            "nonGlassAlternatives": [
+              "開放荷役ベイ",
+              "縦ルーバー",
+              "メッシュラック空隙",
+              "巻上げシャッター",
+              "雨庇下の人扉"
+            ],
+            "materials": [
+              "亜鉛メッキ鋼",
+              "濡れた紺パネル",
+              "橙安全塗装",
+              "半透明FRP"
+            ],
+            "combatFlow": [
+              "中央搬送トンネル",
+              "ラック脚元の迷路状サービス路",
+              "二階検査橋から中央を狙う横断路"
+            ]
+          }
+        },
+        {
+          "id": "souko-amakado-customs-terminal",
+          "ordinal": 1,
+          "legacyProfileId": "souko-amakado-customs-terminal",
+          "conceptLabel": "Customs Sawtooth Terminal",
+          "visualSignature": "反復寸法を崩した巨大鋸歯棟、中央管制塔、深い検査ベイ",
+          "purpose": "港湾貨物の検査・保税・司令機能を集約した立体税関",
+          "placementIntent": "北東・検査レーン脇",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "terminal",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 92,
+              "depth": 78
+            },
+            "heightM": 47,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 98,
+            "depth": 84,
+            "height": 47
+          },
+          "geometryGrammar": {
+            "conceptPriority": "反復寸法を崩した巨大鋸歯棟、中央管制塔、深い検査ベイ",
+            "primarySilhouette": "折板屋根の低い翼と斜めにせり上がる検査塔",
+            "roof": "連続鋸歯屋根と雨受け大庇",
+            "facade": "レンガ基壇、黒ガラス検査塔、白い深庇と黄色の門",
+            "entrance": "番号付き大型搬送口と黄色い税関門をランドマークごとに差別化",
+            "nonGlassAlternatives": [
+              "開放荷役ベイ",
+              "縦ルーバー",
+              "メッシュラック空隙",
+              "巻上げシャッター",
+              "雨庇下の人扉"
+            ],
+            "materials": [
+              "濡れた赤煉瓦",
+              "黒化鋼",
+              "防眩ガラス",
+              "白色GRC"
+            ],
+            "combatFlow": [
+              "六本の検査ベイを横断する地上戦",
+              "保税倉庫の中二階環状路",
+              "斜路から税関塔の屋上へ到達"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "nakaniwa",
+      "name": "中庭",
+      "referenceImage": "nakaniwa-reference-v1.png",
+      "mapSizeM": {
+        "current": 320,
+        "recommended": 320,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "水盤と庭園を抱く宮殿中庭。アーケード、幾何学装飾、ドーム楼閣。",
+        "surface": "palace-stone",
+        "boundary": "palace-arcades",
+        "skyline": "garden-palace",
+        "dominantSilhouette": "左の王冠状多層水宮と右の扇形ガラス温室が水庭・橋・二層回廊を見下ろす非対称宮殿景観",
+        "uniqueKit": "二層アーケード、幾何学スクリーン、庭橋、緑化バルコニー"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–5階のL字宮殿翼と4–6階楼閣を水盤周囲へ噛み合わせ、職人街は細い連続壁にする",
+        "targetBuildingCount": [
+          20,
+          26
+        ],
+        "blockPattern": "水盤を核にL字宮殿翼と細い職人街を噛み合わせる",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          9,
+          13
+        ],
+        "alleyM": [
+          5,
+          7
+        ],
+        "combatFlow": "水庭遊歩道→橋の十字路→宮殿回廊と温室植栽迷路→屋根庭",
+        "openSpace": "中央水盤と回廊庭2つ"
+      },
+      "facade": {
+        "roofGrammar": "深い寄棟、銅板ドーム、扇形ガラス殻",
+        "nonGlassAlternatives": [
+          "白石アーケード",
+          "木格子出窓",
+          "透かし石スクリーン",
+          "開放ロッジア",
+          "温室の構造ガラス"
+        ],
+        "entranceGrammar": "幅広い儀礼アーチと細い庭門を階層化",
+        "materials": [
+          "蜂蜜色砂岩",
+          "白大理石",
+          "緑青銅",
+          "低鉄ガラス",
+          "濃木"
+        ],
+        "surfaceState": "薄い水膜、灌漑水、苔と花弁",
+        "blackWindowAvoidance": "黒板窓は使わず、格子・開放アーチ・植物越しガラス・暖色奥室で面を分節",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "花弁尖塔",
+          "温室ガラス骨格",
+          "橋・水縁・入口"
+        ],
+        "lod1Preserve": [
+          "宮殿段差",
+          "温室三連殻",
+          "主要アーケード"
+        ],
+        "lod2Preserve": [
+          "王冠形宮殿",
+          "扇形温室",
+          "水庭輪郭"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "nakaniwa-suiren-crown-palace",
+          "ordinal": 0,
+          "legacyProfileId": "nakaniwa-suiren-crown-palace",
+          "conceptLabel": "Crowned Water Palace",
+          "visualSignature": "花弁状尖塔群、段状宮殿翼、庭へ落ちる多層テラス",
+          "purpose": "儀礼水庭を囲む行政・迎賓宮殿",
+          "placementIntent": "中央北・水盤正面",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "villa",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 92,
+              "depth": 78
+            },
+            "heightM": 43,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 98,
+            "depth": 84,
+            "height": 43
+          },
+          "geometryGrammar": {
+            "conceptPriority": "花弁状尖塔群、段状宮殿翼、庭へ落ちる多層テラス",
+            "primarySilhouette": "四隅楼閣と中央の浅い青銅ドームが水平に連なる王冠形",
+            "roof": "青緑銅ドーム、深い寄棟、透かし庇",
+            "facade": "白石アーケード、彩色モザイク帯、木格子の出窓",
+            "entrance": "幅広い儀礼アーチと細い庭門を階層化",
+            "nonGlassAlternatives": [
+              "白石アーケード",
+              "木格子出窓",
+              "透かし石スクリーン",
+              "開放ロッジア",
+              "温室の構造ガラス"
+            ],
+            "materials": [
+              "蜂蜜色砂岩",
+              "白大理石",
+              "緑青銅",
+              "濃木格子"
+            ],
+            "combatFlow": [
+              "正門から水庭へ抜ける軸線",
+              "左右翼の二層アーケード",
+              "屋根庭を結ぶ隠し階段"
+            ]
+          }
+        },
+        {
+          "id": "nakaniwa-kakou-conservatory-citadel",
+          "ordinal": 1,
+          "legacyProfileId": "nakaniwa-kakou-conservatory-citadel",
+          "conceptLabel": "Fan-Glass Conservatory",
+          "visualSignature": "三連扇形ガラスヴォールト、石造基壇、植栽の見える温室内部",
+          "purpose": "希少植物の研究温室と庭園防衛塔を融合した複合楼",
+          "placementIntent": "南東・庭園縁",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "villa",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 76,
+              "depth": 66
+            },
+            "heightM": 50,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 80,
+            "depth": 70,
+            "height": 50
+          },
+          "geometryGrammar": {
+            "conceptPriority": "三連扇形ガラスヴォールト、石造基壇、植栽の見える温室内部",
+            "primarySilhouette": "石造基壇から扇状ガラス屋根と細身の灌漑塔が広がる",
+            "roof": "分節ガラス扇屋根と三連採光ドーム",
+            "facade": "石格子の外殻、緑化バルコニー、銅製水樋",
+            "entrance": "幅広い儀礼アーチと細い庭門を階層化",
+            "nonGlassAlternatives": [
+              "白石アーケード",
+              "木格子出窓",
+              "透かし石スクリーン",
+              "開放ロッジア",
+              "温室の構造ガラス"
+            ],
+            "materials": [
+              "低鉄ガラス",
+              "真鍮フレーム",
+              "多孔質白石",
+              "濃緑釉薬タイル"
+            ],
+            "combatFlow": [
+              "温室内部の植栽迷路",
+              "外周灌漑回廊",
+              "塔を介した三層展望路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "kairou",
+      "name": "回廊",
+      "referenceImage": "kairou-reference-v1.png",
+      "mapSizeM": {
+        "current": 300,
+        "recommended": 300,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "砂漠遺跡を転用した前線基地。巨大列柱、神殿門、布製日除け。",
+        "surface": "desert-stone",
+        "boundary": "temple-cliffs",
+        "skyline": "desert-temple",
+        "dominantSilhouette": "左の太い列柱聖域と右の風塔・天球儀を載せた隊商観測城が中央バザール軸を挟む砂岩双極",
+        "uniqueKit": "厚壁アーチ、マシュラビーヤ、布天蓋、風塔、屋上テラス"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の砂岩商館を折れ路地へ密着させ、3階バザールは列柱前広場のフレームに限定",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "blockPattern": "日陰の折れ路地と中庭商館を巨大列柱軸へ接続",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          12,
+          16
+        ],
+        "alleyM": [
+          5,
+          8
+        ],
+        "combatFlow": "南 civic plaza→両ランドマークの独立入口→柱林・中庭→屋上梁路と風塔螺旋路",
+        "openSpace": "列柱主路と泉広場"
+      },
+      "facade": {
+        "roofGrammar": "日干し煉瓦ヴォールト、布庇、段状屋上、天球儀",
+        "nonGlassAlternatives": [
+          "深いアーチ門",
+          "木製マシュラビーヤ",
+          "日陰ロッジア",
+          "青釉換気孔",
+          "布天蓋下の開放店舗"
+        ],
+        "entranceGrammar": "12m級神殿門と4–6m隊商アーチを人間尺度の扉で内包",
+        "materials": [
+          "黄褐砂岩",
+          "赤砂岩",
+          "青釉タイル",
+          "黒鉄",
+          "生成り布"
+        ],
+        "surfaceState": "砂の吹き溜まり、摩耗敷石、日陰の冷色汚れ",
+        "blackWindowAvoidance": "小さな黒窓の乱立を禁止し、窓面積を抑えて木格子・アーチ陰・布・彫刻帯へ置換",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "自立列柱と柱頭",
+          "天球儀冠",
+          "入口・階段・梁接触"
+        ],
+        "lod1Preserve": [
+          "柱列本数と神殿梁",
+          "四風塔",
+          "主要アーチ"
+        ],
+        "lod2Preserve": [
+          "横長列柱聖域",
+          "天球儀付き段状城",
+          "砂岩街区稜線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "kairou-meridian-hypostyle-sanctuary",
+          "ordinal": 0,
+          "legacyProfileId": "kairou-meridian-hypostyle-sanctuary",
+          "conceptLabel": "Meridian Hypostyle Sanctuary",
+          "visualSignature": "6–8本の自立太柱、深い梁間、横長の神殿門と光井",
+          "purpose": "古代天文観測と前線司令を兼ねる列柱神殿",
+          "placementIntent": "西・列柱軸上",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "cathedral",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 114,
+              "depth": 74
+            },
+            "heightM": 38,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 114,
+            "depth": 74,
+            "height": 38
+          },
+          "geometryGrammar": {
+            "conceptPriority": "6–8本の自立太柱、深い梁間、横長の神殿門と光井",
+            "primarySilhouette": "巨大門塔の奥に密な柱林と段差のある採光梁が続く",
+            "roof": "石梁陸屋根と中央の裂けた光井",
+            "facade": "傾斜門塔、彫り込み天文盤、塩害を受けた柱身",
+            "entrance": "12m級神殿門と4–6m隊商アーチを人間尺度の扉で内包",
+            "nonGlassAlternatives": [
+              "深いアーチ門",
+              "木製マシュラビーヤ",
+              "日陰ロッジア",
+              "青釉換気孔",
+              "布天蓋下の開放店舗"
+            ],
+            "materials": [
+              "黄褐砂岩",
+              "青釉タイル",
+              "黒鉄補強材",
+              "生成り布"
+            ],
+            "combatFlow": [
+              "門塔の三つの開口",
+              "柱林の短い横射線",
+              "光井周囲の上部梁路"
+            ]
+          }
+        },
+        {
+          "id": "kairou-windcrown-caravan-observatory",
+          "ordinal": 1,
+          "legacyProfileId": "kairou-windcrown-caravan-observatory",
+          "conceptLabel": "Windcrown Caravan Observatory",
+          "visualSignature": "四本の風塔、段状隊商宿、道路から読める巨大天球儀冠",
+          "purpose": "隊商宿・水庫・砂嵐観測所を積層した都市城",
+          "placementIntent": "北東・砂丘側",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "fortress",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 88,
+              "depth": 80
+            },
+            "heightM": 54,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 88,
+            "depth": 80,
+            "height": 54
+          },
+          "geometryGrammar": {
+            "conceptPriority": "四本の風塔、段状隊商宿、道路から読める巨大天球儀冠",
+            "primarySilhouette": "階段状の宿坊塊から四本の非対称風塔が立つ",
+            "roof": "連続ヴォールトと段状屋上庭",
+            "facade": "小さな深窓、木製マシュラビーヤ、角の扶壁",
+            "entrance": "12m級神殿門と4–6m隊商アーチを人間尺度の扉で内包",
+            "nonGlassAlternatives": [
+              "深いアーチ門",
+              "木製マシュラビーヤ",
+              "日陰ロッジア",
+              "青釉換気孔",
+              "布天蓋下の開放店舗"
+            ],
+            "materials": [
+              "赤砂岩",
+              "石灰漆喰",
+              "黒檀格子",
+              "青銅水管"
+            ],
+            "combatFlow": [
+              "アーチ門から中庭への回遊",
+              "宿坊屋上の段々路",
+              "風塔内部の螺旋上昇路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "kouwan",
+      "name": "港湾",
+      "referenceImage": "kouwan-reference-v1.png",
+      "mapSizeM": {
+        "current": 360,
+        "recommended": 360,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "現役の大型工業港。海面、埠頭、船渠、コンテナ地区、複数の港湾クレーン。",
+        "surface": "harbor-concrete",
+        "boundary": "harbor-seawall",
+        "skyline": "working-harbor",
+        "dominantSilhouette": "左の船体を吊る巨大シップリフトと右の細長い港務取引塔が雨空とドック水面を縦横に切る",
+        "uniqueKit": "耐塩パネル、巨大トラス、クレーンレール、番号基壇、管制橋"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "岸壁平行の4–6階工場・港務住宅を密集させ、3階倉庫は水際の射線切りに限定",
+        "targetBuildingCount": [
+          24,
+          31
+        ],
+        "blockPattern": "水際に平行な長尺工場と斜交する船渠サービス街区",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          16,
+          22
+        ],
+        "alleyM": [
+          7,
+          9
+        ],
+        "combatFlow": "濡れた物流路→船渠床・塔ロビーの三入口→両塔脚→操作橋と管制デッキ",
+        "openSpace": "船渠、水面、物流路2本"
+      },
+      "facade": {
+        "roofGrammar": "片流れ採光屋根、開放トラス、帆型シェル",
+        "nonGlassAlternatives": [
+          "巨大船渠口",
+          "耐塩ルーバー",
+          "開放整備足場",
+          "波形庇",
+          "少数の深い管制ガラス"
+        ],
+        "entranceGrammar": "船体スケールのドック門と人間尺度の港務玄関を別シルエット化",
+        "materials": [
+          "塩錆耐候鋼",
+          "濡れコンクリート",
+          "海緑ガラス",
+          "陽極アルミ",
+          "黄安全格子"
+        ],
+        "surfaceState": "雨水鏡面、塩筋、油膜は局所、軽量水面反射",
+        "blackWindowAvoidance": "オフィス帯以外の黒ガラスを禁止し、配管・ルーバー・開放トラス・半透明庇へ分散",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "吊船と昇降塔",
+          "帆形塔外殻",
+          "水縁・入口・操作橋"
+        ],
+        "lod1Preserve": [
+          "門型塔と船体塊",
+          "塔の帆三枚",
+          "主要クレーン"
+        ],
+        "lod2Preserve": [
+          "シップリフト門",
+          "交換塔の細長い冠",
+          "港湾水際線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "kouwan-breakwater-ship-lift-basilica",
+          "ordinal": 0,
+          "legacyProfileId": "kouwan-breakwater-ship-lift-basilica",
+          "conceptLabel": "Leviathan Drydock Citadel",
+          "visualSignature": "吊り上げ船体、二本の門型塔、上部操作橋と滑車",
+          "purpose": "大型艦を乾式整備床へ持ち上げる双塔シップリフト",
+          "placementIntent": "南・水際船渠",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "terminal",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 134,
+              "depth": 66
+            },
+            "heightM": 60,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 134,
+            "depth": 66,
+            "height": 60
+          },
+          "geometryGrammar": {
+            "conceptPriority": "吊り上げ船体、二本の門型塔、上部操作橋と滑車",
+            "primarySilhouette": "二本の門型塔と懸垂プラットフォームが海上門を作る",
+            "roof": "開放トラス頂部と操作室の片流れ冠",
+            "facade": "塩錆したクロスブレース、巨大滑車、青白い管制箱",
+            "entrance": "船体スケールのドック門と人間尺度の港務玄関を別シルエット化",
+            "nonGlassAlternatives": [
+              "巨大船渠口",
+              "耐塩ルーバー",
+              "開放整備足場",
+              "波形庇",
+              "少数の深い管制ガラス"
+            ],
+            "materials": [
+              "耐候鋼",
+              "青灰塗装鋼",
+              "濡れたコンクリート",
+              "黄安全格子"
+            ],
+            "combatFlow": [
+              "昇降床を横断する低所路",
+              "両塔脚の整備室",
+              "上部操作橋の高所横断"
+            ]
+          }
+        },
+        {
+          "id": "kouwan-umiho-exchange-tower",
+          "ordinal": 1,
+          "legacyProfileId": "kouwan-umiho-exchange-tower",
+          "conceptLabel": "Stormglass Harbor Exchange",
+          "visualSignature": "海緑ガラスの細塔、帆型外殻、低い港務基壇",
+          "purpose": "港務局・海運取引所・VTS管制を収容する海上複合塔",
+          "placementIntent": "北西・港務広場",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 98,
+              "depth": 84
+            },
+            "heightM": 72,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 98,
+            "depth": 84,
+            "height": 72
+          },
+          "geometryGrammar": {
+            "conceptPriority": "海緑ガラスの細塔、帆型外殻、低い港務基壇",
+            "primarySilhouette": "傾斜する三枚の帆型外殻が円筒管制室を抱く",
+            "roof": "三角シェル屋根と灯標状アンテナ冠",
+            "facade": "深い水平庇、波形セラミックルーバー、透明な吹抜け",
+            "entrance": "船体スケールのドック門と人間尺度の港務玄関を別シルエット化",
+            "nonGlassAlternatives": [
+              "巨大船渠口",
+              "耐塩ルーバー",
+              "開放整備足場",
+              "波形庇",
+              "少数の深い管制ガラス"
+            ],
+            "materials": [
+              "淡灰GRC",
+              "海緑ガラス",
+              "陽極酸化アルミ",
+              "暗色花崗岩"
+            ],
+            "combatFlow": [
+              "大吹抜けを囲む二重回廊",
+              "港務車路からロビーへの三入口",
+              "外付け避難階段で管制デッキへ"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "takadai",
+      "name": "天空修道城",
+      "referenceImage": "takadai-reference-v1.png",
+      "mapSizeM": {
+        "current": 326,
+        "recommended": 326,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "潮汐の島山全体を覆う巨大西洋修道城。外郭、城下街、切妻屋根、中央尖塔、大聖堂回廊。",
+        "surface": "abbey-causeway",
+        "boundary": "tidal-abbey-shore",
+        "skyline": "coastal-abbey",
+        "dominantSilhouette": "潮汐岩山の左上へ伸びる尖塔修道城と右前景の八角大城塞が密な石造城下を二重支配する",
+        "uniqueKit": "急切妻、花崗岩扶壁、木骨張出し、飛梁、城壁歩廊"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の石造商家と木骨上階を曲がる参詣坂へ段状密集し、3階家屋は潮汐路沿いのみ",
+        "targetBuildingCount": [
+          20,
+          26
+        ],
+        "blockPattern": "曲がる参詣坂に石造商家と修道院別棟を段状密集",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          9,
+          13
+        ],
+        "alleyM": [
+          5,
+          7
+        ],
+        "combatFlow": "潮汐路→参詣坂→外郭門→城下分岐→大聖堂側廊・八角中庭・壁上路",
+        "openSpace": "主参道、潮汐路、火除け広場"
+      },
+      "facade": {
+        "roofGrammar": "青黒スレート急切妻、鉛回廊、尖塔、八角緑青冠",
+        "nonGlassAlternatives": [
+          "深い石アーチ",
+          "木骨出窓",
+          "鎧戸付き縦窓",
+          "開放回廊",
+          "屋根ドーマー"
+        ],
+        "entranceGrammar": "落とし扉を持つ外郭門と尖頭大聖堂門を混同しない",
+        "materials": [
+          "濡れ花崗岩",
+          "青黒スレート",
+          "緑青銅",
+          "暗色オーク"
+        ],
+        "surfaceState": "潮湿、石畳の水溜まり、海藻汚れ、苔",
+        "blackWindowAvoidance": "黒四角窓列を禁止し、鎧戸・木枠・アーチ陰・暖色室内を非反復配置",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "中央尖塔と飛梁",
+          "八角城冠",
+          "城下段差・門・階段"
+        ],
+        "lod1Preserve": [
+          "修道城段階形",
+          "八角主塔と外郭",
+          "主要切妻"
+        ],
+        "lod2Preserve": [
+          "潮汐修道城の山形輪郭",
+          "八角城冠",
+          "岩島・海岸境界"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "takadai-celestine-tidal-abbey",
+          "ordinal": 0,
+          "legacyProfileId": "takadai-celestine-tidal-abbey",
+          "conceptLabel": "Tidal Crown Abbey",
+          "visualSignature": "岩山から城下・身廊・中央尖塔へ収束するモンサンミッシェル型の段階形",
+          "purpose": "潮汐島の巡礼都市・大聖堂・城塞を一体化した既存主城",
+          "placementIntent": "中央高地・既存城位置",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "abbey",
+            "collisionTemplate": "abbey",
+            "collisionFootprintM": {
+              "width": 124,
+              "depth": 100
+            },
+            "heightM": 70,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 128,
+            "depth": 102,
+            "height": 70
+          },
+          "geometryGrammar": {
+            "conceptPriority": "岩山から城下・身廊・中央尖塔へ収束するモンサンミッシェル型の段階形",
+            "primarySilhouette": "岩山から城下家屋、身廊、中央尖塔へ段階的に収束",
+            "roof": "急勾配スレート群、飛梁、銅尖塔",
+            "facade": "荒い花崗岩、薔薇窓、段状扶壁、木造回廊",
+            "entrance": "落とし扉を持つ外郭門と尖頭大聖堂門を混同しない",
+            "nonGlassAlternatives": [
+              "深い石アーチ",
+              "木骨出窓",
+              "鎧戸付き縦窓",
+              "開放回廊",
+              "屋根ドーマー"
+            ],
+            "materials": [
+              "灰花崗岩",
+              "青黒スレート",
+              "緑青銅",
+              "暗色オーク"
+            ],
+            "combatFlow": [
+              "外郭門から城下坂を上る主路",
+              "大聖堂左右側廊",
+              "城壁上と鐘楼下を繋ぐ高所路"
+            ]
+          }
+        },
+        {
+          "id": "takadai-dawnkeep-crown-citadel",
+          "ordinal": 1,
+          "legacyProfileId": "takadai-dawnkeep-crown-citadel",
+          "conceptLabel": "Octagonal Dawn Citadel",
+          "visualSignature": "八角大本丸、青緑の低い冠屋根、半月外郭",
+          "purpose": "修道城を守る独立王城・兵站庫・潮見塔",
+          "placementIntent": "南西高台・主城と対角",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "fortress",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 96,
+              "depth": 86
+            },
+            "heightM": 76,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 96,
+            "depth": 86,
+            "height": 76
+          },
+          "geometryGrammar": {
+            "conceptPriority": "八角大本丸、青緑の低い冠屋根、半月外郭",
+            "primarySilhouette": "八角主塔を半月形の低い城壁と細塔群が取り囲む",
+            "roof": "円錐スレート屋根と鋸壁付き鉛屋根",
+            "facade": "切石の斜面基壇、狭間、張出し櫓と赤い旗廊",
+            "entrance": "落とし扉を持つ外郭門と尖頭大聖堂門を混同しない",
+            "nonGlassAlternatives": [
+              "深い石アーチ",
+              "木骨出窓",
+              "鎧戸付き縦窓",
+              "開放回廊",
+              "屋根ドーマー"
+            ],
+            "materials": [
+              "温灰切石",
+              "鉛板",
+              "焦茶木材",
+              "鈍い赤漆喰"
+            ],
+            "combatFlow": [
+              "半月形外郭の左右分岐",
+              "主塔一階を貫く兵站路",
+              "螺旋階段と壁上歩廊の縦戦"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "sakyuu",
+      "name": "砂丘",
+      "referenceImage": "sakyuu-reference-v1.png",
+      "mapSizeM": {
+        "current": 350,
+        "recommended": 350,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "風紋の残る砂漠装甲前線。埋没格納庫、掘削設備、露出した岩盤。",
+        "surface": "dune-sand",
+        "boundary": "dune-ridges",
+        "skyline": "desert-mesas",
+        "dominantSilhouette": "左の階段状宮殿ジッグラトと右の開放骨組み大天球ドームが橋で結ばれ、砂に埋もれる密集都市を覆う",
+        "uniqueKit": "砂岩段丘、青釉帯、角塔、布天蓋、橋架け屋上"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の日干し煉瓦住商塔を段丘へ高密配置し、3階アーケード街を砂溜まりの射線縁に置く",
+        "targetBuildingCount": [
+          21,
+          27
+        ],
+        "blockPattern": "半地下の格納庫を砂止め壁で束ね、上部に細い塔棟を密集",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          12,
+          16
+        ],
+        "alleyM": [
+          5,
+          8
+        ],
+        "combatFlow": "砂の主路→宮殿アーチ・観測所基壇の二分岐→中庭→段屋上とドーム環状路",
+        "openSpace": "中央車路と砂止め広場"
+      },
+      "facade": {
+        "roofGrammar": "平屋根、浅いドーム、格子天球冠、布庇",
+        "nonGlassAlternatives": [
+          "深い尖頭アーチ",
+          "木格子バルコニー",
+          "青釉換気帯",
+          "日陰回廊",
+          "重い砂防扉"
+        ],
+        "entranceGrammar": "宮殿の高アーチ門と観測所の多方向基壇門を明確化",
+        "materials": [
+          "暖砂岩",
+          "日干し煉瓦",
+          "青釉タイル",
+          "真鍮",
+          "退色布"
+        ],
+        "surfaceState": "砂堆積、風食、硬い日向と冷たい日陰",
+        "blackWindowAvoidance": "黒いスリット反復を禁止し、格子・アーチ・布・青釉・開放回廊へ置換",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "宮殿階段形と角塔",
+          "天球ドーム骨格",
+          "橋・門・中庭接触"
+        ],
+        "lod1Preserve": [
+          "ジッグラト段差",
+          "ドーム主リング",
+          "主要アーチ"
+        ],
+        "lod2Preserve": [
+          "宮殿王冠塔",
+          "半球観測所",
+          "砂崖都市稜線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "sakyuu-sunken-crawler-vault",
+          "ordinal": 0,
+          "legacyProfileId": "sakyuu-sunken-crawler-vault",
+          "conceptLabel": "Sunscar Palace-Ziggurat",
+          "visualSignature": "段状砂岩宮殿、角塔群、青い垂幕と高い王冠塔",
+          "purpose": "超大型砂漠クローラーと装甲車群を収容する地下格納庫",
+          "placementIntent": "北・砂丘切通し",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "refinery",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 138,
+              "depth": 76
+            },
+            "heightM": 40,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 138,
+            "depth": 76,
+            "height": 40
+          },
+          "geometryGrammar": {
+            "conceptPriority": "段状砂岩宮殿、角塔群、青い垂幕と高い王冠塔",
+            "primarySilhouette": "砂丘から巨大分節扉と背面の三本換気背骨だけが突出",
+            "roof": "砂被覆ヴォールトと埋込採光溝",
+            "facade": "厚い傾斜扉、冷却フィン、砂で磨かれた防爆基壇",
+            "entrance": "宮殿の高アーチ門と観測所の多方向基壇門を明確化",
+            "nonGlassAlternatives": [
+              "深い尖頭アーチ",
+              "木格子バルコニー",
+              "青釉換気帯",
+              "日陰回廊",
+              "重い砂防扉"
+            ],
+            "materials": [
+              "黄土色UHPC",
+              "褐色装甲鋼",
+              "耐熱ガラス",
+              "黒ゴムシール"
+            ],
+            "combatFlow": [
+              "巨大扉の中央路",
+              "左右整備ピット",
+              "換気背骨に沿う屋上塹壕"
+            ]
+          }
+        },
+        {
+          "id": "sakyuu-helios-drill-crown",
+          "ordinal": 1,
+          "legacyProfileId": "sakyuu-helios-drill-crown",
+          "conceptLabel": "Celestial Sand Observatory",
+          "visualSignature": "石造基壇に載る巨大な透過天球ドーム、四隅小塔、空中連絡橋",
+          "purpose": "地下水と地熱を探査する太陽集熱・掘削複合塔",
+          "placementIntent": "南東・岩盤露頭",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 86,
+              "depth": 72
+            },
+            "heightM": 78,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 86,
+            "depth": 72,
+            "height": 78
+          },
+          "geometryGrammar": {
+            "conceptPriority": "石造基壇に載る巨大な透過天球ドーム、四隅小塔、空中連絡橋",
+            "primarySilhouette": "斜めの集光翼が螺旋掘削塔を三方向から囲む",
+            "roof": "回転放物面翼と環状機械冠",
+            "facade": "縦冷却リブ、露出昇降籠、反射を抑えた集熱板",
+            "entrance": "宮殿の高アーチ門と観測所の多方向基壇門を明確化",
+            "nonGlassAlternatives": [
+              "深い尖頭アーチ",
+              "木格子バルコニー",
+              "青釉換気帯",
+              "日陰回廊",
+              "重い砂防扉"
+            ],
+            "materials": [
+              "耐候鋼",
+              "砂色セラミック",
+              "黒色集熱材",
+              "銅配管"
+            ],
+            "combatFlow": [
+              "塔基部の機械迷路",
+              "集光翼下の環状路",
+              "外付け螺旋階段の狙撃位置"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "setsugen",
+      "name": "雪原",
+      "referenceImage": "setsugen-reference-v1.png",
+      "mapSizeM": {
+        "current": 336,
+        "recommended": 336,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "吹雪前の極地研究キャンパス。研究棟、ジオデシックドーム、アンテナ列。",
+        "surface": "packed-snow",
+        "boundary": "ice-ridge",
+        "skyline": "polar-campus",
+        "dominantSilhouette": "左の氷晶尖塔大聖堂と右の煙突・配管を束ねた地熱城塞が雪の階段街を挟む冷暖対比",
+        "uniqueKit": "雪切り庇、密閉橋、配管塔、氷晶扶壁、深い外階段"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の石・断熱研究棟を斜面へ段積みし、3階木造ロッジは広場縁の暖色スケール cue に限定",
+        "targetBuildingCount": [
+          22,
+          28
+        ],
+        "blockPattern": "風下へ段階配置した高床研究棟を密閉スカイブリッジで結ぶ",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          11,
+          15
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "除雪幹線→大聖堂階段・地熱機械床→連絡橋→尖塔回廊と配管デッキ",
+        "openSpace": "緊急車路と小型ヘリ面"
+      },
+      "facade": {
+        "roofGrammar": "急勾配雪切り屋根、氷晶尖塔、蒸気冠",
+        "nonGlassAlternatives": [
+          "暖色の深い木窓",
+          "色分け気密扉",
+          "機械ルーバー",
+          "氷ガラス薔薇窓",
+          "高床下開口"
+        ],
+        "entranceGrammar": "雪庇から離した2.1m気密扉と大聖堂の高門を庇・照明で識別",
+        "materials": [
+          "青氷ガラス",
+          "濡れ灰石",
+          "白断熱板",
+          "黒鋼管",
+          "焦茶木"
+        ],
+        "surfaceState": "積雪厚差、圧雪轍、氷柱、蒸気凝結",
+        "blackWindowAvoidance": "設備帯を黒い窓に見せず立体ルーバー・配管・雪庇へ分解し、発光窓は少数非反復",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "氷晶尖塔と飛梁",
+          "地熱管・煙突",
+          "雪階段・入口・橋"
+        ],
+        "lod1Preserve": [
+          "主氷晶群",
+          "工場段差と太管",
+          "主要屋根"
+        ],
+        "lod2Preserve": [
+          "氷大聖堂鋭塔",
+          "地熱城塞煙突群",
+          "雪山境界"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "setsugen-borealis-tripod-arcology",
+          "ordinal": 0,
+          "legacyProfileId": "setsugen-borealis-tripod-arcology",
+          "conceptLabel": "Aurora Iceglass Cathedral",
+          "visualSignature": "青い氷晶尖塔群、薔薇窓、透明飛梁と暖色大門",
+          "purpose": "越冬居住・気象観測・生命維持を統合した極地都市核",
+          "placementIntent": "西・風上側",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 90,
+              "depth": 80
+            },
+            "heightM": 58,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 90,
+            "depth": 80,
+            "height": 58
+          },
+          "geometryGrammar": {
+            "conceptPriority": "青い氷晶尖塔群、薔薇窓、透明飛梁と暖色大門",
+            "primarySilhouette": "三本の円筒塔を三角ブリッジが結び中央に光井を作る",
+            "roof": "空力キャップと小型観測ドーム",
+            "facade": "高床脚、垂直色帯、霜付き連絡橋",
+            "entrance": "雪庇から離した2.1m気密扉と大聖堂の高門を庇・照明で識別",
+            "nonGlassAlternatives": [
+              "暖色の深い木窓",
+              "色分け気密扉",
+              "機械ルーバー",
+              "氷ガラス薔薇窓",
+              "高床下開口"
+            ],
+            "materials": [
+              "白FRP",
+              "群青断熱パネル",
+              "低鉄三層ガラス",
+              "赤い救難塗装"
+            ],
+            "combatFlow": [
+              "三脚下の吹抜け路",
+              "二層の三角連絡橋",
+              "各塔の非常階段で非対称な上下戦"
+            ]
+          }
+        },
+        {
+          "id": "setsugen-aurora-data-cathedral",
+          "ordinal": 1,
+          "legacyProfileId": "setsugen-aurora-data-cathedral",
+          "conceptLabel": "Frostline Geothermal Citadel",
+          "visualSignature": "高い石工場塊、太い垂直熱管、蒸気塔と密閉連絡橋",
+          "purpose": "電波望遠・気候計算・氷床試料庫を収める大空間研究棟",
+          "placementIntent": "北東・アンテナ列脇",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "terminal",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 108,
+              "depth": 60
+            },
+            "heightM": 44,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 108,
+            "depth": 60,
+            "height": 44
+          },
+          "geometryGrammar": {
+            "conceptPriority": "高い石工場塊、太い垂直熱管、蒸気塔と密閉連絡橋",
+            "primarySilhouette": "結晶状の鋸歯屋根と二本の傾いたデータ塔",
+            "roof": "北向き採光鋸歯と雪を落とす急斜面",
+            "facade": "青黒い基壇、白いトラス外骨格、発光する狭窓",
+            "entrance": "雪庇から離した2.1m気密扉と大聖堂の高門を庇・照明で識別",
+            "nonGlassAlternatives": [
+              "暖色の深い木窓",
+              "色分け気密扉",
+              "機械ルーバー",
+              "氷ガラス薔薇窓",
+              "高床下開口"
+            ],
+            "materials": [
+              "白塗装鋼",
+              "濃青複合板",
+              "乳白ポリカーボネート",
+              "氷結コンクリート"
+            ],
+            "combatFlow": [
+              "中央計算ホールの長軸戦",
+              "試料庫間の短い横路",
+              "外骨格メンテナンス路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "koushou",
+      "name": "工廠",
+      "referenceImage": "koushou-reference-v1.png",
+      "mapSizeM": {
+        "current": 314,
+        "recommended": 314,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "高熱の重工業製鉄所。溶鋼路、配管橋、炉塔、火花を放つ搬送設備。",
+        "surface": "steel-foundry",
+        "boundary": "refinery-walls",
+        "skyline": "furnace-city",
+        "dominantSilhouette": "左の対称ツイン高炉と右の長大な連続鋳造大殿が濡れた軌道・石炭車・配管橋を囲う鋼鉄盆地",
+        "uniqueKit": "煤煉瓦基壇、鋸歯棟、管束、トラス歩廊、クレーン脚"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の煉瓦炉棟・鋼製制御棟を溶鋼輸送軸へ高密結合し、3階作業棟は軌道沿いの遮蔽に限定",
+        "targetBuildingCount": [
+          24,
+          30
+        ],
+        "blockPattern": "炉塔・圧延棟・配管街区を斜めの溶鋼輸送軸で密結合",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          11,
+          15
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "軌道主路→高炉脚・鋳造床→煉瓦回廊→配管橋とクレーンデッキ",
+        "openSpace": "溶鋼輸送路と鉄道荷役帯"
+      },
+      "facade": {
+        "roofGrammar": "鋸歯屋根、排煙冠、大スパントラス",
+        "nonGlassAlternatives": [
+          "煉瓦アーチ機械口",
+          "大型巻上げ扉",
+          "換気ルーバー",
+          "開放トラス間",
+          "耐熱庇下の人扉"
+        ],
+        "entranceGrammar": "炉脚の耐熱門と鋳造殿の長大開口を黄色い安全縁で可読化",
+        "materials": [
+          "煤煉瓦",
+          "黒化鋼",
+          "耐熱遮蔽板",
+          "油濡れコンクリート",
+          "橙炉光"
+        ],
+        "surfaceState": "雨水、煤、油痕、局所的な熱乾燥帯",
+        "blackWindowAvoidance": "暗部は中空トラス・開放機械層・煉瓦アーチで作り、黒ガラス窓列を置かない",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "高炉管束と橋",
+          "鋳造殿トラス",
+          "軌道・入口・階段"
+        ],
+        "lod1Preserve": [
+          "二高炉の主円筒",
+          "大殿切妻",
+          "主要搬送橋"
+        ],
+        "lod2Preserve": [
+          "ツイン高炉冠",
+          "長大工場屋根",
+          "煙突群"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "koushou-twin-furnace-citadel",
+          "ordinal": 0,
+          "legacyProfileId": "koushou-twin-furnace-citadel",
+          "conceptLabel": "Twin-Furnace Keep",
+          "visualSignature": "二基の高炉、太い上昇管、中央空中橋、橙の炉口",
+          "purpose": "二基の高炉と熱風炉を統合した製鉄所の心臓部",
+          "placementIntent": "北西・溶鋼軸上",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "refinery",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 110,
+              "depth": 76
+            },
+            "heightM": 84,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 116,
+            "depth": 80,
+            "height": 84
+          },
+          "geometryGrammar": {
+            "conceptPriority": "二基の高炉、太い上昇管、中央空中橋、橙の炉口",
+            "primarySilhouette": "二本の太い炉塔と斜行する装入橋が巨大なA字を作る",
+            "roof": "開放機械デッキと傘形排煙冠",
+            "facade": "耐火煉瓦炉腹、鋼製リング、密な配管と階段",
+            "entrance": "炉脚の耐熱門と鋳造殿の長大開口を黄色い安全縁で可読化",
+            "nonGlassAlternatives": [
+              "煉瓦アーチ機械口",
+              "大型巻上げ扉",
+              "換気ルーバー",
+              "開放トラス間",
+              "耐熱庇下の人扉"
+            ],
+            "materials": [
+              "黒化鋼",
+              "耐火赤煉瓦",
+              "焼けた銅",
+              "煤色コンクリート"
+            ],
+            "combatFlow": [
+              "炉間の溶鋼床",
+              "熱風炉を縫う環状路",
+              "装入橋から炉頂へ上る長い高所路"
+            ]
+          }
+        },
+        {
+          "id": "koushou-redriver-caster-hall",
+          "ordinal": 1,
+          "legacyProfileId": "koushou-redriver-caster-hall",
+          "conceptLabel": "Continuous-Casting Hall",
+          "visualSignature": "大スパン切妻工場、連続窓ではなく露出トラス、長い搬送橋",
+          "purpose": "溶鋼をスラブへ変える長大な鋳造・冷却工場",
+          "placementIntent": "南東・搬出路沿い",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "hangar",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 122,
+              "depth": 64
+            },
+            "heightM": 48,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 130,
+            "depth": 68,
+            "height": 48
+          },
+          "geometryGrammar": {
+            "conceptPriority": "大スパン切妻工場、連続窓ではなく露出トラス、長い搬送橋",
+            "primarySilhouette": "長い鋸歯屋根を巨大取鍋クレーン塔が横断",
+            "roof": "排熱モニター付き連続鋸歯屋根",
+            "facade": "煉瓦側壁、巨大ルーバー、赤熱開口と外露出水管",
+            "entrance": "炉脚の耐熱門と鋳造殿の長大開口を黄色い安全縁で可読化",
+            "nonGlassAlternatives": [
+              "煉瓦アーチ機械口",
+              "大型巻上げ扉",
+              "換気ルーバー",
+              "開放トラス間",
+              "耐熱庇下の人扉"
+            ],
+            "materials": [
+              "煤煉瓦",
+              "耐候鋼",
+              "青灰波板",
+              "湿った黒コンクリート"
+            ],
+            "combatFlow": [
+              "長軸のローラー床",
+              "両側冷却水路",
+              "天井クレーン保守歩廊"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "yoichi",
+      "name": "夜市",
+      "referenceImage": "yoichi-reference-v1.png",
+      "mapSizeM": {
+        "current": 302,
+        "recommended": 302,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "雨の夜市と高架街区。屋台、濡れた路地、立体通路、ネオン尖塔。",
+        "surface": "neon-wet-street",
+        "boundary": "market-blocks",
+        "skyline": "neon-megacity",
+        "dominantSilhouette": "左の細長い垂直市場塔と右の巨大円形舞台窓を持つ雨劇場が、屋台・高架歩道・濡れた市場路を包む",
+        "uniqueKit": "反り庇、積層桟敷、看板梁、高架歩道、雨除け天蓋"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の町家・集合市場を折れ路地へ隙間なく積み、3階屋台棟は交差点周囲の視界抜きに限定",
+        "targetBuildingCount": [
+          26,
+          34
+        ],
+        "blockPattern": "細い折れ路地を立体屋台・集合住宅・高架歩道が覆う",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          9,
+          12
+        ],
+        "alleyM": [
+          4.5,
+          7
+        ],
+        "combatFlow": "雨の市場路→屋台分岐→市場塔脚・劇場ロビー→斜め歩道と桟敷高所",
+        "openSpace": "屋台広場1つと搬入路"
+      },
+      "facade": {
+        "roofGrammar": "反り瓦庇、積層テラス、機械冠、大舞台屋根",
+        "nonGlassAlternatives": [
+          "開放店舗間口",
+          "木格子",
+          "障子の暖色透過",
+          "雨戸",
+          "軒下バルコニー",
+          "円形舞台ガラス"
+        ],
+        "entranceGrammar": "暖簾付き市場口と劇場の巨大円形玄関を照明で差別化",
+        "materials": [
+          "濡れ木材",
+          "黒瓦",
+          "赤煉瓦",
+          "銅",
+          "低彩度ネオン"
+        ],
+        "surfaceState": "雨膜、反射溜まり、樋の流水、湿った布",
+        "blackWindowAvoidance": "ネオンを黒窓カードへ貼らず、開放店内・格子・障子・立体看板として配置し同一看板列を避ける",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "市場塔の歩道と庇",
+          "劇場円窓と桟敷",
+          "屋台入口・濡れ路"
+        ],
+        "lod1Preserve": [
+          "市場塔積層形",
+          "劇場大屋根と円窓",
+          "主要歩道"
+        ],
+        "lod2Preserve": [
+          "細塔冠",
+          "大劇場屋根",
+          "市場屋根群"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "yoichi-thousand-sign-bazaar-tower",
+          "ordinal": 0,
+          "legacyProfileId": "yoichi-thousand-sign-bazaar-tower",
+          "conceptLabel": "Vertical Market Spire",
+          "visualSignature": "屋台層を積み上げた細塔、斜め歩道、機械冠と暖色灯",
+          "purpose": "生鮮・工房・住居を積層する24時間市場アーコロジー",
+          "placementIntent": "西・主路地終端",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 78,
+              "depth": 66
+            },
+            "heightM": 78,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 84,
+            "depth": 70,
+            "height": 78
+          },
+          "geometryGrammar": {
+            "conceptPriority": "屋台層を積み上げた細塔、斜め歩道、機械冠と暖色灯",
+            "primarySilhouette": "ずれた六層の市場テラスと一本の細い広告塔",
+            "roof": "屋上菜園、反り庇、設備冠の混成",
+            "facade": "店先の深い箱、半透明雨幕、密な縦看板と避難梯子",
+            "entrance": "暖簾付き市場口と劇場の巨大円形玄関を照明で差別化",
+            "nonGlassAlternatives": [
+              "開放店舗間口",
+              "木格子",
+              "障子の暖色透過",
+              "雨戸",
+              "軒下バルコニー",
+              "円形舞台ガラス"
+            ],
+            "materials": [
+              "濡れた青タイル",
+              "黒鉄",
+              "赤い提灯ガラス",
+              "古いコンクリート"
+            ],
+            "combatFlow": [
+              "地上商店迷路",
+              "吹抜け周囲の二階環状市場",
+              "外部非常階段から屋上横断路"
+            ]
+          }
+        },
+        {
+          "id": "yoichi-rainopera-exchange",
+          "ordinal": 1,
+          "legacyProfileId": "yoichi-rainopera-exchange",
+          "conceptLabel": "Rain Opera Exchange",
+          "visualSignature": "和風大屋根に抱かれた巨大円形舞台窓、左右の多層桟敷",
+          "purpose": "ライブホール・魚市場・金融取引所が同居する都市門",
+          "placementIntent": "北東・高架下広場",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "terminal",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 100,
+              "depth": 72
+            },
+            "heightM": 50,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 106,
+            "depth": 76,
+            "height": 50
+          },
+          "geometryGrammar": {
+            "conceptPriority": "和風大屋根に抱かれた巨大円形舞台窓、左右の多層桟敷",
+            "primarySilhouette": "巨大な灯籠状ホールを二本の低い市場翼が挟む",
+            "roof": "折紙状の発光屋根と雨水鎖",
+            "facade": "黒い石基壇、赤銅格子、半透明の音響外皮",
+            "entrance": "暖簾付き市場口と劇場の巨大円形玄関を照明で差別化",
+            "nonGlassAlternatives": [
+              "開放店舗間口",
+              "木格子",
+              "障子の暖色透過",
+              "雨戸",
+              "軒下バルコニー",
+              "円形舞台ガラス"
+            ],
+            "materials": [
+              "黒花崗岩",
+              "赤銅",
+              "乳白ガラス",
+              "雨染みコンクリート"
+            ],
+            "combatFlow": [
+              "市場翼を貫く二本の路地",
+              "中央ホールの客席段床",
+              "舞台裏から屋根テラスへ上る経路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "okujou",
+      "name": "屋上",
+      "referenceImage": "okujou-reference-v1.png",
+      "mapSizeM": {
+        "current": 300,
+        "recommended": 300,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "複数の高層ビルを橋で結ぶ屋上戦域。ヘリパッド、設備階、都市の深い遠景。",
+        "surface": "rooftop-membrane",
+        "boundary": "highrise-roofs",
+        "skyline": "dense-highrise",
+        "dominantSilhouette": "左の裾広がり放送スパイアと右の段丘型スカイレール・アトリウムホテルが雲上の屋上島を連結する",
+        "uniqueKit": "植栽テラス、深いアルミ庇、屋上橋、HVACスクリーン、ガラス峡谷"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "各屋上島に3–6層の機械・住居・庭園棟をずらして配置し、低い設備箱だけの反復を禁止",
+        "targetBuildingCount": [
+          20,
+          26
+        ],
+        "blockPattern": "異なる高さの屋上島を三方向スカイブリッジで束ねる",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          10,
+          14
+        ],
+        "alleyM": [
+          5,
+          7
+        ],
+        "combatFlow": "中央屋上路→三方向橋→放送塔リング・ホテルアトリウム→階段状客室テラス",
+        "openSpace": "ヘリ面1つと空中橋の着地点"
+      },
+      "facade": {
+        "roofGrammar": "機械ペントハウス、放送マスト、段丘庭園、アーチ大屋根",
+        "nonGlassAlternatives": [
+          "深い縦フィンのカーテンウォール",
+          "開放テラス",
+          "木張り客室口",
+          "設備ルーバー",
+          "植栽スリット"
+        ],
+        "entranceGrammar": "塔の圧縮ゲートとホテルの透明吹抜け玄関を逆の質感にする",
+        "materials": [
+          "淡灰コンクリート",
+          "陽極アルミ",
+          "低Eガラス",
+          "暖木",
+          "植栽"
+        ],
+        "surfaceState": "朝露程度の弱い反射、排水筋、風化金属",
+        "blackWindowAvoidance": "カーテンウォールを黒一枚にせず、床スラブ・縦フィン・室内暖色・反射粗さ差で立体分節",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "放送塔三脚とリング",
+          "ホテル段丘とアトリウム",
+          "橋・階段・植栽縁"
+        ],
+        "lod1Preserve": [
+          "塔の主外骨格",
+          "ホテル段床",
+          "主要屋上橋"
+        ],
+        "lod2Preserve": [
+          "細塔冠",
+          "ホテル大アーチと段丘",
+          "雲上屋上線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "okujou-cloudline-broadcast-spire",
+          "ordinal": 0,
+          "legacyProfileId": "okujou-cloudline-broadcast-spire",
+          "conceptLabel": "Cloud Broadcast Spire",
+          "visualSignature": "三脚状に開く基部、細い放送冠、中央展望リング",
+          "purpose": "都市通信・気象レーダー・報道スタジオを束ねる放送塔",
+          "placementIntent": "北西・最高屋上",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 74,
+              "depth": 68
+            },
+            "heightM": 100,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 78,
+            "depth": 72,
+            "height": 100
+          },
+          "geometryGrammar": {
+            "conceptPriority": "三脚状に開く基部、細い放送冠、中央展望リング",
+            "primarySilhouette": "傾いた二枚の放送翼と針状マストが非対称なV字を描く",
+            "roof": "多段機械冠と細いアンテナ針",
+            "facade": "縦フィン外皮、黒いスタジオ窓、外露出保守ブリッジ",
+            "entrance": "塔の圧縮ゲートとホテルの透明吹抜け玄関を逆の質感にする",
+            "nonGlassAlternatives": [
+              "深い縦フィンのカーテンウォール",
+              "開放テラス",
+              "木張り客室口",
+              "設備ルーバー",
+              "植栽スリット"
+            ],
+            "materials": [
+              "濃銀アルミ",
+              "黒ガラス",
+              "白FRP",
+              "警戒赤塗装"
+            ],
+            "combatFlow": [
+              "低層スタジオの環状路",
+              "放送翼間の横断橋",
+              "螺旋保守路の長い上昇"
+            ]
+          }
+        },
+        {
+          "id": "okujou-skyrail-atrium-hotel",
+          "ordinal": 1,
+          "legacyProfileId": "okujou-skyrail-atrium-hotel",
+          "conceptLabel": "Skyrail Atrium Hotel",
+          "visualSignature": "左右へ広がる段丘客室、中央ガラス峡谷、上部アーチ屋根",
+          "purpose": "空中駅・高層ホテル・避難拠点を一体化した屋上宮殿",
+          "placementIntent": "南東・連絡橋中心",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "terminal",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 106,
+              "depth": 78
+            },
+            "heightM": 66,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 112,
+            "depth": 84,
+            "height": 66
+          },
+          "geometryGrammar": {
+            "conceptPriority": "左右へ広がる段丘客室、中央ガラス峡谷、上部アーチ屋根",
+            "primarySilhouette": "中空の大アトリウムを二本の傾斜客室塔が抱く",
+            "roof": "段状屋上庭と張出しプール庇",
+            "facade": "深い客室リズム、透明アトリウム、金属メッシュ基壇",
+            "entrance": "塔の圧縮ゲートとホテルの透明吹抜け玄関を逆の質感にする",
+            "nonGlassAlternatives": [
+              "深い縦フィンのカーテンウォール",
+              "開放テラス",
+              "木張り客室口",
+              "設備ルーバー",
+              "植栽スリット"
+            ],
+            "materials": [
+              "淡色UHPC",
+              "青灰ガラス",
+              "真鍮色メッシュ",
+              "黒玄武岩"
+            ],
+            "combatFlow": [
+              "アトリウム地上の交差路",
+              "客室階を繋ぐ二本の空中橋",
+              "駅ホームから屋上庭への縦路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "saisekiba",
+      "name": "採石場",
+      "referenceImage": "saisekiba-reference-v1.png",
+      "mapSizeM": {
+        "current": 320,
+        "recommended": 320,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "巨大な段状採石場。切削面、重機道、ベルトコンベア、砕石プラント。",
+        "surface": "quarry-gravel",
+        "boundary": "quarry-terraces",
+        "skyline": "cut-mountain",
+        "dominantSilhouette": "左の採石段丘そのものを砕石塔化したジッグラトと右の尖頭大開口を持つ石鋸大殿がコンベアで結ばれる",
+        "uniqueKit": "露出骨材壁、重力シュート、コンベア橋、尖頭機械口、石ブロック基壇"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の選鉱棟・作業住宅を各採掘段へ密集させ、3階貯鉱庫はヘアピン路の遮蔽に限定",
+        "targetBuildingCount": [
+          21,
+          28
+        ],
+        "blockPattern": "採掘段丘ごとに選鉱棟・作業住宅・貯鉱庫を高密度配置",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          12,
+          18
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "泥の運搬路→段丘ヘアピン→破砕塔脚・石鋸身廊→コンベア保守橋",
+        "openSpace": "重機回頭地と採石切羽"
+      },
+      "facade": {
+        "roofGrammar": "鋸歯屋根、防塵フード、段丘陸屋根",
+        "nonGlassAlternatives": [
+          "巨大石鋸ポータル",
+          "コンベア抜け",
+          "防塵ルーバー",
+          "巻上げ扉",
+          "開放機械床"
+        ],
+        "entranceGrammar": "破砕坑口と尖頭加工門をシルエットで一目判別",
+        "materials": [
+          "露出骨材コンクリート",
+          "切石",
+          "黄橙機械鋼",
+          "粉塵波板",
+          "濡れ泥"
+        ],
+        "surfaceState": "石粉、泥水轍、濡れ切石、乾湿境界",
+        "blackWindowAvoidance": "窓を減らし、深い機械開口・シュート・トラス・石積み目地で表情を作る",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "破砕段丘とコンベア",
+          "石鋸大門と歯車",
+          "運搬路接地"
+        ],
+        "lod1Preserve": [
+          "段塔輪郭",
+          "大殿身廊",
+          "主コンベア"
+        ],
+        "lod2Preserve": [
+          "採石ジッグラト",
+          "尖頭加工殿",
+          "切羽地形"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "saisekiba-strata-crusher-ziggurat",
+          "ordinal": 0,
+          "legacyProfileId": "saisekiba-strata-crusher-ziggurat",
+          "conceptLabel": "Strata Crusher Step-Tower",
+          "visualSignature": "岩盤段丘へ食い込む多段破砕塔、斜めコンベア、頂部クレーン",
+          "purpose": "一次破砕・選別・貯鉱を重力順に積層した山状プラント",
+          "placementIntent": "北・切羽正面",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "refinery",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 112,
+              "depth": 74
+            },
+            "heightM": 60,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 120,
+            "depth": 78,
+            "height": 60
+          },
+          "geometryGrammar": {
+            "conceptPriority": "岩盤段丘へ食い込む多段破砕塔、斜めコンベア、頂部クレーン",
+            "primarySilhouette": "段丘状コンクリート塊を斜めコンベアが縫う人工山",
+            "roof": "防塵フードと露出スクリーン塔",
+            "facade": "骨材の粗い壁、巨大漏斗、黄色い保守足場",
+            "entrance": "破砕坑口と尖頭加工門をシルエットで一目判別",
+            "nonGlassAlternatives": [
+              "巨大石鋸ポータル",
+              "コンベア抜け",
+              "防塵ルーバー",
+              "巻上げ扉",
+              "開放機械床"
+            ],
+            "materials": [
+              "骨材コンクリート",
+              "黄塗装鋼",
+              "錆鋼",
+              "黒ゴムベルト"
+            ],
+            "combatFlow": [
+              "下部破砕室の三入口",
+              "漏斗間の短い迷路",
+              "斜行コンベア脇の上昇歩廊"
+            ]
+          }
+        },
+        {
+          "id": "saisekiba-echo-span-processing-hall",
+          "ordinal": 1,
+          "legacyProfileId": "saisekiba-echo-span-processing-hall",
+          "conceptLabel": "Echo Stone-Saw Hall",
+          "visualSignature": "石造の巨大尖頭ポータル、露出歯車、長い鋸加工身廊",
+          "purpose": "巨石切断・研磨・搬出を行う峡跨ぎ工場",
+          "placementIntent": "南西・段丘間",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "hangar",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 124,
+              "depth": 56
+            },
+            "heightM": 48,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 132,
+            "depth": 60,
+            "height": 48
+          },
+          "geometryGrammar": {
+            "conceptPriority": "石造の巨大尖頭ポータル、露出歯車、長い鋸加工身廊",
+            "primarySilhouette": "二つの崖棚を跨ぐ深いトラスと片側の垂直鋸塔",
+            "roof": "鋸歯採光屋根と吊りクレーン庇",
+            "facade": "開放トラス、石粉で白化したパネル、縦長切断窓",
+            "entrance": "破砕坑口と尖頭加工門をシルエットで一目判別",
+            "nonGlassAlternatives": [
+              "巨大石鋸ポータル",
+              "コンベア抜け",
+              "防塵ルーバー",
+              "巻上げ扉",
+              "開放機械床"
+            ],
+            "materials": [
+              "白化鋼",
+              "灰波板",
+              "濡れた切石",
+              "赤錆クレーン"
+            ],
+            "combatFlow": [
+              "橋下の重機路",
+              "加工床の長軸戦",
+              "トラス内保守歩廊"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "chikurin",
+      "name": "竹林",
+      "referenceImage": "chikurin-reference-v1.png",
+      "mapSizeM": {
+        "current": 288,
+        "recommended": 288,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "深い竹林に包まれた山寺。参道、石灯籠、社殿、層塔。",
+        "surface": "forest-earth",
+        "boundary": "bamboo-slopes",
+        "skyline": "forest-pagoda",
+        "dominantSilhouette": "左の九重庇寺院と右の時計塔・橋を持つ竹林学城が、門前木造町の屋根海から別々に立ち上がる",
+        "uniqueKit": "真壁木組、深い瓦庇、石垣、門、竹越しの渡廊下"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–5階町家・宿坊を曲がる参道へ連続させ、6階相当は寺院・学城近傍の楼だけに限定",
+        "targetBuildingCount": [
+          22,
+          30
+        ],
+        "blockPattern": "曲がる参道沿いに町家・宿坊・土蔵を段状連続配置",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          8,
+          12
+        ],
+        "alleyM": [
+          4.5,
+          6
+        ],
+        "combatFlow": "石畳参道→木門分岐→寺院大広間・学城中庭→縁側と高架書院橋",
+        "openSpace": "小さな寺前広場と竹の水路"
+      },
+      "facade": {
+        "roofGrammar": "反り瓦、入母屋、檜皮、銅宝珠",
+        "nonGlassAlternatives": [
+          "木格子戸",
+          "障子",
+          "開放縁側",
+          "白漆喰真壁",
+          "蔀戸",
+          "門楼空隙"
+        ],
+        "entranceGrammar": "太い木柱の寺門と石基壇の学城門を別文法にする",
+        "materials": [
+          "風化杉",
+          "黒瓦",
+          "白漆喰",
+          "苔石",
+          "緑青銅"
+        ],
+        "surfaceState": "湿石、苔、竹葉、局所水溜まり",
+        "blackWindowAvoidance": "黒四角を一切並べず、木格子・障子・開放縁側・白壁比率でファサードを作る",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "九重庇と木組",
+          "時計塔と高架橋",
+          "門・縁側・石段"
+        ],
+        "lod1Preserve": [
+          "主庇層",
+          "学城二棟と塔",
+          "主要屋根"
+        ],
+        "lod2Preserve": [
+          "多層寺院",
+          "時計塔付き学城",
+          "竹林山稜"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "chikurin-nine-canopy-temple",
+          "ordinal": 0,
+          "legacyProfileId": "chikurin-nine-canopy-temple",
+          "conceptLabel": "Nine Canopy Temple",
+          "visualSignature": "九層に見える重い反り庇、石基壇、左右非対称の宿坊翼",
+          "purpose": "山寺の本堂・経蔵・多層塔を一体化した巡礼拠点",
+          "placementIntent": "北・参道最上段",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "pagoda",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 94,
+              "depth": 78
+            },
+            "heightM": 60,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 94,
+            "depth": 78,
+            "height": 60
+          },
+          "geometryGrammar": {
+            "conceptPriority": "九層に見える重い反り庇、石基壇、左右非対称の宿坊翼",
+            "primarySilhouette": "九枚の異なる反り屋根が竹冠から階段状に現れる",
+            "roof": "入母屋群と細い九輪塔",
+            "facade": "太い木組、白漆喰小壁、深い金色格子",
+            "entrance": "太い木柱の寺門と石基壇の学城門を別文法にする",
+            "nonGlassAlternatives": [
+              "木格子戸",
+              "障子",
+              "開放縁側",
+              "白漆喰真壁",
+              "蔀戸",
+              "門楼空隙"
+            ],
+            "materials": [
+              "燻し檜",
+              "黒瓦",
+              "白漆喰",
+              "緑青銅"
+            ],
+            "combatFlow": [
+              "仁王門から本堂床下へ抜ける路",
+              "縁側を巡る左右回遊",
+              "経蔵階段から塔基壇へ"
+            ]
+          }
+        },
+        {
+          "id": "chikurin-bamboo-scholar-citadel",
+          "ordinal": 1,
+          "legacyProfileId": "chikurin-bamboo-scholar-citadel",
+          "conceptLabel": "Bamboo Scholar Citadel",
+          "visualSignature": "細い時計塔、二棟を結ぶ高架書院橋、段状石垣",
+          "purpose": "武芸・写経・薬草研究を行う谷跨ぎ宿坊群",
+          "placementIntent": "南東・谷側",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "villa",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 110,
+              "depth": 70
+            },
+            "heightM": 44,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 110,
+            "depth": 70,
+            "height": 44
+          },
+          "geometryGrammar": {
+            "conceptPriority": "細い時計塔、二棟を結ぶ高架書院橋、段状石垣",
+            "primarySilhouette": "長い三段屋根と一本の鐘楼が竹林上に浮く",
+            "roof": "段違い寄棟と雨落ち中庭",
+            "facade": "木格子廊下、石垣脚、透かし竹壁と懸造柱",
+            "entrance": "太い木柱の寺門と石基壇の学城門を別文法にする",
+            "nonGlassAlternatives": [
+              "木格子戸",
+              "障子",
+              "開放縁側",
+              "白漆喰真壁",
+              "蔀戸",
+              "門楼空隙"
+            ],
+            "materials": [
+              "赤褐木材",
+              "灰瓦",
+              "苔石",
+              "竹編み"
+            ],
+            "combatFlow": [
+              "懸造床下の岩路",
+              "中庭を囲む回廊",
+              "鐘楼と薬草屋根を結ぶ高所路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tanada",
+      "name": "棚田",
+      "referenceImage": "tanada-reference-v1.png",
+      "mapSizeM": {
+        "current": 310,
+        "recommended": 310,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "山腹の水田と集落。反射する棚田、石積み、木造家屋、水路。",
+        "surface": "rice-terraces",
+        "boundary": "terraced-hills",
+        "skyline": "rural-valley",
+        "dominantSilhouette": "左の石垣上に積む大穀倉城と右の双大水車を正面へ露出した灌漑修道院が霧の棚田を挟む",
+        "uniqueKit": "石積み擁壁、高床木組、板葺庇、水樋、水車小屋"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–5階の高床家屋・共同倉を棚田段差へ密着させ、6階望楼は二ランドマークへの視線を支える位置だけ",
+        "targetBuildingCount": [
+          23,
+          30
+        ],
+        "blockPattern": "棚田段差に沿い高床家屋・乾燥塔・共同倉を密集",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          8,
+          12
+        ],
+        "alleyM": [
+          4,
+          6
+        ],
+        "combatFlow": "濡れた村道→棚田畦分岐→穀倉石段・水車水路→屋根廊下と水道橋",
+        "openSpace": "稲作水面と共同脱穀場"
+      },
+      "facade": {
+        "roofGrammar": "大切妻、段葺板、瓦庇、望楼冠",
+        "nonGlassAlternatives": [
+          "木格子",
+          "白土真壁",
+          "開放乾燥廊",
+          "板戸",
+          "水樋下アーケード"
+        ],
+        "entranceGrammar": "石垣の穀物搬入口と水路を跨ぐ修道院門を分ける",
+        "materials": [
+          "焦茶木",
+          "白土",
+          "濡れ野面石",
+          "黒瓦",
+          "青緑水"
+        ],
+        "surfaceState": "水田反射、泥、苔、霧湿、流水",
+        "blackWindowAvoidance": "暗部は奥行きある乾燥廊と木格子で作り、同形の黒い窓板を禁止",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "穀倉の積層庇",
+          "双水車と水道橋",
+          "棚田縁・門・階段"
+        ],
+        "lod1Preserve": [
+          "石基壇と主屋根",
+          "水車円形と修道院翼",
+          "主水路"
+        ],
+        "lod2Preserve": [
+          "穀倉城段形",
+          "双水車修道院",
+          "霧山・棚田層"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "tanada-cloudgranary-fortress",
+          "ordinal": 0,
+          "legacyProfileId": "tanada-cloudgranary-fortress",
+          "conceptLabel": "Terraced Granary Castle",
+          "visualSignature": "巨大石基壇、積層木造穀倉、深い切妻と望楼",
+          "purpose": "共同穀倉・乾燥・避難所を段丘状に積層した農業城",
+          "placementIntent": "北西・上段棚田",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "fortress",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 100,
+              "depth": 74
+            },
+            "heightM": 48,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 106,
+            "depth": 78,
+            "height": 48
+          },
+          "geometryGrammar": {
+            "conceptPriority": "巨大石基壇、積層木造穀倉、深い切妻と望楼",
+            "primarySilhouette": "巨大石垣から五棟の高い茅屋根が雁行する",
+            "roof": "急勾配茅葺と煙抜き越屋根",
+            "facade": "粗石基壇、木格子倉扉、白土の防火帯",
+            "entrance": "石垣の穀物搬入口と水路を跨ぐ修道院門を分ける",
+            "nonGlassAlternatives": [
+              "木格子",
+              "白土真壁",
+              "開放乾燥廊",
+              "板戸",
+              "水樋下アーケード"
+            ],
+            "materials": [
+              "稲藁",
+              "黒褐木",
+              "白土",
+              "濡れた石"
+            ],
+            "combatFlow": [
+              "石垣の三つの水門路",
+              "穀倉間の細い中庭",
+              "屋根裏乾燥廊下の高所路"
+            ]
+          }
+        },
+        {
+          "id": "tanada-waterwheel-aqueduct-cloister",
+          "ordinal": 1,
+          "legacyProfileId": "tanada-waterwheel-aqueduct-cloister",
+          "conceptLabel": "Waterwheel Irrigation Monastery",
+          "visualSignature": "双大水車、水路橋、石造修道院翼と排水滝",
+          "purpose": "棚田全域へ送水する大水車・水道橋・共同会所",
+          "placementIntent": "南東・沢筋",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "villa",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 112,
+              "depth": 56
+            },
+            "heightM": 54,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 120,
+            "depth": 60,
+            "height": 54
+          },
+          "geometryGrammar": {
+            "conceptPriority": "双大水車、水路橋、石造修道院翼と排水滝",
+            "primarySilhouette": "三連大水車と弧状水道橋の上に細長い会所塔が立つ",
+            "roof": "板葺の長屋根と水樋塔冠",
+            "facade": "石アーチ、濡れた木樋、銅の水門と漆喰塔",
+            "entrance": "石垣の穀物搬入口と水路を跨ぐ修道院門を分ける",
+            "nonGlassAlternatives": [
+              "木格子",
+              "白土真壁",
+              "開放乾燥廊",
+              "板戸",
+              "水樋下アーケード"
+            ],
+            "materials": [
+              "苔石",
+              "栗材",
+              "緑青銅",
+              "白漆喰"
+            ],
+            "combatFlow": [
+              "水車下の飛石路",
+              "水道橋上の狭い横断",
+              "会所塔内の段階上昇"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "misaki",
+      "name": "岬灯台",
+      "referenceImage": "misaki-reference-v1.png",
+      "mapSizeM": {
+        "current": 302,
+        "recommended": 302,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "荒波の軍用岬。海蝕崖、沿岸道路、コンクリート壕、灯台。",
+        "surface": "coastal-concrete",
+        "boundary": "coastal-cliffs",
+        "skyline": "ocean-headland",
+        "dominantSilhouette": "左の岩頭灯台城と右の海へ張り出す鯨背型潜水艦ペンが嵐の岬道と荒波を挟む",
+        "uniqueKit": "厚壁石造、耐風庇、草覆い掩体、海食基壇、索具橋"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の石造港務・軍用棟を防風曲線道路へ密結合し、3階木造棟は海際のスケール cue に限定",
+        "targetBuildingCount": [
+          20,
+          27
+        ],
+        "blockPattern": "岬尾根の防風建物を曲線道路と掩体壕で密結合",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          10,
+          14
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "岬主路→灯台城坂・潜水艦ペン岸壁→砲台回廊→灯台デッキとペン保守路",
+        "openSpace": "海面、岸壁、砲台広場"
+      },
+      "facade": {
+        "roofGrammar": "低い耐風曲屋根、灯標冠、半円潜水艦殻",
+        "nonGlassAlternatives": [
+          "厚い鋼シャッター",
+          "深い石窓",
+          "観測スリット",
+          "格納庫大門",
+          "風除けポーチ"
+        ],
+        "entranceGrammar": "灯台城の石門とペンの海側巨大扉・人用側扉を三尺度で表す",
+        "materials": [
+          "塩濡れ花崗岩",
+          "荒れコンクリート",
+          "厚鋼",
+          "曇り灯台ガラス",
+          "海藻"
+        ],
+        "surfaceState": "豪雨、波飛沫、塩筋、水溜まり、海面反射",
+        "blackWindowAvoidance": "窓数を抑え、鎧戸・観測孔・ポーチ・格納扉・石の厚みで陰影を作る",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "灯台レンズ冠",
+          "鯨背殻と巨大扉",
+          "岸壁・石段・波際"
+        ],
+        "lod1Preserve": [
+          "灯台城段形",
+          "ペン半円殻",
+          "主要防波壁"
+        ],
+        "lod2Preserve": [
+          "灯塔縦軸",
+          "鯨背シルエット",
+          "岬・海岸線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "misaki-stormglass-lighthouse-citadel",
+          "ordinal": 0,
+          "legacyProfileId": "misaki-stormglass-lighthouse-citadel",
+          "conceptLabel": "Storm-Glass Lighthouse Castle",
+          "visualSignature": "発光レンズ冠、段状石城、岬の縦軸を作る灯塔",
+          "purpose": "灯台・沿岸管制・救難基地を一体化した岬の主堡",
+          "placementIntent": "西・岬先端",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "fortress",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 82,
+              "depth": 74
+            },
+            "heightM": 70,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 88,
+            "depth": 78,
+            "height": 70
+          },
+          "geometryGrammar": {
+            "conceptPriority": "発光レンズ冠、段状石城、岬の縦軸を作る灯塔",
+            "primarySilhouette": "厚い半円要塞から角ばった灯室塔が風上へ傾く",
+            "roof": "銅板の段付き灯室冠と耐風曲面庇",
+            "facade": "傾斜コンクリート、深いスリット、波除けの石積み",
+            "entrance": "灯台城の石門とペンの海側巨大扉・人用側扉を三尺度で表す",
+            "nonGlassAlternatives": [
+              "厚い鋼シャッター",
+              "深い石窓",
+              "観測スリット",
+              "格納庫大門",
+              "風除けポーチ"
+            ],
+            "materials": [
+              "塩害コンクリート",
+              "緑青銅",
+              "曇りガラス",
+              "黒玄武岩"
+            ],
+            "combatFlow": [
+              "波除け門から中央救難庫",
+              "半円堡の環状路",
+              "灯塔螺旋と外部観測デッキ"
+            ]
+          }
+        },
+        {
+          "id": "misaki-whaleback-submarine-pen",
+          "ordinal": 1,
+          "legacyProfileId": "misaki-whaleback-submarine-pen",
+          "conceptLabel": "Whaleback Submarine Pen",
+          "visualSignature": "低く長い半円殻、巨大海側扉、耐波コンクリート脚",
+          "purpose": "崖に埋め込まれた潜水艇・魚雷整備基地",
+          "placementIntent": "北東・海蝕崖",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "hangar",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 130,
+              "depth": 66
+            },
+            "heightM": 36,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 138,
+            "depth": 70,
+            "height": 36
+          },
+          "geometryGrammar": {
+            "conceptPriority": "低く長い半円殻、巨大海側扉、耐波コンクリート脚",
+            "primarySilhouette": "鯨の背のような二連コンクリート殻と崖上換気塔",
+            "roof": "厚い楕円ヴォールトと偽装植生",
+            "facade": "巨大海扉、爆風隔壁、濡れたリブと排水溝",
+            "entrance": "灯台城の石門とペンの海側巨大扉・人用側扉を三尺度で表す",
+            "nonGlassAlternatives": [
+              "厚い鋼シャッター",
+              "深い石窓",
+              "観測スリット",
+              "格納庫大門",
+              "風除けポーチ"
+            ],
+            "materials": [
+              "粗コンクリート",
+              "錆鋼",
+              "黒い海水",
+              "苔植生"
+            ],
+            "combatFlow": [
+              "二本のドック路",
+              "中央隔壁の横断口",
+              "崖上換気塔へ至る狭い整備階段"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "haieki",
+      "name": "廃駅",
+      "referenceImage": "haieki-reference-v1.png",
+      "mapSizeM": {
+        "current": 314,
+        "recommended": 314,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "霧に沈む廃貨物駅。長い線路、車庫、跨線橋、放置列車。",
+        "surface": "rail-ballast",
+        "boundary": "rail-sheds",
+        "skyline": "industrial-rail",
+        "dominantSilhouette": "左の大アーチ鉄骨中央駅と右の時計盤を抱く水塔城が霧の線路扇形と煤煉瓦街を支配する",
+        "uniqueKit": "煤煉瓦、鋳鉄柱、トレインシェッド、跨線橋、積込庇"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の鉄道会社住宅・修理工場を線路沿いへ長尺配置し、3階貨物庫は射線分割に限定",
+        "targetBuildingCount": [
+          23,
+          30
+        ],
+        "blockPattern": "線路に沿う長尺工場と線路を跨ぐ職住棟を密集",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          11,
+          16
+        ],
+        "alleyM": [
+          5,
+          7
+        ],
+        "combatFlow": "線路扇形→ホーム分岐→大駅殿・時計水塔車庫→跨線橋と給水デッキ",
+        "openSpace": "線路束と転車作業帯"
+      },
+      "facade": {
+        "roofGrammar": "大鉄骨アーチ、鋸歯工場屋根、円筒水槽冠",
+        "nonGlassAlternatives": [
+          "アーチ積込口",
+          "木製貨物扉",
+          "鋳鉄サッシ",
+          "換気モニター",
+          "ホーム庇"
+        ],
+        "entranceGrammar": "駅の大アーチ玄関と水塔城の車庫門を時計・照明で誘導",
+        "materials": [
+          "煤赤煉瓦",
+          "黒鋳鉄",
+          "曇りガラス",
+          "油濡れ石",
+          "老朽木"
+        ],
+        "surfaceState": "霧雨、煤泥、レール反射、雑草",
+        "blackWindowAvoidance": "窓を黒面化せず、鋳鉄サッシの明暗・割れガラス・木板塞ぎ・開放アーチを混在",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "駅大アーチ鉄骨",
+          "時計盤と水槽",
+          "線路・跨線橋・入口"
+        ],
+        "lod1Preserve": [
+          "単アーチ殿",
+          "時計塔塊",
+          "主要ホーム庇"
+        ],
+        "lod2Preserve": [
+          "駅アーチ",
+          "時計水塔城",
+          "霧の煉瓦稜線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "haieki-ironmist-grand-terminus",
+          "ordinal": 0,
+          "legacyProfileId": "haieki-ironmist-grand-terminus",
+          "conceptLabel": "Iron-Fog Grand Terminal",
+          "visualSignature": "巨大単アーチ列車殿、左右時計小塔、透ける鉄骨屋根",
+          "purpose": "旅客・貨物・修繕を一体化した廃線都市の巨大駅",
+          "placementIntent": "南・主線終端",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "station",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 122,
+              "depth": 70
+            },
+            "heightM": 44,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 130,
+            "depth": 74,
+            "height": 44
+          },
+          "geometryGrammar": {
+            "conceptPriority": "巨大単アーチ列車殿、左右時計小塔、透ける鉄骨屋根",
+            "primarySilhouette": "三連トレインシェッドと崩れた中央時計塔が霧を切る",
+            "roof": "リベット鉄骨の三連ヴォールト",
+            "facade": "煤煉瓦の連続アーチ、割れたガラス、石の正面階段",
+            "entrance": "駅の大アーチ玄関と水塔城の車庫門を時計・照明で誘導",
+            "nonGlassAlternatives": [
+              "アーチ積込口",
+              "木製貨物扉",
+              "鋳鉄サッシ",
+              "換気モニター",
+              "ホーム庇"
+            ],
+            "materials": [
+              "煤赤煉瓦",
+              "黒鋳鉄",
+              "曇りガラス",
+              "灰石"
+            ],
+            "combatFlow": [
+              "三本のホーム長軸",
+              "地下荷物道の横断",
+              "跨線橋と屋根保守路"
+            ]
+          }
+        },
+        {
+          "id": "haieki-clocktank-depot-citadel",
+          "ordinal": 1,
+          "legacyProfileId": "haieki-clocktank-depot-citadel",
+          "conceptLabel": "Clock Water-Tower Keep",
+          "visualSignature": "大時計盤、背後の円筒水槽群、スカイブリッジ付き煉瓦城",
+          "purpose": "蒸気機関車の給水塔・転車庫・乗務員宿舎の複合",
+          "placementIntent": "北西・転車台脇",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 88,
+              "depth": 66
+            },
+            "heightM": 64,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 94,
+            "depth": 70,
+            "height": 64
+          },
+          "geometryGrammar": {
+            "conceptPriority": "大時計盤、背後の円筒水槽群、スカイブリッジ付き煉瓦城",
+            "primarySilhouette": "巨大円筒水槽を抱く角塔と扇形機関庫",
+            "roof": "円錐水槽冠と扇形鋸歯屋根",
+            "facade": "煤けた煉瓦扶壁、巨大時計、木製扇形扉",
+            "entrance": "駅の大アーチ玄関と水塔城の車庫門を時計・照明で誘導",
+            "nonGlassAlternatives": [
+              "アーチ積込口",
+              "木製貨物扉",
+              "鋳鉄サッシ",
+              "換気モニター",
+              "ホーム庇"
+            ],
+            "materials": [
+              "暗赤煉瓦",
+              "錆鉄",
+              "黒スレート",
+              "油染み木材"
+            ],
+            "combatFlow": [
+              "扇形機関庫の放射路",
+              "水塔基部の環状路",
+              "外階段から水槽デッキへ"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "kyokoku",
+      "name": "峡谷",
+      "referenceImage": "kyokoku-reference-v1.png",
+      "mapSizeM": {
+        "current": 326,
+        "recommended": 326,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "赤い峡谷に築かれた要塞都市。断崖、門楼、石橋、見張塔。",
+        "surface": "canyon-stone",
+        "boundary": "canyon-cliffs",
+        "skyline": "red-mesas",
+        "dominantSilhouette": "左の赤崖へ吊られた宮殿橋と右の大アーチ・鎖・落水を持つ水道要塞が深い峡谷を横断する",
+        "uniqueKit": "片持ち木櫓、赤岩扶壁、崖穴入口、水道橋、段階石段"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–6階の赤岩・白漆喰住宅を崖棚へ垂直接続し、低棟は階段踊場だけに配置",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "blockPattern": "崖壁に貼り付く多層住宅と門楼を石段で高密接続",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          8,
+          12
+        ],
+        "alleyM": [
+          4,
+          6
+        ],
+        "combatFlow": "崖沿い主路→吊宮殿下・水門広場→多層石段→空中橋と水道歩廊",
+        "openSpace": "峡谷空隙と水門前庭"
+      },
+      "facade": {
+        "roofGrammar": "平土屋根、張出し木庇、小塔冠",
+        "nonGlassAlternatives": [
+          "深い岩窟門",
+          "白漆喰アーチ",
+          "木格子ロッジア",
+          "片持ちバルコニー",
+          "水門口"
+        ],
+        "entranceGrammar": "崖穴宮殿門と水の流れる大要塞門を明確に離す",
+        "materials": [
+          "赤砂岩",
+          "白漆喰",
+          "焦木",
+          "青銅鎖",
+          "流水"
+        ],
+        "surfaceState": "乾いた岩粉、日陰の湿り、水路周辺の苔",
+        "blackWindowAvoidance": "崖の暗孔を均一窓列にせず、ロッジア・木格子・白帯・岩の凹凸へ分散",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "吊宮殿支柱と橋",
+          "水塔・鎖・落水",
+          "石段・入口"
+        ],
+        "lod1Preserve": [
+          "宮殿張出し塊",
+          "水道要塞アーチ",
+          "主要橋"
+        ],
+        "lod2Preserve": [
+          "峡谷横断宮殿",
+          "円形水塔要塞",
+          "赤崖輪郭"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "kyokoku-redgate-cliff-palace",
+          "ordinal": 0,
+          "legacyProfileId": "kyokoku-redgate-cliff-palace",
+          "conceptLabel": "Suspended Cliff Palace",
+          "visualSignature": "崖から張り出す多棟宮殿、木鋼支柱、峡谷上の連絡橋",
+          "purpose": "峡谷門・行政宮・穀倉を崖面に積層した都市核",
+          "placementIntent": "北・峡谷狭窄部",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "fortress",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 106,
+              "depth": 78
+            },
+            "heightM": 66,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 112,
+            "depth": 82,
+            "height": 66
+          },
+          "geometryGrammar": {
+            "conceptPriority": "崖から張り出す多棟宮殿、木鋼支柱、峡谷上の連絡橋",
+            "primarySilhouette": "崖から張り出す三段宮殿と二本の角形門塔",
+            "roof": "平屋根テラスと木造日除け冠",
+            "facade": "巨石基壇、赤土壁、白い水平帯と暗い格子窓",
+            "entrance": "崖穴宮殿門と水の流れる大要塞門を明確に離す",
+            "nonGlassAlternatives": [
+              "深い岩窟門",
+              "白漆喰アーチ",
+              "木格子ロッジア",
+              "片持ちバルコニー",
+              "水門口"
+            ],
+            "materials": [
+              "赤砂岩",
+              "白石灰",
+              "焦茶木",
+              "青銅扉"
+            ],
+            "combatFlow": [
+              "谷底の三連門",
+              "段状中庭の左右回遊",
+              "崖内階段から最上部テラスへ"
+            ]
+          }
+        },
+        {
+          "id": "kyokoku-skychain-aqueduct-fortress",
+          "ordinal": 1,
+          "legacyProfileId": "kyokoku-skychain-aqueduct-fortress",
+          "conceptLabel": "Chain Aqueduct Fortress",
+          "visualSignature": "円形水塔、大アーチ門、巨大吊鎖、壁面を落ちる水路",
+          "purpose": "両岸を結ぶ水道橋・兵舎・監視所の空中城",
+          "placementIntent": "南東・峡谷横断",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "fortress",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 122,
+              "depth": 52
+            },
+            "heightM": 54,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 130,
+            "depth": 56,
+            "height": 54
+          },
+          "geometryGrammar": {
+            "conceptPriority": "円形水塔、大アーチ門、巨大吊鎖、壁面を落ちる水路",
+            "primarySilhouette": "巨大多層アーチ橋の中央に細長い堡塔が載る",
+            "roof": "石造ヴォールトと木製防風庇",
+            "facade": "赤いアーチ、懸垂水路、塔の小さな狭間",
+            "entrance": "崖穴宮殿門と水の流れる大要塞門を明確に離す",
+            "nonGlassAlternatives": [
+              "深い岩窟門",
+              "白漆喰アーチ",
+              "木格子ロッジア",
+              "片持ちバルコニー",
+              "水門口"
+            ],
+            "materials": [
+              "赤切石",
+              "暗色木材",
+              "緑青水管",
+              "鉄鎖"
+            ],
+            "combatFlow": [
+              "下段橋の広い横断",
+              "中段水路脇の狭路",
+              "中央堡塔の螺旋上昇"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "kohan",
+      "name": "湖畔",
+      "referenceImage": "kohan-reference-v1.png",
+      "mapSizeM": {
+        "current": 292,
+        "recommended": 292,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "高山湖の観測施設。岩の湖岸、桟橋、山荘、湖畔天文台。",
+        "surface": "lakeside-stone",
+        "boundary": "lake-shore",
+        "skyline": "alpine-lake",
+        "dominantSilhouette": "左の三連鏡面観測ドームと右の滝崖に架かる大山荘が湖面・桟橋・小住宅を挟む",
+        "uniqueKit": "石基壇、木ルーバー、深い山荘庇、船庫、滝受けテラス"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–5階の湖畔研究棟・山荘を岸線へ段積みし、6階塔は観測・宿泊の目印だけ",
+        "targetBuildingCount": [
+          21,
+          27
+        ],
+        "blockPattern": "湖岸曲線に沿い研究棟・山荘・船庫を段状密集",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          10,
+          14
+        ],
+        "alleyM": [
+          5,
+          7
+        ],
+        "combatFlow": "湖畔遊歩道→桟橋・岩段→観測ドーム脚・山荘ロビー→連絡橋と滝上テラス",
+        "openSpace": "湖面、船着場、観測前庭"
+      },
+      "facade": {
+        "roofGrammar": "金属観測ドーム、深い切妻、湖見庇",
+        "nonGlassAlternatives": [
+          "木ルーバー",
+          "石アーチ回廊",
+          "船庫扉",
+          "深い客室バルコニー",
+          "構造分節したドームガラス"
+        ],
+        "entranceGrammar": "観測所の円筒基壇口と山荘大アーチを水辺から認識可能にする",
+        "materials": [
+          "銀色金属",
+          "湖畔石",
+          "暖木",
+          "低反射ガラス",
+          "緑青銅"
+        ],
+        "surfaceState": "湖面反射、濡れ石、滝飛沫、秋葉",
+        "blackWindowAvoidance": "暗い湖面反射ガラスは細い面積に限定し、木ルーバー・バルコニー・石アーチへ置換",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "三ドーム分節",
+          "山荘大アーチと滝",
+          "桟橋・入口"
+        ],
+        "lod1Preserve": [
+          "三半球",
+          "山荘翼と滝崖",
+          "主連絡橋"
+        ],
+        "lod2Preserve": [
+          "三連ドーム",
+          "大山荘輪郭",
+          "湖・山稜"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "kohan-mirrorstar-observatory",
+          "ordinal": 0,
+          "legacyProfileId": "kohan-mirrorstar-observatory",
+          "conceptLabel": "Triple-Mirror Observatory",
+          "visualSignature": "大小三つの銀色ドーム、岩盤基壇、細い連絡橋",
+          "purpose": "湖面干渉計と三波長望遠鏡を統合した観測宮",
+          "placementIntent": "北西・岩棚",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 84,
+              "depth": 74
+            },
+            "heightM": 56,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 90,
+            "depth": 78,
+            "height": 56
+          },
+          "geometryGrammar": {
+            "conceptPriority": "大小三つの銀色ドーム、岩盤基壇、細い連絡橋",
+            "primarySilhouette": "大小三つの非対称ドームと細いレーザー橋",
+            "roof": "分節回転ドームと低い機械屋根",
+            "facade": "暗石基壇、縦木ルーバー、白いドーム殻",
+            "entrance": "観測所の円筒基壇口と山荘大アーチを水辺から認識可能にする",
+            "nonGlassAlternatives": [
+              "木ルーバー",
+              "石アーチ回廊",
+              "船庫扉",
+              "深い客室バルコニー",
+              "構造分節したドームガラス"
+            ],
+            "materials": [
+              "黒花崗岩",
+              "白アルミ",
+              "温木材",
+              "低反射ガラス"
+            ],
+            "combatFlow": [
+              "三ドーム間の三角回廊",
+              "湖側観測テラス",
+              "中央ドーム下の螺旋機器路"
+            ]
+          }
+        },
+        {
+          "id": "kohan-hydrocliff-grand-lodge",
+          "ordinal": 1,
+          "legacyProfileId": "kohan-hydrocliff-grand-lodge",
+          "conceptLabel": "Hydro-Cliff Grand Lodge",
+          "visualSignature": "大アーチ玄関、複数切妻翼、建物下を落ちる二本の滝",
+          "purpose": "水力発電・宿泊・救難機能を崖際に統合した大型山荘",
+          "placementIntent": "南東・流出口",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "villa",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 106,
+              "depth": 70
+            },
+            "heightM": 46,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 112,
+            "depth": 74,
+            "height": 46
+          },
+          "geometryGrammar": {
+            "conceptPriority": "大アーチ玄関、複数切妻翼、建物下を落ちる二本の滝",
+            "primarySilhouette": "長い深屋根の下から二本の水車塔が湖へ落ちる",
+            "roof": "石板の大切妻と連続採光棟",
+            "facade": "粗石壁、木製バルコニー、銅水樋とガラスラウンジ",
+            "entrance": "観測所の円筒基壇口と山荘大アーチを水辺から認識可能にする",
+            "nonGlassAlternatives": [
+              "木ルーバー",
+              "石アーチ回廊",
+              "船庫扉",
+              "深い客室バルコニー",
+              "構造分節したドームガラス"
+            ],
+            "materials": [
+              "片岩",
+              "焦茶木",
+              "緑青銅",
+              "青灰ガラス"
+            ],
+            "combatFlow": [
+              "発電水路を跨ぐ地上路",
+              "山荘ロビーの二層回廊",
+              "崖側バルコニーと屋根裏路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "kuko",
+      "name": "空港エプロン",
+      "referenceImage": "kuko-reference-v1.png",
+      "mapSizeM": {
+        "current": 336,
+        "recommended": 336,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "夕刻の国際空港エプロン。大型格納庫、誘導路、旅客機、管制塔。",
+        "surface": "airport-apron",
+        "boundary": "airport-hangars",
+        "skyline": "terminal-airfield",
+        "dominantSilhouette": "左の翼冠型巨大ターミナルと右の環状レーダー冠を持つ管制城塞が広い濡れエプロンを挟む",
+        "uniqueKit": "翼状屋根、搭乗橋、航空庇、管制リング、植栽擁壁"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の貨物・整備・管理棟を誘導路間へ高密配置し、3階サービス棟は視界を開くエプロン縁だけ",
+        "targetBuildingCount": [
+          22,
+          28
+        ],
+        "blockPattern": "ターミナル指状棟・整備棟・貨物塔を誘導路間に高密配置",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          18,
+          24
+        ],
+        "alleyM": [
+          6,
+          10
+        ],
+        "combatFlow": "エプロン車路→貨物庭→ターミナル搭乗階・管制基壇→搭乗橋と展望リング",
+        "openSpace": "航空機スポットと緊急車路"
+      },
+      "facade": {
+        "roofGrammar": "翼冠シェル、波形大屋根、円形管制冠",
+        "nonGlassAlternatives": [
+          "巨大整備扉",
+          "縦フィン付き構造ガラス",
+          "搭乗橋口",
+          "航空ルーバー",
+          "深い到着庇"
+        ],
+        "entranceGrammar": "ターミナルの多車線到着口と管制城の圧縮セキュリティ門を分離",
+        "materials": [
+          "白GRC",
+          "銀アルミ",
+          "青灰ガラス",
+          "濡れアスファルト",
+          "黄黒誘導塗装"
+        ],
+        "surfaceState": "雨後ターマック、タイヤ跡、排水反射、局所植栽",
+        "blackWindowAvoidance": "大ガラスは柱・床・縦フィン・室内階で実体分節し、黒い矩形板の帯を禁止",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "翼冠屋根とガラス骨格",
+          "管制リングとドーム",
+          "搭乗橋・入口"
+        ],
+        "lod1Preserve": [
+          "主翼シェル",
+          "管制円筒とリング",
+          "主要指状翼"
+        ],
+        "lod2Preserve": [
+          "翼冠ターミナル",
+          "環状管制塔",
+          "空港水平線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "kuko-aerocrown-terminal",
+          "ordinal": 0,
+          "legacyProfileId": "kuko-aerocrown-terminal",
+          "conceptLabel": "Wing-Crown Air Terminal",
+          "visualSignature": "複数の上反り翼屋根、高いガラス峡谷、指状搭乗翼",
+          "purpose": "国際線ターミナル・鉄道駅・航空都市ホテルの巨大複合",
+          "placementIntent": "西・エプロン縁",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "terminal",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 136,
+              "depth": 88
+            },
+            "heightM": 54,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 144,
+            "depth": 94,
+            "height": 54
+          },
+          "geometryGrammar": {
+            "conceptPriority": "複数の上反り翼屋根、高いガラス峡谷、指状搭乗翼",
+            "primarySilhouette": "三枚の翼形屋根が中央アトリウムから扇状に伸びる",
+            "roof": "波形大屋根と採光リボン",
+            "facade": "白い構造リブ、深いガラス面、金色搭乗庇",
+            "entrance": "ターミナルの多車線到着口と管制城の圧縮セキュリティ門を分離",
+            "nonGlassAlternatives": [
+              "巨大整備扉",
+              "縦フィン付き構造ガラス",
+              "搭乗橋口",
+              "航空ルーバー",
+              "深い到着庇"
+            ],
+            "materials": [
+              "白塗装鋼",
+              "青灰ガラス",
+              "淡色石",
+              "金色アルミ"
+            ],
+            "combatFlow": [
+              "中央出発ホールの三分岐",
+              "手荷物階の低い横断路",
+              "搭乗橋と屋上庭の高所路"
+            ]
+          }
+        },
+        {
+          "id": "kuko-orbit-control-citadel",
+          "ordinal": 1,
+          "legacyProfileId": "kuko-orbit-control-citadel",
+          "conceptLabel": "Orbital Control Citadel",
+          "visualSignature": "太い管制基壇、円形展望室、浮く外周リングとレーダードーム",
+          "purpose": "管制塔・気象センター・緊急指揮所をまとめた耐災害施設",
+          "placementIntent": "北東・誘導路交点",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 84,
+              "depth": 74
+            },
+            "heightM": 80,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 90,
+            "depth": 78,
+            "height": 80
+          },
+          "geometryGrammar": {
+            "conceptPriority": "太い管制基壇、円形展望室、浮く外周リングとレーダードーム",
+            "primarySilhouette": "厚い楕円基壇から二段の多面管制室が立ち上がる",
+            "roof": "360度管制冠と気象レーダー",
+            "facade": "傾斜防爆壁、連続眺望窓、外露出避難螺旋",
+            "entrance": "ターミナルの多車線到着口と管制城の圧縮セキュリティ門を分離",
+            "nonGlassAlternatives": [
+              "巨大整備扉",
+              "縦フィン付き構造ガラス",
+              "搭乗橋口",
+              "航空ルーバー",
+              "深い到着庇"
+            ],
+            "materials": [
+              "淡灰UHPC",
+              "黒ガラス",
+              "群青アルミ",
+              "赤白アンテナ鋼"
+            ],
+            "combatFlow": [
+              "基壇を貫く緊急車路",
+              "作戦階の環状路",
+              "外階段から管制冠直下へ"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "onsengai",
+      "name": "湯けむり温泉街",
+      "referenceImage": "onsengai-reference-v1.png",
+      "mapSizeM": {
+        "current": 280,
+        "recommended": 280,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "山間の温泉街。濡れた石畳、木造旅館、湯煙、紅葉、層塔。",
+        "surface": "onsen-stone",
+        "boundary": "mountain-town",
+        "skyline": "steaming-ryokan",
+        "dominantSilhouette": "左の山腹を覆う千層旅館と右の蒸気管・大時計を組み込んだ温泉塔が湯煙の木造街を挟む",
+        "uniqueKit": "千鳥破風、濃木格子、石段、露天湯槽、蒸気管橋"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–6階の木造旅館・共同浴場を曲がる石段へ隙間なく配置し、低い浴場は水路縁に限定",
+        "targetBuildingCount": [
+          24,
+          32
+        ],
+        "blockPattern": "曲がる石段沿いに多層旅館・共同浴場・商家を隙間なく配置",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          7,
+          10
+        ],
+        "alleyM": [
+          4,
+          6
+        ],
+        "combatFlow": "濡れ石段→共同湯広場→大旅館中庭・時計塔機械室→縁側回廊と高架湯管",
+        "openSpace": "共同湯前庭と温泉水路"
+      },
+      "facade": {
+        "roofGrammar": "大入母屋、千鳥破風、湯気抜き越屋根、銅時計冠",
+        "nonGlassAlternatives": [
+          "濃木格子",
+          "障子の暖光",
+          "開放縁側",
+          "石造湯口",
+          "換気越屋根",
+          "暖簾門"
+        ],
+        "entranceGrammar": "大旅館の車寄せ門と時計塔の機械アーチを湯煙越しに読める照度にする",
+        "materials": [
+          "濡れ濃木",
+          "白漆喰",
+          "黒瓦",
+          "緑青銅",
+          "温泉石"
+        ],
+        "surfaceState": "湯水反射、蒸気、苔、温湿境界",
+        "blackWindowAvoidance": "黒窓を使わず格子・障子・暖色室内・開放縁側で暗明を作り、窓寸法を階ごとに変える",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "旅館の多重庇",
+          "大時計と蒸気管",
+          "湯槽・石段・入口"
+        ],
+        "lod1Preserve": [
+          "旅館段形",
+          "時計塔本体",
+          "主要湯管"
+        ],
+        "lod2Preserve": [
+          "千層旅館屋根海",
+          "時計塔冠",
+          "山林輪郭"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "onsengai-thousand-bath-ryokan",
+          "ordinal": 0,
+          "legacyProfileId": "onsengai-thousand-bath-ryokan",
+          "conceptLabel": "Thousand-Bath Grand Ryokan",
+          "visualSignature": "多数の入母屋・縁側を段積みした巨大旅館、山腹回廊、湯煙",
+          "purpose": "複数源泉・宿泊棟・能舞台を抱く巨大温泉旅館",
+          "placementIntent": "北・川上",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "villa",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 112,
+              "depth": 80
+            },
+            "heightM": 54,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 120,
+            "depth": 86,
+            "height": 54
+          },
+          "geometryGrammar": {
+            "conceptPriority": "多数の入母屋・縁側を段積みした巨大旅館、山腹回廊、湯煙",
+            "primarySilhouette": "斜面に雁行する七棟の大屋根と中央湯煙塔",
+            "roof": "大入母屋群、千鳥破風、露天風呂庇",
+            "facade": "石積み一階、濃木格子、白漆喰、暖色窓",
+            "entrance": "大旅館の車寄せ門と時計塔の機械アーチを湯煙越しに読める照度にする",
+            "nonGlassAlternatives": [
+              "濃木格子",
+              "障子の暖光",
+              "開放縁側",
+              "石造湯口",
+              "換気越屋根",
+              "暖簾門"
+            ],
+            "materials": [
+              "黒瓦",
+              "濃褐木",
+              "白漆喰",
+              "濡れた安山岩"
+            ],
+            "combatFlow": [
+              "玄関土間から内庭へ",
+              "左右客室棟の渡廊下",
+              "露天風呂と能舞台の屋上路"
+            ]
+          }
+        },
+        {
+          "id": "onsengai-steamclock-pagoda",
+          "ordinal": 1,
+          "legacyProfileId": "onsengai-steamclock-pagoda",
+          "conceptLabel": "Steam-Clock Onsen Tower",
+          "visualSignature": "大時計盤、銅尖塔、外露出蒸気管、石造機械基壇",
+          "purpose": "共同浴場・源泉制御・町の時鐘を積層した温泉塔",
+          "placementIntent": "南東・湯畑脇",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 82,
+              "depth": 70
+            },
+            "heightM": 68,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 88,
+            "depth": 74,
+            "height": 68
+          },
+          "geometryGrammar": {
+            "conceptPriority": "大時計盤、銅尖塔、外露出蒸気管、石造機械基壇",
+            "primarySilhouette": "石の浴場基壇から四角い蒸気塔と銅時計冠が上がる",
+            "roof": "多段銅板屋根と湯気抜き塔",
+            "facade": "荒石アーチ、木格子、緑青時計面と露出湯管",
+            "entrance": "大旅館の車寄せ門と時計塔の機械アーチを湯煙越しに読める照度にする",
+            "nonGlassAlternatives": [
+              "濃木格子",
+              "障子の暖光",
+              "開放縁側",
+              "石造湯口",
+              "換気越屋根",
+              "暖簾門"
+            ],
+            "materials": [
+              "濡れた石",
+              "緑青銅",
+              "赤褐木",
+              "白い湯垢"
+            ],
+            "combatFlow": [
+              "浴場の三つの湯路",
+              "源泉室周囲の環状路",
+              "外階段から時計デッキへ"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z01",
+      "name": "夜の廃市",
+      "referenceImage": "z01-reference-v1.png",
+      "mapSizeM": {
+        "current": 302,
+        "recommended": 302,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "停電後の夜の廃市。死んだネオン、崩れた高架、浸水路、折れた塔。",
+        "surface": "ruined-wet-asphalt",
+        "boundary": "collapsed-city",
+        "skyline": "dead-neon-city",
+        "dominantSilhouette": "左の幅広い停電市庁メガブロックと右の王冠が裂けた円形交通殿が浸水・緑化した市民広場を挟む",
+        "uniqueKit": "ブルータリスト列柱、崩れた高架、植栽テラス、避難ランプ、破断屋根"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の公共・商住棟を広場外周へ密集させ、3階駐車棟は避難路の層差に使う",
+        "targetBuildingCount": [
+          25,
+          33
+        ],
+        "blockPattern": "崩れた高架を挟み商住塔・病院・駐車棟を過密配置",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          12,
+          18
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "浸水大通り→広場バリケード→庁舎列柱・交通殿高架下→屋上避難路",
+        "openSpace": "市民広場と高架下避難帯"
+      },
+      "facade": {
+        "roofGrammar": "陥没陸屋根、破断鋼冠、植生化設備屋根",
+        "nonGlassAlternatives": [
+          "深い公共列柱",
+          "板塞ぎ店舗",
+          "換気グリル",
+          "植物バルコニー",
+          "割れた少数の室内窓"
+        ],
+        "entranceGrammar": "市庁の幅広い階段玄関と交通殿の高架下ゲートを別方向へ開く",
+        "materials": [
+          "雨濡れ石灰岩",
+          "煤コンクリート",
+          "錆鋼",
+          "割れガラス",
+          "繁茂植物"
+        ],
+        "surfaceState": "雨水、浅い浸水、泥、苔、死んだ照明",
+        "blackWindowAvoidance": "停電を黒い窓板で表現せず、板塞ぎ・カーテン・植生・奥室・破断壁を混在",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "市庁の水平段差",
+          "交通殿の破断冠",
+          "高架・入口・浸水縁"
+        ],
+        "lod1Preserve": [
+          "メガブロック列柱塊",
+          "円形交通殿",
+          "主高架"
+        ],
+        "lod2Preserve": [
+          "水平庁舎",
+          "裂けた円冠",
+          "遠方実3D高層線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z01-blackout-municipal-megablock",
+          "ordinal": 0,
+          "legacyProfileId": "z01-blackout-municipal-megablock",
+          "conceptLabel": "Blackout Civic Megablock",
+          "visualSignature": "水平に広がる階段状庁舎、深い列柱、植生に侵食された屋上",
+          "purpose": "市庁舎・病院・避難住宅が崩壊融合した巨大公共棟",
+          "placementIntent": "西・浸水交差点",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "terminal",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 108,
+              "depth": 82
+            },
+            "heightM": 60,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 114,
+            "depth": 88,
+            "height": 60
+          },
+          "geometryGrammar": {
+            "conceptPriority": "水平に広がる階段状庁舎、深い列柱、植生に侵食された屋上",
+            "primarySilhouette": "三本のずれた塔と陥没した中央アトリウム",
+            "roof": "崩落設備屋根と非常通信マスト",
+            "facade": "濡れた石板、割れたカーテンウォール、露出床スラブ",
+            "entrance": "市庁の幅広い階段玄関と交通殿の高架下ゲートを別方向へ開く",
+            "nonGlassAlternatives": [
+              "深い公共列柱",
+              "板塞ぎ店舗",
+              "換気グリル",
+              "植物バルコニー",
+              "割れた少数の室内窓"
+            ],
+            "materials": [
+              "煤コンクリート",
+              "青黒ガラス",
+              "錆鋼",
+              "退色した救難塗装"
+            ],
+            "combatFlow": [
+              "浸水ロビーの三方向路",
+              "崩れた議場の段床",
+              "外部救難梯子から病院塔へ"
+            ]
+          }
+        },
+        {
+          "id": "z01-broken-transit-crown",
+          "ordinal": 1,
+          "legacyProfileId": "z01-broken-transit-crown",
+          "conceptLabel": "Broken-Crown Transit Keep",
+          "visualSignature": "円形交通殿、破断した鋼冠、内部を横切る高架車両路",
+          "purpose": "地下鉄・バスターミナル・高架道路が事故融合した交通核",
+          "placementIntent": "北東・高架終端",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "station",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 92,
+              "depth": 72
+            },
+            "heightM": 74,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 98,
+            "depth": 76,
+            "height": 74
+          },
+          "geometryGrammar": {
+            "conceptPriority": "円形交通殿、破断した鋼冠、内部を横切る高架車両路",
+            "primarySilhouette": "折れた高架ループを細長い駅塔が貫く",
+            "roof": "半壊した波形コンコース屋根",
+            "facade": "煤タイル、裂けたコンクリート梁、暗い案内板",
+            "entrance": "市庁の幅広い階段玄関と交通殿の高架下ゲートを別方向へ開く",
+            "nonGlassAlternatives": [
+              "深い公共列柱",
+              "板塞ぎ店舗",
+              "換気グリル",
+              "植物バルコニー",
+              "割れた少数の室内窓"
+            ],
+            "materials": [
+              "濡れたコンクリート",
+              "錆鉄",
+              "黄緑駅タイル",
+              "黒ガラス"
+            ],
+            "combatFlow": [
+              "バス床の円環路",
+              "地下コンコースの低い横断",
+              "傾いた高架と駅塔階段の高所路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z02",
+      "name": "紅蓮区画",
+      "referenceImage": "z02-reference-v1.png",
+      "mapSizeM": {
+        "current": 300,
+        "recommended": 300,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "延焼中の都市区画。崩壊した競技場、燃える建物、瓦礫の車道。",
+        "surface": "burned-asphalt",
+        "boundary": "burning-ruins",
+        "skyline": "firestorm-blocks",
+        "dominantSilhouette": "左の焼け落ちた円形競技大聖堂と右の細長い火災監視集合塔が焦げた煉瓦街・消火路を挟む",
+        "uniqueKit": "煤煉瓦、崩落テラス、消防配管、露出鉄骨、アーチ残骸"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の焼損集合住宅・消防棟を競技場周囲へ密着させ、3階店棟は瓦礫路の遮蔽に限定",
+        "targetBuildingCount": [
+          23,
+          31
+        ],
+        "blockPattern": "競技場を囲む高層住宅・消防棟・商業塔を焼けた路地で密結合",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          12,
+          16
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "消火車路→焼損路地→競技場客席・監視塔車庫→避難床とアーチ上路",
+        "openSpace": "競技場前庭と消防旋回域"
+      },
+      "facade": {
+        "roofGrammar": "焦げた膜屋根、崩落客席冠、排煙塔",
+        "nonGlassAlternatives": [
+          "煉瓦アーチ残骸",
+          "消防シャッター",
+          "骨組みバルコニー",
+          "深い店間口",
+          "赤熱換気口"
+        ],
+        "entranceGrammar": "競技場大アーチと塔の消防車庫をホース路で接続",
+        "materials": [
+          "煤赤煉瓦",
+          "焼け鋼",
+          "黒化石",
+          "濡れ灰",
+          "鈍い消防赤"
+        ],
+        "surfaceState": "消火水、灰泥、焦げ跡、局所燻煙",
+        "blackWindowAvoidance": "焼失窓を同じ黒板で埋めず、瓦礫・板・奥室・炎焼け・アーチ空隙の5種へ分散",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "円形客席破断",
+          "監視塔避難床",
+          "瓦礫・入口・道路"
+        ],
+        "lod1Preserve": [
+          "競技殿円弧",
+          "細塔段差",
+          "主要アーチ"
+        ],
+        "lod2Preserve": [
+          "半壊アリーナ冠",
+          "火災監視塔",
+          "焼け街稜線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z02-pyre-arena-basilica",
+          "ordinal": 0,
+          "legacyProfileId": "z02-pyre-arena-basilica",
+          "conceptLabel": "Cremation Arena Basilica",
+          "visualSignature": "半壊円形客席、巨大薔薇窓、焼損アーチ骨格",
+          "purpose": "避難所化した巨大競技場が延焼崩壊した都市核",
+          "placementIntent": "中央南・競技広場",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "arena",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 126,
+              "depth": 94
+            },
+            "heightM": 56,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 134,
+            "depth": 100,
+            "height": 56
+          },
+          "geometryGrammar": {
+            "conceptPriority": "半壊円形客席、巨大薔薇窓、焼損アーチ骨格",
+            "primarySilhouette": "半壊した楕円観客席と片側だけ残る膜屋根塔",
+            "roof": "焦げた張力膜と露出リングトラス",
+            "facade": "煤けたPC段床、赤い避難ゲート、剥離した外装",
+            "entrance": "競技場大アーチと塔の消防車庫をホース路で接続",
+            "nonGlassAlternatives": [
+              "煉瓦アーチ残骸",
+              "消防シャッター",
+              "骨組みバルコニー",
+              "深い店間口",
+              "赤熱換気口"
+            ],
+            "materials": [
+              "焼損コンクリート",
+              "黒化鋼",
+              "焦げ膜材",
+              "非常赤塗装"
+            ],
+            "combatFlow": [
+              "競技面の長い横断",
+              "観客席下の放射状通路",
+              "崩れた客席から屋根リングへ"
+            ]
+          }
+        },
+        {
+          "id": "z02-firewatch-tenement-citadel",
+          "ordinal": 1,
+          "legacyProfileId": "z02-firewatch-tenement-citadel",
+          "conceptLabel": "Firewatch Collective Tower",
+          "visualSignature": "煉瓦集合塔、外付け避難床、煙を吐く消防冠",
+          "purpose": "消防署・集合住宅・給水塔が籠城化した高層街区",
+          "placementIntent": "北西・消防路",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 100,
+              "depth": 74
+            },
+            "heightM": 70,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 106,
+            "depth": 78,
+            "height": 70
+          },
+          "geometryGrammar": {
+            "conceptPriority": "煉瓦集合塔、外付け避難床、煙を吐く消防冠",
+            "primarySilhouette": "二本の焼けた住棟を巨大給水塔橋が束ねる",
+            "roof": "崩れたテラスと監視鐘楼",
+            "facade": "煤煉瓦、黒いバルコニー、赤錆防火階段",
+            "entrance": "競技場大アーチと塔の消防車庫をホース路で接続",
+            "nonGlassAlternatives": [
+              "煉瓦アーチ残骸",
+              "消防シャッター",
+              "骨組みバルコニー",
+              "深い店間口",
+              "赤熱換気口"
+            ],
+            "materials": [
+              "暗赤煉瓦",
+              "黒鋼",
+              "錆銅",
+              "煤ガラス"
+            ],
+            "combatFlow": [
+              "消防車庫の通抜け",
+              "中庭を囲む住棟回廊",
+              "給水橋と外階段の上下戦"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z03",
+      "name": "灰霧の廃港",
+      "referenceImage": "z03-reference-v1.png",
+      "mapSizeM": {
+        "current": 320,
+        "recommended": 320,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "灰霧の廃港。沈みかけた埠頭、座礁船、折れたクレーン、冷たい海面。",
+        "surface": "wrecked-dock",
+        "boundary": "flooded-port",
+        "skyline": "ghost-harbor",
+        "dominantSilhouette": "左の転覆船殻を抱く巨大ドック殿と右の霧鐘を載せた段状貨物城が沈降岸壁と傾いた港町を挟む",
+        "uniqueKit": "船殻屋根、索具、塩錆波板、木杭桟橋、貨物橋"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–6階の冷蔵塔・船舶工場・港務住宅を沈んだ岸壁へ傾斜密集させる",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "blockPattern": "沈んだ埠頭に船舶工場・冷蔵塔・港務住宅を傾斜密集",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          12,
+          16
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "濡れ岸壁→船殻下ドック・貨物城門→傾斜港町→索具歩廊と鐘楼デッキ",
+        "openSpace": "沈降水面とドック前庭"
+      },
+      "facade": {
+        "roofGrammar": "船殻曲面、破断トラス、霧鐘塔冠",
+        "nonGlassAlternatives": [
+          "貨物大扉",
+          "船肋間空隙",
+          "木鎧戸",
+          "クレーンポータル",
+          "塩錆ルーバー"
+        ],
+        "entranceGrammar": "船殻下の巨大裂け口と鐘楼城の石アーチを別射線へ向ける",
+        "materials": [
+          "塩錆鋼",
+          "藻付きコンクリート",
+          "濡れ木",
+          "割れ波板",
+          "鈍い港灯"
+        ],
+        "surfaceState": "霧雨、塩水、藻、油膜は小面積、沈下亀裂",
+        "blackWindowAvoidance": "暗い港窓カードを禁止し、鎧戸・作業灯・開放荷役口・索具影・板塞ぎへ分散",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "転覆船殻と肋骨",
+          "霧鐘塔",
+          "岸壁・桟橋・入口"
+        ],
+        "lod1Preserve": [
+          "船殻大曲面",
+          "貨物城段形",
+          "主貨物橋"
+        ],
+        "lod2Preserve": [
+          "転覆船シルエット",
+          "霧鐘塔",
+          "沈降港線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z03-capsized-drydock-cathedral",
+          "ordinal": 0,
+          "legacyProfileId": "z03-capsized-drydock-cathedral",
+          "conceptLabel": "Capsized Drydock Hall",
+          "visualSignature": "建屋内に立つ転覆船殻、露出肋骨、巨大石ドック門",
+          "purpose": "座礁した大型船体と乾ドック工場が融合した廃墟",
+          "placementIntent": "南・沈降船渠",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "hangar",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 134,
+              "depth": 70
+            },
+            "heightM": 46,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 142,
+            "depth": 74,
+            "height": 46
+          },
+          "geometryGrammar": {
+            "conceptPriority": "建屋内に立つ転覆船殻、露出肋骨、巨大石ドック門",
+            "primarySilhouette": "横倒し船首が長い工場屋根を突き破る非対称巨塊",
+            "roof": "破断船殻と鋸歯ドック屋根",
+            "facade": "外板リブ、巨大プロペラ軸、崩れたドック門",
+            "entrance": "船殻下の巨大裂け口と鐘楼城の石アーチを別射線へ向ける",
+            "nonGlassAlternatives": [
+              "貨物大扉",
+              "船肋間空隙",
+              "木鎧戸",
+              "クレーンポータル",
+              "塩錆ルーバー"
+            ],
+            "materials": [
+              "塩錆鋼",
+              "藻コンクリート",
+              "黒い海水",
+              "退色青塗装"
+            ],
+            "combatFlow": [
+              "船底を貫く狭路",
+              "ドック床の左右水路",
+              "船殻リブ上の傾斜高所路"
+            ]
+          }
+        },
+        {
+          "id": "z03-fogbell-crane-palace",
+          "ordinal": 1,
+          "legacyProfileId": "z03-fogbell-crane-palace",
+          "conceptLabel": "Fog-Bell Cargo Keep",
+          "visualSignature": "高い霧鐘塔、段状港務塊、空中貨物橋",
+          "purpose": "港務局・冷蔵倉庫・霧信号塔を持つ巨大揚貨施設",
+          "placementIntent": "北西・旧岸壁",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 94,
+              "depth": 76
+            },
+            "heightM": 74,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 100,
+            "depth": 80,
+            "height": 74
+          },
+          "geometryGrammar": {
+            "conceptPriority": "高い霧鐘塔、段状港務塊、空中貨物橋",
+            "primarySilhouette": "門型冷蔵塔から一本の折れたクレーン腕と霧笛冠が伸びる",
+            "roof": "機械冠と傾いたクレーン走行路",
+            "facade": "断熱煉瓦、錆ルーバー、曇り窓と吊りケーブル",
+            "entrance": "船殻下の巨大裂け口と鐘楼城の石アーチを別射線へ向ける",
+            "nonGlassAlternatives": [
+              "貨物大扉",
+              "船肋間空隙",
+              "木鎧戸",
+              "クレーンポータル",
+              "塩錆ルーバー"
+            ],
+            "materials": [
+              "白化煉瓦",
+              "赤錆鋼",
+              "曇りガラス",
+              "黒ゴム"
+            ],
+            "combatFlow": [
+              "冷蔵庫の短い格子路",
+              "荷役床の通抜け",
+              "クレーン塔外階段の高所戦"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z04",
+      "name": "崩落修道城",
+      "referenceImage": "z04-reference-v1.png",
+      "mapSizeM": {
+        "current": 310,
+        "recommended": 310,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "闇に沈む崩落西洋修道城。破断屋根、割れた薔薇窓、荒廃回廊、城下墓地。",
+        "surface": "cathedral-stone",
+        "boundary": "gothic-precinct",
+        "skyline": "broken-spires",
+        "dominantSilhouette": "左の極端に細い黒尖塔大聖堂と右の銅ドーム・雷コイルを持つ錬金観測城が濡れた木骨墓都を挟む",
+        "uniqueKit": "濡れ木骨、尖頭アーチ、スレート切妻、飛梁、錬金銅管"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–6階の木骨商家・納骨堂を曲がる墓都路へ密集し、石造高棟は二ランドマークへ段階上昇",
+        "targetBuildingCount": [
+          21,
+          27
+        ],
+        "blockPattern": "破断大聖堂を中心に墓地住宅・納骨堂・崩れた商家を密集",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          8,
+          12
+        ],
+        "alleyM": [
+          4,
+          6
+        ],
+        "combatFlow": "墓都主路→大聖堂階段・観測城アーチ→納骨地下路→飛梁とコイルデッキ",
+        "openSpace": "墓地中央路と雷撃広場"
+      },
+      "facade": {
+        "roofGrammar": "鋭いスレート切妻、単尖塔、緑青ドーム、雷コイル冠",
+        "nonGlassAlternatives": [
+          "尖頭アーケード",
+          "構造分節したステンドグラス",
+          "木骨張出し",
+          "店先ポーチ",
+          "屋根ドーマー",
+          "鉄格子門"
+        ],
+        "entranceGrammar": "大聖堂の高尖頭門と観測城の銅アーチを色・形で分離",
+        "materials": [
+          "黒濡れ花崗岩",
+          "腐食鉛",
+          "焦木",
+          "緑青銅",
+          "暗色ステンドガラス"
+        ],
+        "surfaceState": "嵐雨、濡れ石、苔、落葉、雷の冷光",
+        "blackWindowAvoidance": "黒窓板を禁止し、木枠・ステンド色・板塞ぎ・暖灯・アーチ陰を不規則に使う",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "黒尖塔と飛梁",
+          "銅ドームと雷コイル",
+          "木骨街・門・階段"
+        ],
+        "lod1Preserve": [
+          "大聖堂身廊",
+          "観測城ドーム",
+          "主要切妻"
+        ],
+        "lod2Preserve": [
+          "鋭い単尖塔",
+          "銅ドームとコイル冠",
+          "山岳墓都稜線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z04-severed-rose-abbey",
+          "ordinal": 0,
+          "legacyProfileId": "z04-severed-rose-abbey",
+          "conceptLabel": "Blackspire Cathedral Fortress",
+          "visualSignature": "鋭い単尖塔、長いゴシック身廊、飛梁と高い石階段",
+          "purpose": "崩落した大聖堂・城壁・修道街が一体化した死都主城",
+          "placementIntent": "中央高地・既存廃城位置",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "abbey",
+            "collisionTemplate": "abbey",
+            "collisionFootprintM": {
+              "width": 124,
+              "depth": 100
+            },
+            "heightM": 72,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 128,
+            "depth": 102,
+            "height": 72
+          },
+          "geometryGrammar": {
+            "conceptPriority": "鋭い単尖塔、長いゴシック身廊、飛梁と高い石階段",
+            "primarySilhouette": "片側を失った身廊と折れた二本尖塔が鋭い空隙を作る",
+            "roof": "破断スレート屋根、露出小屋組、欠けた尖塔",
+            "facade": "割れ薔薇窓、濡れ扶壁、崩れた石回廊",
+            "entrance": "大聖堂の高尖頭門と観測城の銅アーチを色・形で分離",
+            "nonGlassAlternatives": [
+              "尖頭アーケード",
+              "構造分節したステンドグラス",
+              "木骨張出し",
+              "店先ポーチ",
+              "屋根ドーマー",
+              "鉄格子門"
+            ],
+            "materials": [
+              "黒濡れ花崗岩",
+              "腐食鉛",
+              "焦木",
+              "暗色ステンドガラス"
+            ],
+            "combatFlow": [
+              "瓦礫化した正門軸",
+              "片側だけ残る回廊",
+              "地下納骨堂から破断塔へ"
+            ]
+          }
+        },
+        {
+          "id": "z04-ossuary-bell-keep",
+          "ordinal": 1,
+          "legacyProfileId": "z04-ossuary-bell-keep",
+          "conceptLabel": "Thundercoil Alchemical Observatory",
+          "visualSignature": "緑青大ドーム、複数の螺旋雷コイル、細塔群と錬金橋",
+          "purpose": "集団墓所・鐘楼・隔離療養院が融合した副城",
+          "placementIntent": "南西・墓地端",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "cathedral",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 94,
+              "depth": 84
+            },
+            "heightM": 80,
+            "source": "stage.ts-proof7-exact"
+          },
+          "visualEnvelopeM": {
+            "width": 94,
+            "depth": 84,
+            "height": 80
+          },
+          "geometryGrammar": {
+            "conceptPriority": "緑青大ドーム、複数の螺旋雷コイル、細塔群と錬金橋",
+            "primarySilhouette": "中空鐘楼を四本の細い納骨塔と橋が囲む",
+            "roof": "骨組だけの鐘楼冠と鋭い鉛庇",
+            "facade": "頭骨意匠を抽象化したアーチ、鉄格子、蔦の石壁",
+            "entrance": "大聖堂の高尖頭門と観測城の銅アーチを色・形で分離",
+            "nonGlassAlternatives": [
+              "尖頭アーケード",
+              "構造分節したステンドグラス",
+              "木骨張出し",
+              "店先ポーチ",
+              "屋根ドーマー",
+              "鉄格子門"
+            ],
+            "materials": [
+              "冷灰石灰岩",
+              "黒鉄",
+              "緑青鉛",
+              "腐木"
+            ],
+            "combatFlow": [
+              "地下納骨路の十字交差",
+              "療養院二階回廊",
+              "外部飛梁から鐘楼デッキへ"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z05",
+      "name": "溶岩坑道",
+      "referenceImage": "z05-reference-v1.png",
+      "mapSizeM": {
+        "current": 314,
+        "recommended": 314,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "崩れた溶岩坑道。赤熱した裂け目、鉱山軌道、耐熱施設、排気塔。",
+        "surface": "lava-mine-floor",
+        "boundary": "basalt-tunnels",
+        "skyline": "volcanic-mine",
+        "dominantSilhouette": "左の赤熱立坑ホイスト城と右の舟形長大黒曜精錬殿が蒸気・溶岩溝・玄武岩街を挟む",
+        "uniqueKit": "玄武岩基壇、耐熱フィン、鉱車レール、冷却管、赤熱溝"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の冷却棟・鉱員街を玄武岩段丘へ高密挿入し、3階坑口棟をレール沿いの遮蔽に使う",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "blockPattern": "坑口・冷却棟・鉱員街を玄武岩段丘へ高密挿入",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          10,
+          14
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "鉱車主線→立坑基部・精錬殿下→機械床→冷却管橋と排熱背骨",
+        "openSpace": "溶岩割れ目と鉱車交換所"
+      },
+      "facade": {
+        "roofGrammar": "開放ホイスト冠、耐熱バレル殻、排熱背骨",
+        "nonGlassAlternatives": [
+          "鉱山大門",
+          "熱ルーバー",
+          "開放機械層",
+          "セラミック盾継ぎ目",
+          "格子ケージ"
+        ],
+        "entranceGrammar": "立坑の縦長赤熱門と精錬殿の舟形端部門を区別",
+        "materials": [
+          "黒玄武岩",
+          "焼け鋼",
+          "白耐熱セラミック",
+          "赤銅",
+          "暗い耐熱ガラス"
+        ],
+        "surfaceState": "火山灰、煤、熱乾燥、局所冷却水、控えめ溶岩発光",
+        "blackWindowAvoidance": "赤熱スリットを窓列化せず、機械開口・盾継ぎ目・管路・玄武岩凹凸で面を構成",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "ホイスト骨格と赤熱立坑",
+          "舟形殻と熱アーチ",
+          "レール・入口・管橋"
+        ],
+        "lod1Preserve": [
+          "立坑塔主骨格",
+          "精錬殿バレル",
+          "主要冷却管"
+        ],
+        "lod2Preserve": [
+          "高いホイスト冠",
+          "舟形大殿",
+          "火山稜線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z05-magma-shaft-elevator-citadel",
+          "ordinal": 0,
+          "legacyProfileId": "z05-magma-shaft-elevator-citadel",
+          "conceptLabel": "Magma-Shaft Hoist Castle",
+          "visualSignature": "高い開放巻上げ冠、中央赤熱立坑、左右の太い冷却塔",
+          "purpose": "深部鉱山の人員・鉱石・冷却材を運ぶ巨大立坑塔",
+          "placementIntent": "北・主坑口",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "refinery",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 102,
+              "depth": 70
+            },
+            "heightM": 84,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 108,
+            "depth": 74,
+            "height": 84
+          },
+          "geometryGrammar": {
+            "conceptPriority": "高い開放巻上げ冠、中央赤熱立坑、左右の太い冷却塔",
+            "primarySilhouette": "二本の昇降塔を斜め巻上げ室と太い冷却管が結ぶ",
+            "roof": "開放巻上げ冠と耐熱フィン",
+            "facade": "黒石基壇、赤熱スリット、露出ケージと梯子",
+            "entrance": "立坑の縦長赤熱門と精錬殿の舟形端部門を区別",
+            "nonGlassAlternatives": [
+              "鉱山大門",
+              "熱ルーバー",
+              "開放機械層",
+              "セラミック盾継ぎ目",
+              "格子ケージ"
+            ],
+            "materials": [
+              "玄武岩",
+              "焼け鋼",
+              "白耐熱セラミック",
+              "赤銅管"
+            ],
+            "combatFlow": [
+              "立坑基部の鉱車路",
+              "巻上げ室下の横断",
+              "外部冷却管に沿う上昇路"
+            ]
+          }
+        },
+        {
+          "id": "z05-basalt-smelter-ark",
+          "ordinal": 1,
+          "legacyProfileId": "z05-basalt-smelter-ark",
+          "conceptLabel": "Obsidian Smelter Ark",
+          "visualSignature": "舟形バレル殻、連続した熱アーチ、両端の丸い機械門",
+          "purpose": "溶岩流を跨ぐ鉱石精錬・避難居住複合棟",
+          "placementIntent": "南東・溶岩裂け目",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "hangar",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 122,
+              "depth": 66
+            },
+            "heightM": 50,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 130,
+            "depth": 70,
+            "height": 50
+          },
+          "geometryGrammar": {
+            "conceptPriority": "舟形バレル殻、連続した熱アーチ、両端の丸い機械門",
+            "primarySilhouette": "厚い舟形耐熱殻が二本の玄武岩脚に載る",
+            "roof": "分節セラミックシェルと排熱背骨",
+            "facade": "黒い斜面壁、白い遮熱鱗、橙色の整備開口",
+            "entrance": "立坑の縦長赤熱門と精錬殿の舟形端部門を区別",
+            "nonGlassAlternatives": [
+              "鉱山大門",
+              "熱ルーバー",
+              "開放機械層",
+              "セラミック盾継ぎ目",
+              "格子ケージ"
+            ],
+            "materials": [
+              "黒玄武岩",
+              "白セラミック",
+              "黒化鋼",
+              "赤熱ガラス"
+            ],
+            "combatFlow": [
+              "方舟下の溶岩橋",
+              "内部精錬床の長軸",
+              "排熱背骨の高所路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z06",
+      "name": "血染めの精肉場",
+      "referenceImage": "z06-reference-v1.png",
+      "mapSizeM": {
+        "current": 288,
+        "recommended": 288,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "封鎖された精肉加工複合施設。冷蔵庫棟、搬送レール、排水溝、煙突。",
+        "surface": "slaughter-concrete",
+        "boundary": "processing-walls",
+        "skyline": "factory-stacks",
+        "dominantSilhouette": "左の白化した鎖垂直冷蔵塔と右の長い曲面加工殿が凍結した搬送街路と吊送レールを挟む",
+        "uniqueKit": "白化タイル、断熱箱、吊送トラス、排水溝、外付け冷却機"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の冷蔵・加工・宿舎棟を搬送レール沿いへ過密配置し、3階洗浄棟を交差点だけに置く",
+        "targetBuildingCount": [
+          23,
+          30
+        ],
+        "blockPattern": "冷蔵塔・加工棟・労働住宅を搬送レール沿いに過密配置",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          9,
+          13
+        ],
+        "alleyM": [
+          5,
+          7
+        ],
+        "combatFlow": "凍結搬送路→冷蔵塔荷捌き床・加工殿大ベイ→洗浄室→吊送歩廊と機械冠",
+        "openSpace": "車両洗浄帯と中央搬送路"
+      },
+      "facade": {
+        "roofGrammar": "断熱段屋根、半円加工殻、排気塔",
+        "nonGlassAlternatives": [
+          "断熱荷役扉",
+          "冷却ルーバー",
+          "タイルアーチ",
+          "吊送トラス空隙",
+          "覆い付き搬送口"
+        ],
+        "entranceGrammar": "冷蔵塔の三荷役口と加工殿の長軸搬出門を床マーキングで可読化",
+        "materials": [
+          "汚れた白タイル",
+          "錆ステンレス",
+          "冷灰コンクリート",
+          "黒ゴム",
+          "氷"
+        ],
+        "surfaceState": "凍結水膜、霜、排水、油脂汚れは控えめ",
+        "blackWindowAvoidance": "無窓面を黒パネルで割らず、冷却機・ルーバー・荷役扉・タイル帯・鎖で構成",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "巨大鎖と塔段差",
+          "半円殻と吊送レール",
+          "排水・入口・歩廊"
+        ],
+        "lod1Preserve": [
+          "冷蔵塔主塊",
+          "加工殿長殻",
+          "主搬送トラス"
+        ],
+        "lod2Preserve": [
+          "鎖塔シルエット",
+          "長い曲面殿",
+          "凍結工場線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z06-coldchain-tower-palace",
+          "ordinal": 0,
+          "legacyProfileId": "z06-coldchain-tower-palace",
+          "conceptLabel": "Frozen-Chain Storage Tower",
+          "visualSignature": "段状白冷蔵塔、外壁を垂れる巨大鎖、上部機械冠",
+          "purpose": "巨大冷蔵庫・アンモニア機械室・配電所の高層複合",
+          "placementIntent": "北西・冷蔵街区",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "warehouse",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 110,
+              "depth": 74
+            },
+            "heightM": 60,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 118,
+            "depth": 78,
+            "height": 60
+          },
+          "geometryGrammar": {
+            "conceptPriority": "段状白冷蔵塔、外壁を垂れる巨大鎖、上部機械冠",
+            "primarySilhouette": "無窓の三段塔を外付け配管と傾いた冷却冠が包む",
+            "roof": "蒸発冷却冠と段状機械屋根",
+            "facade": "白化断熱板、黒い縦目地、錆びた避難階段",
+            "entrance": "冷蔵塔の三荷役口と加工殿の長軸搬出門を床マーキングで可読化",
+            "nonGlassAlternatives": [
+              "断熱荷役扉",
+              "冷却ルーバー",
+              "タイルアーチ",
+              "吊送トラス空隙",
+              "覆い付き搬送口"
+            ],
+            "materials": [
+              "汚れた白断熱板",
+              "錆ステンレス",
+              "黒ゴム",
+              "冷灰コンクリート"
+            ],
+            "combatFlow": [
+              "荷捌き床の三入口",
+              "冷蔵区画間の格子路",
+              "外階段と機械冠の高所路"
+            ]
+          }
+        },
+        {
+          "id": "z06-ironrail-processing-hall",
+          "ordinal": 1,
+          "legacyProfileId": "z06-ironrail-processing-hall",
+          "conceptLabel": "Cable Processing Hall",
+          "visualSignature": "長い半円屋根、吊送レール、連続する大加工ベイ",
+          "purpose": "屠体搬送・加工・焼却を一つの長大ラインにした工場",
+          "placementIntent": "南東・搬出側",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "refinery",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 126,
+              "depth": 68
+            },
+            "heightM": 46,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 134,
+            "depth": 72,
+            "height": 46
+          },
+          "geometryGrammar": {
+            "conceptPriority": "長い半円屋根、吊送レール、連続する大加工ベイ",
+            "primarySilhouette": "長い鋸歯棟を赤錆の吊送トラスと二本煙突が横断",
+            "roof": "北向き鋸歯と排気モニター",
+            "facade": "白タイル基壇、大開口シャッター、外露出レール",
+            "entrance": "冷蔵塔の三荷役口と加工殿の長軸搬出門を床マーキングで可読化",
+            "nonGlassAlternatives": [
+              "断熱荷役扉",
+              "冷却ルーバー",
+              "タイルアーチ",
+              "吊送トラス空隙",
+              "覆い付き搬送口"
+            ],
+            "materials": [
+              "白化タイル",
+              "赤錆鋼",
+              "煤煉瓦",
+              "濡れコンクリート"
+            ],
+            "combatFlow": [
+              "加工床の長軸",
+              "洗浄室の左右迂回",
+              "吊送トラス保守歩廊"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z07",
+      "name": "封鎖検問所",
+      "referenceImage": "z07-reference-v1.png",
+      "mapSizeM": {
+        "current": 326,
+        "recommended": 326,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "雨の隔離検問所。コンクリートゲート、検査レーン、車両封鎖、監視塔。",
+        "surface": "checkpoint-wet-road",
+        "boundary": "quarantine-perimeter",
+        "skyline": "sealed-industrial",
+        "dominantSilhouette": "左の三塔大検疫関門と右の白い楔形除染病院塔が雨の検査車路・仮設医療庭を圧縮する",
+        "uniqueKit": "傾斜PC壁、気密橋、黄色い扉、除染ノズル、白い深庇"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の宿舎・医療・物資棟を検査路両側へ連続させ、3階仮設棟は隔離広場縁に限定",
+        "targetBuildingCount": [
+          24,
+          31
+        ],
+        "blockPattern": "検査レーンを高層宿舎・医療棟・物資庫が両側から圧縮",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          12,
+          18
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "三検査レーン→門塔収容回廊・病院除染ロビー→気密橋→監視冠とヘリ庇",
+        "openSpace": "除染広場と検査レーン"
+      },
+      "facade": {
+        "roofGrammar": "防爆陸屋根、監視冠、ヘリ救急庇",
+        "nonGlassAlternatives": [
+          "気密車両門",
+          "縦日除け",
+          "除染ベイ",
+          "機械ルーバー",
+          "曇り医療窓",
+          "避難バルコニー"
+        ],
+        "entranceGrammar": "黄色い関門扉と白い病院エアロックを色と庇で識別",
+        "materials": [
+          "灰UHPC",
+          "白GRC",
+          "黄塗装鋼",
+          "青曇りガラス",
+          "濡れ道路"
+        ],
+        "surfaceState": "豪雨水膜、除染排水、泥、仮設布の湿り",
+        "blackWindowAvoidance": "医療窓は少数・曇り・深庇付きとし、残りを日除け・ルーバー・空洞機械層へ置換",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "三門塔と検査橋",
+          "白病院楔形と空洞",
+          "レーン・入口・気密橋"
+        ],
+        "lod1Preserve": [
+          "門城主塊",
+          "病院塔段差",
+          "主要橋"
+        ],
+        "lod2Preserve": [
+          "巨大関門輪郭",
+          "白盾病院塔",
+          "都市封鎖線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z07-quarantine-gate-fortress",
+          "ordinal": 0,
+          "legacyProfileId": "z07-quarantine-gate-fortress",
+          "conceptLabel": "Quarantine Great Gate",
+          "visualSignature": "三本の重い門塔、道路を跨ぐ検査橋、複数の貫通車両口",
+          "purpose": "車両検疫・収容・物資移送を一体化した巨大封鎖門",
+          "placementIntent": "西・主進入路",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "checkpoint",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 122,
+              "depth": 78
+            },
+            "heightM": 48,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 130,
+            "depth": 84,
+            "height": 48
+          },
+          "geometryGrammar": {
+            "conceptPriority": "三本の重い門塔、道路を跨ぐ検査橋、複数の貫通車両口",
+            "primarySilhouette": "三本の厚い門塔を長い検査橋が一枚に束ねる",
+            "roof": "防爆庇と監視スリット冠",
+            "facade": "傾斜壁、巨大除染ノズル、黄色い分節扉",
+            "entrance": "黄色い関門扉と白い病院エアロックを色と庇で識別",
+            "nonGlassAlternatives": [
+              "気密車両門",
+              "縦日除け",
+              "除染ベイ",
+              "機械ルーバー",
+              "曇り医療窓",
+              "避難バルコニー"
+            ],
+            "materials": [
+              "灰UHPC",
+              "黄塗装鋼",
+              "黒ガラス",
+              "白化タイル"
+            ],
+            "combatFlow": [
+              "三つの車両検査トンネル",
+              "収容棟の左右回廊",
+              "上部検査橋の横断路"
+            ]
+          }
+        },
+        {
+          "id": "z07-aegis-decon-hospital",
+          "ordinal": 1,
+          "legacyProfileId": "z07-aegis-decon-hospital",
+          "conceptLabel": "White-Shield Hospital Tower",
+          "visualSignature": "白い楔形病棟、露出した中央機械空洞、ヘリ救急冠",
+          "purpose": "感染症治療・除染・指揮を垂直分離した救急要塞",
+          "placementIntent": "北東・隔離広場",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "terminal",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 88,
+              "depth": 74
+            },
+            "heightM": 72,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 94,
+            "depth": 78,
+            "height": 72
+          },
+          "geometryGrammar": {
+            "conceptPriority": "白い楔形病棟、露出した中央機械空洞、ヘリ救急冠",
+            "primarySilhouette": "三枚の楔形病棟が中央の赤い換気塔を囲む",
+            "roof": "負圧排気冠とヘリ救急庇",
+            "facade": "白い深庇、青い気密窓、赤い縦換気リブ",
+            "entrance": "黄色い関門扉と白い病院エアロックを色と庇で識別",
+            "nonGlassAlternatives": [
+              "気密車両門",
+              "縦日除け",
+              "除染ベイ",
+              "機械ルーバー",
+              "曇り医療窓",
+              "避難バルコニー"
+            ],
+            "materials": [
+              "白GRC",
+              "青防眩ガラス",
+              "赤塗装鋼",
+              "灰セラミック"
+            ],
+            "combatFlow": [
+              "救急車庫から除染ロビー",
+              "三病棟の環状連絡階",
+              "外部救難階段からヘリ庇へ"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z08",
+      "name": "残灯の地下街",
+      "referenceImage": "z08-reference-v1.png",
+      "mapSizeM": {
+        "current": 292,
+        "recommended": 292,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "残灯だけが点く地下商業街。駅コンコース、アーチ天井、浸水店舗。",
+        "surface": "subway-tile",
+        "boundary": "underground-vaults",
+        "skyline": "subterranean-concourse",
+        "dominantSilhouette": "左の二層円環バザールと右の青緑ガラス大駅ヴォールトが巨大洞窟天井・光井・浸水運河を支える",
+        "uniqueKit": "リブヴォールト、釉薬タイル、真鍮縁、布天蓋、跨線橋、水路"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–6層の店舗・駅舎・住居を洞窟壁と環状回廊へ積層し、地上型箱建物を禁止",
+        "targetBuildingCount": [
+          25,
+          33
+        ],
+        "blockPattern": "商店街・駅舎・換気塔基部をアーチ天井下へ高密配置",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          8,
+          12
+        ],
+        "alleyM": [
+          5,
+          7
+        ],
+        "combatFlow": "中央コンコース→放射店舗路・浸水ホーム→環状中二階→光井と水門機械橋",
+        "openSpace": "中央円形床と水路ホーム"
+      },
+      "facade": {
+        "roofGrammar": "洞窟リブ、環状ヴォールト、青緑駅殻",
+        "nonGlassAlternatives": [
+          "アーチ店舗口",
+          "金属格子",
+          "布天蓋",
+          "ガラスブロック光井",
+          "駅大門",
+          "水門口"
+        ],
+        "entranceGrammar": "円環バザールの四放射口と駅ヴォールトの青い正門を照度で誘導",
+        "materials": [
+          "緑釉タイル",
+          "煤真鍮",
+          "濡れ花崗岩",
+          "錆鋼",
+          "青緑水"
+        ],
+        "surfaceState": "結露、浅い浸水、水跡、石灰析出、光井の湿光",
+        "blackWindowAvoidance": "閉店を同一黒シャッター列で表さず、格子・布・板・半開店内・タイル壁を交互にする",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "円環アーチと二層床",
+          "駅ヴォールト骨格",
+          "水路・階段・入口"
+        ],
+        "lod1Preserve": [
+          "バザール円環",
+          "駅大殻",
+          "主跨線橋"
+        ],
+        "lod2Preserve": [
+          "二大ヴォールト輪郭",
+          "洞窟天井孔",
+          "地下水路線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z08-subterranean-exchange-rotunda",
+          "ordinal": 0,
+          "legacyProfileId": "z08-subterranean-exchange-rotunda",
+          "conceptLabel": "Underground Ring Bazaar",
+          "visualSignature": "二層の円形店舗環、連続アーチ、上部環状レール",
+          "purpose": "商業街・地下鉄・避難都市を束ねる巨大円形コンコース",
+          "placementIntent": "中央・地下広場",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "metro",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 118,
+              "depth": 92
+            },
+            "heightM": 40,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 126,
+            "depth": 98,
+            "height": 40
+          },
+          "geometryGrammar": {
+            "conceptPriority": "二層の円形店舗環、連続アーチ、上部環状レール",
+            "primarySilhouette": "同心アーチと大換気井が地底の王冠を作る",
+            "roof": "リブ付き環状ヴォールトと中央光井",
+            "facade": "緑釉タイル、真鍮列柱、閉じた店舗アーチ",
+            "entrance": "円環バザールの四放射口と駅ヴォールトの青い正門を照度で誘導",
+            "nonGlassAlternatives": [
+              "アーチ店舗口",
+              "金属格子",
+              "布天蓋",
+              "ガラスブロック光井",
+              "駅大門",
+              "水門口"
+            ],
+            "materials": [
+              "緑釉タイル",
+              "煤真鍮",
+              "濡れ花崗岩",
+              "乳白ガラスブロック"
+            ],
+            "combatFlow": [
+              "中央ロトンダの環状戦",
+              "四本の放射商店街",
+              "中二階バルコニーと光井階段"
+            ]
+          }
+        },
+        {
+          "id": "z08-floodgate-station-cathedral",
+          "ordinal": 1,
+          "legacyProfileId": "z08-floodgate-station-cathedral",
+          "conceptLabel": "Last-Light Flood Terminal",
+          "visualSignature": "青緑大バレルヴォールト、中央水門塔、浸水ホーム",
+          "purpose": "地下河川水門・鉄道駅・非常発電所を統合した深層施設",
+          "placementIntent": "東・浸水ホーム",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "station",
+            "collisionTemplate": "hall",
+            "collisionFootprintM": {
+              "width": 108,
+              "depth": 70
+            },
+            "heightM": 46,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 114,
+            "depth": 74,
+            "height": 46
+          },
+          "geometryGrammar": {
+            "conceptPriority": "青緑大バレルヴォールト、中央水門塔、浸水ホーム",
+            "primarySilhouette": "高い駅ヴォールトを巨大な水門梁と発電塔が横切る",
+            "roof": "鉄骨バレルヴォールトと換気フィン",
+            "facade": "白タイルアーチ、黒い水門、残光する案内帯",
+            "entrance": "円環バザールの四放射口と駅ヴォールトの青い正門を照度で誘導",
+            "nonGlassAlternatives": [
+              "アーチ店舗口",
+              "金属格子",
+              "布天蓋",
+              "ガラスブロック光井",
+              "駅大門",
+              "水門口"
+            ],
+            "materials": [
+              "白化タイル",
+              "黒鋼",
+              "青緑水",
+              "赤錆銅"
+            ],
+            "combatFlow": [
+              "二本のホーム長軸",
+              "水門機械室の横断",
+              "跨線橋から発電塔への高所路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z09",
+      "name": "降灰の廃園",
+      "referenceImage": "z09-reference-v1.png",
+      "mapSizeM": {
+        "current": 314,
+        "recommended": 314,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "降灰に埋もれた遊園地。壊れた観覧車、入場門、枯れ木、火山の遠景。",
+        "surface": "ash-park",
+        "boundary": "amusement-ruins",
+        "skyline": "volcanic-fairground",
+        "dominantSilhouette": "左の大観覧輪を建築化した灰冠城と右の尖塔付きガラス鏡迷宮殿が灰に埋もれたパレード路を挟む",
+        "uniqueKit": "退色アールデコ、遊具トラス、破れテント、鏡壁、灰積み庇"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–6階の劇場・ホテル・遊具機械棟を環状園路へ密集させ、売店だけの低密度を禁止",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "blockPattern": "劇場・ホテル・遊具機械棟を環状園路沿いに高密配置",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          9,
+          14
+        ],
+        "alleyM": [
+          4.5,
+          7
+        ],
+        "combatFlow": "中央パレード路→観覧輪機械館・鏡宮玄関→ホテル回廊・劇場段床→保守路",
+        "openSpace": "観覧輪足元とパレード中心"
+      },
+      "facade": {
+        "roofGrammar": "観覧輪骨格、破れテント冠、ガラス尖塔",
+        "nonGlassAlternatives": [
+          "アールデコ店舗アーチ",
+          "割れ展示湾",
+          "巻上げシャッター",
+          "布庇",
+          "遊具トラス空隙",
+          "鏡迷路門"
+        ],
+        "entranceGrammar": "観覧輪の機械口と鏡宮の装飾大門を退色色で差別化",
+        "materials": [
+          "灰積みスタッコ",
+          "赤錆鋼",
+          "割れ鏡",
+          "退色赤青塗装",
+          "濡れ舗装"
+        ],
+        "surfaceState": "降灰、雨泥、錆水、枯植生、鈍い鏡反射",
+        "blackWindowAvoidance": "廃園窓を黒板化せず、割れ鏡・カーテン・板塞ぎ・空室奥行き・灰付着を不規則に混在",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "観覧輪スポークと基壇",
+          "鏡宮ガラス尖塔",
+          "園路・入口・保守階段"
+        ],
+        "lod1Preserve": [
+          "観覧輪主リング",
+          "鏡宮中央塊",
+          "主要ホテル翼"
+        ],
+        "lod2Preserve": [
+          "大観覧輪",
+          "尖塔鏡宮",
+          "灰の街並み"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z09-ashcrown-wheel-citadel",
+          "ordinal": 0,
+          "legacyProfileId": "z09-ashcrown-wheel-citadel",
+          "conceptLabel": "Ash-Crown Ferris Keep",
+          "visualSignature": "巨大観覧輪、輪基部を城化した塔群、崩れた乗降殿",
+          "purpose": "観覧車・展望ホテル・機械館が崩壊融合した遊園地の王冠",
+          "placementIntent": "北・中央園路",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "arena",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 122,
+              "depth": 92
+            },
+            "heightM": 68,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 130,
+            "depth": 98,
+            "height": 68
+          },
+          "geometryGrammar": {
+            "conceptPriority": "巨大観覧輪、輪基部を城化した塔群、崩れた乗降殿",
+            "primarySilhouette": "巨大観覧輪を二本のホテル翼と歯車館が基壇化",
+            "roof": "半壊した輪骨とアールデコ冠",
+            "facade": "退色した幾何学壁、錆フレーム、割れた展望窓",
+            "entrance": "観覧輪の機械口と鏡宮の装飾大門を退色色で差別化",
+            "nonGlassAlternatives": [
+              "アールデコ店舗アーチ",
+              "割れ展示湾",
+              "巻上げシャッター",
+              "布庇",
+              "遊具トラス空隙",
+              "鏡迷路門"
+            ],
+            "materials": [
+              "灰色スタッコ",
+              "赤錆鋼",
+              "割れガラス",
+              "退色青塗装"
+            ],
+            "combatFlow": [
+              "機械館の歯車迷路",
+              "ホテル翼の二層回廊",
+              "輪基部の保守階段と高所横断"
+            ]
+          }
+        },
+        {
+          "id": "z09-eclipse-funhouse-palace",
+          "ordinal": 1,
+          "legacyProfileId": "z09-eclipse-funhouse-palace",
+          "conceptLabel": "Eclipse Mirror-Maze Palace",
+          "visualSignature": "歪んだガラス中央塔、四隅遊園尖塔、鏡面大玄関",
+          "purpose": "鏡迷路・劇場・屋内遊具を収める巨大娯楽宮",
+          "placementIntent": "南東・劇場通り",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "villa",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 100,
+              "depth": 78
+            },
+            "heightM": 50,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 106,
+            "depth": 84,
+            "height": 50
+          },
+          "geometryGrammar": {
+            "conceptPriority": "歪んだガラス中央塔、四隅遊園尖塔、鏡面大玄関",
+            "primarySilhouette": "歪んだ三つのアーチ塔と傾く月形サイン",
+            "roof": "破れたテントドームと階段状劇場屋根",
+            "facade": "割れ鏡、白黒幾何学壁、深い舞台開口",
+            "entrance": "観覧輪の機械口と鏡宮の装飾大門を退色色で差別化",
+            "nonGlassAlternatives": [
+              "アールデコ店舗アーチ",
+              "割れ展示湾",
+              "巻上げシャッター",
+              "布庇",
+              "遊具トラス空隙",
+              "鏡迷路門"
+            ],
+            "materials": [
+              "煤鏡",
+              "白黒タイル",
+              "紫錆鋼",
+              "灰積み屋根"
+            ],
+            "combatFlow": [
+              "鏡迷路の短い分岐",
+              "劇場客席の段床",
+              "舞台裏からサイン塔への保守路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "z10",
+      "name": "業火の火口",
+      "referenceImage": "z10-reference-v1.png",
+      "mapSizeM": {
+        "current": 310,
+        "recommended": 310,
+        "compactExceptionRequired": false
+      },
+      "identity": {
+        "brief": "火口縁の最終要塞。溶岩の裂け目、円形防衛施設、熱遮蔽塔、火山雲。",
+        "surface": "volcanic-fortress",
+        "boundary": "crater-rim",
+        "skyline": "eruption-caldera",
+        "dominantSilhouette": "左奥の溶岩を流す巨大円環司令城と右の極端に細い地熱針塔が玄武岩の環状都市と冷却水路を支配する",
+        "uniqueKit": "玄武岩リブ、白耐熱鱗、環状塹壕、蒸気橋、赤熱機械溝"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "4–6階の円弧兵舎・熱交換棟を火口中心へ向けて密集し、3階低棟は冷却水路沿いだけ",
+        "targetBuildingCount": [
+          21,
+          27
+        ],
+        "blockPattern": "火口縁に沿う円弧兵舎・熱交換棟・砲台塔を高密配置",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          12,
+          18
+        ],
+        "alleyM": [
+          6,
+          8
+        ],
+        "combatFlow": "放射幹線→円環の三観測門・針塔発電床→環状路→熱盾上と交換器螺旋路",
+        "openSpace": "火口観測帯と緊急車路"
+      },
+      "facade": {
+        "roofGrammar": "分節熱盾、灰落とし庇、蒸気冠、針塔交換器",
+        "nonGlassAlternatives": [
+          "厚い防爆門",
+          "白い冷却フィン",
+          "深い玄武岩アーチ",
+          "換気溝",
+          "水路トンネル"
+        ],
+        "entranceGrammar": "円環の巨大切欠き門と針塔の狭い発電門を正反対の尺度にする",
+        "materials": [
+          "黒玄武岩",
+          "白耐熱セラミック",
+          "黒化鋼",
+          "赤銅",
+          "冷却水"
+        ],
+        "surfaceState": "火山灰、煤、熱亀裂、冷却水反射、溶岩ブルーム抑制",
+        "blackWindowAvoidance": "赤熱溝を窓扱いせず、玄武岩凹凸・冷却鱗・門・フィンの物理深度で面を作る",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "円環切欠きと溶岩樋",
+          "針塔交換器翼",
+          "水路・門・環状階段"
+        ],
+        "lod1Preserve": [
+          "司令環主殻",
+          "針塔縦軸",
+          "主要熱盾"
+        ],
+        "lod2Preserve": [
+          "巨大円環壁",
+          "細い地熱針",
+          "火口稜線"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "z10-caldera-shield-command-ring",
+          "ordinal": 0,
+          "legacyProfileId": "z10-caldera-shield-command-ring",
+          "conceptLabel": "Fire-Ring Command Fort",
+          "visualSignature": "切れた巨大円環壁、縦に流れる溶岩樋、厚い三層防衛殻",
+          "purpose": "火口監視・避難・最終防衛を担う巨大環状要塞",
+          "placementIntent": "中央・火口縁",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "fortress",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 130,
+              "depth": 100
+            },
+            "heightM": 48,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 138,
+            "depth": 106,
+            "height": 48
+          },
+          "geometryGrammar": {
+            "conceptPriority": "切れた巨大円環壁、縦に流れる溶岩樋、厚い三層防衛殻",
+            "primarySilhouette": "切れ目のある厚い円環と三枚の傾斜熱盾が火口を囲む",
+            "roof": "分節耐熱シェルと蒸気排出スロット",
+            "facade": "黒い斜面基壇、白い遮熱板、赤い狭窓",
+            "entrance": "円環の巨大切欠き門と針塔の狭い発電門を正反対の尺度にする",
+            "nonGlassAlternatives": [
+              "厚い防爆門",
+              "白い冷却フィン",
+              "深い玄武岩アーチ",
+              "換気溝",
+              "水路トンネル"
+            ],
+            "materials": [
+              "黒玄武岩",
+              "白セラミック",
+              "黒化鋼",
+              "赤熱ガラス"
+            ],
+            "combatFlow": [
+              "円環内部の二方向回遊",
+              "三つの火口観測トンネル",
+              "熱盾上の段状狙撃路"
+            ]
+          }
+        },
+        {
+          "id": "z10-geothermal-needle-fortress",
+          "ordinal": 1,
+          "legacyProfileId": "z10-geothermal-needle-fortress",
+          "conceptLabel": "Geothermal Needle Castle",
+          "visualSignature": "細長い針塔、赤熱縦芯、周囲の交換器翼",
+          "purpose": "深部熱交換井・発電・噴火観測を担う垂直要塞",
+          "placementIntent": "北東・火口外輪",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "vertical",
+            "collisionFootprintM": {
+              "width": 84,
+              "depth": 70
+            },
+            "heightM": 88,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 90,
+            "depth": 74,
+            "height": 88
+          },
+          "geometryGrammar": {
+            "conceptPriority": "細長い針塔、赤熱縦芯、周囲の交換器翼",
+            "primarySilhouette": "太い玄武岩基壇から白い冷却針と三本蒸気塔が伸びる",
+            "roof": "尖った冷却冠と環状蒸気庇",
+            "facade": "黒石リブ、白い交換器、露出する赤銅管",
+            "entrance": "円環の巨大切欠き門と針塔の狭い発電門を正反対の尺度にする",
+            "nonGlassAlternatives": [
+              "厚い防爆門",
+              "白い冷却フィン",
+              "深い玄武岩アーチ",
+              "換気溝",
+              "水路トンネル"
+            ],
+            "materials": [
+              "玄武岩",
+              "白耐熱合金",
+              "赤銅",
+              "黒ガラス"
+            ],
+            "combatFlow": [
+              "発電床の機械迷路",
+              "基壇外周の環状路",
+              "外部交換器に沿う螺旋高所路"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "renshujo",
+      "name": "練習場",
+      "referenceImage": "renshujo-reference-v1.png",
+      "mapSizeM": {
+        "current": 200,
+        "recommended": 236,
+        "compactExceptionRequired": true,
+        "exceptionReason": "At 200m the two legacy visual envelopes occupy 31.1% before ordinary districts; 6m gaps and 30m player-spawn clearance cannot safely satisfy the general dense-world solver.",
+        "adoptionGate": "Prefer 236m. A 200m exception requires explicit per-stage coverage, spawn-clearance, entrance-reachability and benchmark tests."
+      },
+      "identity": {
+        "brief": "山岳基地の小規模訓練区画。射撃塔、開放格納庫、土塁、近距離障害物。",
+        "surface": "compact-range",
+        "boundary": "mountain-base",
+        "skyline": "alpine-military",
+        "dominantSilhouette": "左のレーダードーム付き山岳指揮館と右の橋で結ばれた双標的塔が狭い谷底訓練町を挟む",
+        "uniqueKit": "山石基壇、木ルーバー、雪切り片流れ、標的シャッター、短い橋"
+      },
+      "districtGrammar": {
+        "ordinaryFloors": [
+          3,
+          6
+        ],
+        "massPattern": "3–5階の兵舎・工房を斜面へ段積みし、6階相当は指揮館と双塔周辺に限定。kunrenの縮小コピーは禁止",
+        "targetBuildingCount": [
+          20,
+          26
+        ],
+        "blockPattern": "斜面に指揮棟・兵舎・標的工房を段状密集",
+        "tallBuildingMajority": true
+      },
+      "routes": {
+        "primaryM": [
+          10,
+          14
+        ],
+        "alleyM": [
+          5,
+          7
+        ],
+        "combatFlow": "近距離三レーン→指揮館車庫・双塔脚→中庭回遊→尾根屋上と塔橋",
+        "openSpace": "集合広場と三射撃路。現200mでは2巨大建築と30mスポーン余白が競合するため拡張または明示的コンパクト解が必須"
+      },
+      "facade": {
+        "roofGrammar": "雪切り片流れ、偽装植生冠、レーダードーム",
+        "nonGlassAlternatives": [
+          "木ルーバー",
+          "車庫大扉",
+          "標的シャッター",
+          "屋根付きバルコニー",
+          "深い少数の管制窓"
+        ],
+        "entranceGrammar": "指揮館の山荘型車寄せと双塔の可動壁ゲートを分ける",
+        "materials": [
+          "荒いPC",
+          "山石",
+          "焦茶木",
+          "迷彩鋼",
+          "低反射ガラス"
+        ],
+        "surfaceState": "雪解け湿り、ひび割れ舗装、苔、局所残雪",
+        "blackWindowAvoidance": "黒窓列を禁止し、木ルーバー・車庫・標的面・バルコニー・石基壇へ置換",
+        "maxIdenticalOpeningRun": 3,
+        "minimumPhysicalRecessM": 0.12,
+        "lod2WindowCards": 0
+      },
+      "lod": {
+        "lod0Preserve": [
+          "レーダードームと斜面基壇",
+          "双塔と接続橋",
+          "三レーン・入口・階段"
+        ],
+        "lod1Preserve": [
+          "司令館主屋根",
+          "双塔主塊",
+          "主要擁壁"
+        ],
+        "lod2Preserve": [
+          "ドーム付き指揮館",
+          "双塔橋シルエット",
+          "山岳境界"
+        ]
+      },
+      "legacyVista": {
+        "countedTowardLandmarkQuota": false,
+        "policy": "may-remain-as-uncounted-layered-3d-vista-only",
+        "rasterMatteAllowedAfterBlenderLoad": false
+      },
+      "landmarks": [
+        {
+          "id": "renshujo-ridge-command-lodge",
+          "ordinal": 0,
+          "legacyProfileId": "renshujo-ridge-command-lodge",
+          "conceptLabel": "Ridge Command Lodge",
+          "visualSignature": "三段斜面基壇、広い山荘型司令棟、白いレーダードーム",
+          "purpose": "山岳戦教育・救難・通信を収める斜面型司令棟",
+          "placementIntent": "北西・尾根中腹",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "bunker",
+            "collisionTemplate": "courtyard",
+            "collisionFootprintM": {
+              "width": 92,
+              "depth": 66
+            },
+            "heightM": 50,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 98,
+            "depth": 70,
+            "height": 50
+          },
+          "geometryGrammar": {
+            "conceptPriority": "三段斜面基壇、広い山荘型司令棟、白いレーダードーム",
+            "primarySilhouette": "三段の石基壇と斜めに伸びる通信翼が山稜へ同化",
+            "roof": "大きな片流れ屋根と偽装植生冠",
+            "facade": "荒石基壇、縦木ルーバー、傾斜PC防壁",
+            "entrance": "指揮館の山荘型車寄せと双塔の可動壁ゲートを分ける",
+            "nonGlassAlternatives": [
+              "木ルーバー",
+              "車庫大扉",
+              "標的シャッター",
+              "屋根付きバルコニー",
+              "深い少数の管制窓"
+            ],
+            "materials": [
+              "山石",
+              "焦茶木",
+              "迷彩鋼",
+              "低反射ガラス"
+            ],
+            "combatFlow": [
+              "車庫を貫く一階路",
+              "中庭を囲む二階回廊",
+              "尾根側屋上と通信翼への上昇"
+            ]
+          }
+        },
+        {
+          "id": "renshujo-twinridge-target-tower",
+          "ordinal": 1,
+          "legacyProfileId": "renshujo-twinridge-target-tower",
+          "conceptLabel": "Twin-Ridge Target Tower",
+          "visualSignature": "異高の双塔、上部接続橋、可動標的壁",
+          "purpose": "可動標的・近接訓練街・観測塔を一体化した教育巨構",
+          "placementIntent": "南東・射撃路終端",
+          "playableContract": {
+            "insideAuthoritativeBounds": true,
+            "combatSpace": true,
+            "entranceAndApproachRequired": true,
+            "outsideVistaCannotSatisfyQuota": true
+          },
+          "collision": {
+            "districtKind": "tower",
+            "collisionTemplate": "bridge",
+            "collisionFootprintM": {
+              "width": 84,
+              "depth": 58
+            },
+            "heightM": 64,
+            "source": "migration-heuristic-explicit-review-required"
+          },
+          "visualEnvelopeM": {
+            "width": 90,
+            "depth": 62,
+            "height": 64
+          },
+          "geometryGrammar": {
+            "conceptPriority": "異高の双塔、上部接続橋、可動標的壁",
+            "primarySilhouette": "二本の異高観測塔を可動標的壁と橋が結ぶ",
+            "roof": "開放監視冠と雪切り庇",
+            "facade": "番号付きPC面、可動鋼壁、橙色安全フレーム",
+            "entrance": "指揮館の山荘型車寄せと双塔の可動壁ゲートを分ける",
+            "nonGlassAlternatives": [
+              "木ルーバー",
+              "車庫大扉",
+              "標的シャッター",
+              "屋根付きバルコニー",
+              "深い少数の管制窓"
+            ],
+            "materials": [
+              "灰PC",
+              "黒鋼",
+              "橙塗装",
+              "白い防雪板"
+            ],
+            "combatFlow": [
+              "可変壁の三レーン",
+              "塔脚の短い回遊",
+              "橋と外階段の高所横断"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "profiles": {
     "kunren": {
       "brief": "広大な現役軍事射撃場。管制塔、格納庫、レーダー、射線別のコンクリート防壁。",
@@ -12,7 +12,94 @@
       "cameraHeight": 0.18,
       "targetHeight": 7,
       "sunAzimuth": 132,
-      "sunElevation": 42
+      "sunElevation": 42,
+      "cityProfile": {
+        "archetype": "統合軍事学園都市",
+        "targetBuildingCount": [
+          22,
+          28
+        ],
+        "coverageRatio": 0.66,
+        "highRiseRatio": 0.74,
+        "dominantHeightM": [
+          22,
+          38
+        ],
+        "secondaryHeightM": [
+          8,
+          16
+        ],
+        "streetWidthM": [
+          12,
+          20
+        ],
+        "blockPattern": "射線をずらした長方形兵舎ブロックと斜行する装甲サービス路",
+        "roofLanguage": "低勾配装甲屋根・鋸歯状採光帯・レーダー架台",
+        "facadeLanguage": "深い窓洞、縦リブPC板、識別色の庇と外階段",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "中央に射撃レーン2本を残し、それ以外は建物間8〜12mの密集配置",
+        "verticalityRule": "屋上連絡橋と外階段で三段の射撃高度を作る",
+        "forbiddenMotifs": [
+          "同形ハンガー反復",
+          "城郭の胸壁",
+          "遠景画像",
+          "電線境界"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "kunren-kurogane-command-bastion",
+          "name": "黒鋼統合指揮堡",
+          "purpose": "訓練場全域を監視するC4ISR指揮・教育複合棟",
+          "dimensionsM": {
+            "width": 94,
+            "depth": 60,
+            "height": 49
+          },
+          "placement": "北西・射撃レーン終端",
+          "silhouette": "段状の装甲基壇から非対称レーダー冠が立つ横長要塞",
+          "roof": "防爆フラットルーフと鋸歯状レーダーデッキ",
+          "facade": "傾斜PC防護板、深い管制窓、露出した耐震ブレース",
+          "materials": [
+            "煤色プレキャスト",
+            "酸化亜鉛鋼",
+            "低反射管制ガラス",
+            "朱色識別塗装"
+          ],
+          "combatFlow": [
+            "地上車庫を貫く長射線",
+            "中央作戦室を囲む二階回廊",
+            "屋上レーダー基部へ上がる外階段"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "kunren-hakuen-aerostat-hall",
+          "name": "白煙エアロスタット格納殿",
+          "purpose": "監視気球と大型標的機を整備する双胴高天井施設",
+          "dimensionsM": {
+            "width": 120,
+            "depth": 74,
+            "height": 55
+          },
+          "placement": "南東・整備道路沿い",
+          "silhouette": "二連ヴォールトと細い係留塔が交差する巨大シルエット",
+          "roof": "リブ付き双曲面ヴォールトと可動扉上の採光ランタン",
+          "facade": "巨大分節扉、外付け整備足場、基壇の連続ルーバー",
+          "materials": [
+            "淡灰アルミ",
+            "濃紺構造鋼",
+            "曇りポリカーボネート",
+            "汚れたコンクリート"
+          ],
+          "combatFlow": [
+            "扉から扉へ抜ける一階主路",
+            "機体ピットを挟む左右側廊",
+            "トラス下キャットウォークの高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "souko": {
       "brief": "雨上がりのコンテナ物流地区。高層倉庫、積層コンテナ、ガントリークレーン。",
@@ -25,7 +112,94 @@
       "cameraHeight": 0.2,
       "targetHeight": 8,
       "sunAzimuth": 118,
-      "sunElevation": 24
+      "sunElevation": 24,
+      "cityProfile": {
+        "archetype": "雨港立体物流都市",
+        "targetBuildingCount": [
+          24,
+          32
+        ],
+        "coverageRatio": 0.71,
+        "highRiseRatio": 0.78,
+        "dominantHeightM": [
+          24,
+          44
+        ],
+        "secondaryHeightM": [
+          10,
+          19
+        ],
+        "streetWidthM": [
+          14,
+          22
+        ],
+        "blockPattern": "倉庫を直交させず荷役線に沿って15度ずつ振る千鳥ブロック",
+        "roofLanguage": "モニタールーフ・高架クレーン桁・雨樋キャノピー",
+        "facadeLanguage": "積層ラックの奥行き、縦長荷役扉、濡れた金属庇",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "二本のトラック路と一つのコンテナ広場だけを空ける",
+        "verticalityRule": "外付け階段塔・橋形クレーン・倉庫屋上を連結",
+        "forbiddenMotifs": [
+          "同色コンテナ壁",
+          "低い箱倉庫だけの街区",
+          "遠景画像",
+          "平坦な無用途屋根"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "souko-shiosai-stackhouse",
+          "name": "潮騒自動積層庫",
+          "purpose": "無人クレーンが垂直搬送する超高層パレット倉庫",
+          "dimensionsM": {
+            "width": 110,
+            "depth": 70,
+            "height": 64
+          },
+          "placement": "西・コンテナ軸終端",
+          "silhouette": "二枚の薄いラック塔を橋形クレーンが束ねる門型巨構",
+          "roof": "走行クレーンを露出した切欠きフラットルーフ",
+          "facade": "半透明メッシュ外皮、巨大スロット窓、番号付き搬送口",
+          "materials": [
+            "亜鉛メッキ鋼",
+            "濡れた紺パネル",
+            "橙安全塗装",
+            "半透明FRP"
+          ],
+          "combatFlow": [
+            "中央搬送トンネル",
+            "ラック脚元の迷路状サービス路",
+            "二階検査橋から中央を狙う横断路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "souko-amakado-customs-terminal",
+          "name": "雨門税関メガターミナル",
+          "purpose": "港湾貨物の検査・保税・司令機能を集約した立体税関",
+          "dimensionsM": {
+            "width": 98,
+            "depth": 84,
+            "height": 47
+          },
+          "placement": "北東・検査レーン脇",
+          "silhouette": "折板屋根の低い翼と斜めにせり上がる検査塔",
+          "roof": "連続鋸歯屋根と雨受け大庇",
+          "facade": "レンガ基壇、黒ガラス検査塔、白い深庇と黄色の門",
+          "materials": [
+            "濡れた赤煉瓦",
+            "黒化鋼",
+            "防眩ガラス",
+            "白色GRC"
+          ],
+          "combatFlow": [
+            "六本の検査ベイを横断する地上戦",
+            "保税倉庫の中二階環状路",
+            "斜路から税関塔の屋上へ到達"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "nakaniwa": {
       "brief": "水盤と庭園を抱く宮殿中庭。アーケード、幾何学装飾、ドーム楼閣。",
@@ -38,7 +212,94 @@
       "cameraHeight": 0.17,
       "targetHeight": 6,
       "sunAzimuth": 154,
-      "sunElevation": 55
+      "sunElevation": 55,
+      "cityProfile": {
+        "archetype": "水庭宮殿密集街",
+        "targetBuildingCount": [
+          20,
+          26
+        ],
+        "coverageRatio": 0.64,
+        "highRiseRatio": 0.69,
+        "dominantHeightM": [
+          20,
+          36
+        ],
+        "secondaryHeightM": [
+          9,
+          17
+        ],
+        "streetWidthM": [
+          9,
+          15
+        ],
+        "blockPattern": "水盤を核にL字宮殿翼と細い職人街を噛み合わせる",
+        "roofLanguage": "深い寄棟・銅板ドーム・採光中庭",
+        "facadeLanguage": "幾何学透かし、二層アーケード、色石インレイ",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "中央水盤と二つの回廊庭だけを開放し外周は連続街路壁",
+        "verticalityRule": "ドーム基壇・楼閣・バルコニーを段状に接続",
+        "forbiddenMotifs": [
+          "軍用ハンガー",
+          "同じ切妻家屋の環状反復",
+          "遠景画像",
+          "西洋城壁"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "nakaniwa-suiren-crown-palace",
+          "name": "睡蓮冠宮",
+          "purpose": "儀礼水庭を囲む行政・迎賓宮殿",
+          "dimensionsM": {
+            "width": 98,
+            "depth": 84,
+            "height": 43
+          },
+          "placement": "中央北・水盤正面",
+          "silhouette": "四隅楼閣と中央の浅い青銅ドームが水平に連なる王冠形",
+          "roof": "青緑銅ドーム、深い寄棟、透かし庇",
+          "facade": "白石アーケード、彩色モザイク帯、木格子の出窓",
+          "materials": [
+            "蜂蜜色砂岩",
+            "白大理石",
+            "緑青銅",
+            "濃木格子"
+          ],
+          "combatFlow": [
+            "正門から水庭へ抜ける軸線",
+            "左右翼の二層アーケード",
+            "屋根庭を結ぶ隠し階段"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "nakaniwa-kakou-conservatory-citadel",
+          "name": "花香温室楼塞",
+          "purpose": "希少植物の研究温室と庭園防衛塔を融合した複合楼",
+          "dimensionsM": {
+            "width": 80,
+            "depth": 70,
+            "height": 50
+          },
+          "placement": "南東・庭園縁",
+          "silhouette": "石造基壇から扇状ガラス屋根と細身の灌漑塔が広がる",
+          "roof": "分節ガラス扇屋根と三連採光ドーム",
+          "facade": "石格子の外殻、緑化バルコニー、銅製水樋",
+          "materials": [
+            "低鉄ガラス",
+            "真鍮フレーム",
+            "多孔質白石",
+            "濃緑釉薬タイル"
+          ],
+          "combatFlow": [
+            "温室内部の植栽迷路",
+            "外周灌漑回廊",
+            "塔を介した三層展望路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "kairou": {
       "brief": "砂漠遺跡を転用した前線基地。巨大列柱、神殿門、布製日除け。",
@@ -51,7 +312,94 @@
       "cameraHeight": 0.19,
       "targetHeight": 7,
       "sunAzimuth": 126,
-      "sunElevation": 38
+      "sunElevation": 38,
+      "cityProfile": {
+        "archetype": "砂岩列柱交易都市",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "coverageRatio": 0.67,
+        "highRiseRatio": 0.72,
+        "dominantHeightM": [
+          21,
+          40
+        ],
+        "secondaryHeightM": [
+          8,
+          17
+        ],
+        "streetWidthM": [
+          10,
+          17
+        ],
+        "blockPattern": "日陰の折れ路地と中庭商館を巨大列柱軸へ接続",
+        "roofLanguage": "日干し煉瓦ヴォールト・布天蓋・風塔",
+        "facadeLanguage": "厚い砂岩壁、凹凸彫刻帯、深い木扉洞",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "列柱主路と泉のある小広場を確保し街区は連続日陰化",
+        "verticalityRule": "屋上テラス、風塔、橋渡し布庇で上下射線を交差",
+        "forbiddenMotifs": [
+          "鳥居",
+          "近代ガラス高層ビル",
+          "遠景画像",
+          "同一パゴダ反復"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "kairou-meridian-hypostyle-sanctuary",
+          "name": "子午線大列柱聖域",
+          "purpose": "古代天文観測と前線司令を兼ねる列柱神殿",
+          "dimensionsM": {
+            "width": 114,
+            "depth": 74,
+            "height": 38
+          },
+          "placement": "西・列柱軸上",
+          "silhouette": "巨大門塔の奥に密な柱林と段差のある採光梁が続く",
+          "roof": "石梁陸屋根と中央の裂けた光井",
+          "facade": "傾斜門塔、彫り込み天文盤、塩害を受けた柱身",
+          "materials": [
+            "黄褐砂岩",
+            "青釉タイル",
+            "黒鉄補強材",
+            "生成り布"
+          ],
+          "combatFlow": [
+            "門塔の三つの開口",
+            "柱林の短い横射線",
+            "光井周囲の上部梁路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "kairou-windcrown-caravan-observatory",
+          "name": "風冠隊商天測城",
+          "purpose": "隊商宿・水庫・砂嵐観測所を積層した都市城",
+          "dimensionsM": {
+            "width": 88,
+            "depth": 80,
+            "height": 54
+          },
+          "placement": "北東・砂丘側",
+          "silhouette": "階段状の宿坊塊から四本の非対称風塔が立つ",
+          "roof": "連続ヴォールトと段状屋上庭",
+          "facade": "小さな深窓、木製マシュラビーヤ、角の扶壁",
+          "materials": [
+            "赤砂岩",
+            "石灰漆喰",
+            "黒檀格子",
+            "青銅水管"
+          ],
+          "combatFlow": [
+            "アーチ門から中庭への回遊",
+            "宿坊屋上の段々路",
+            "風塔内部の螺旋上昇路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "kouwan": {
       "brief": "現役の大型工業港。海面、埠頭、船渠、コンテナ地区、複数の港湾クレーン。",
@@ -64,7 +412,94 @@
       "cameraHeight": 0.22,
       "targetHeight": 8,
       "sunAzimuth": 142,
-      "sunElevation": 30
+      "sunElevation": 30,
+      "cityProfile": {
+        "archetype": "船渠工業高層港都",
+        "targetBuildingCount": [
+          24,
+          31
+        ],
+        "coverageRatio": 0.69,
+        "highRiseRatio": 0.76,
+        "dominantHeightM": [
+          25,
+          48
+        ],
+        "secondaryHeightM": [
+          10,
+          20
+        ],
+        "streetWidthM": [
+          15,
+          24
+        ],
+        "blockPattern": "水際に平行な長尺工場と斜交する船渠サービス街区",
+        "roofLanguage": "巨大トラス・片流れ採光屋根・クレーンレール",
+        "facadeLanguage": "耐塩パネル、巨大開口、露出配管と番号付き基壇",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "海面・船渠・二本の物流路を空け建物は岸壁背後に密集",
+        "verticalityRule": "クレーン桁、管制橋、屋上機械階の三高度を結ぶ",
+        "forbiddenMotifs": [
+          "小型コンテナだけの景観",
+          "帆船時代の城塞",
+          "遠景画像",
+          "水面を覆う過剰反射"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "kouwan-breakwater-ship-lift-basilica",
+          "name": "防波船昇降殿",
+          "purpose": "大型艦を乾式整備床へ持ち上げる双塔シップリフト",
+          "dimensionsM": {
+            "width": 134,
+            "depth": 66,
+            "height": 60
+          },
+          "placement": "南・水際船渠",
+          "silhouette": "二本の門型塔と懸垂プラットフォームが海上門を作る",
+          "roof": "開放トラス頂部と操作室の片流れ冠",
+          "facade": "塩錆したクロスブレース、巨大滑車、青白い管制箱",
+          "materials": [
+            "耐候鋼",
+            "青灰塗装鋼",
+            "濡れたコンクリート",
+            "黄安全格子"
+          ],
+          "combatFlow": [
+            "昇降床を横断する低所路",
+            "両塔脚の整備室",
+            "上部操作橋の高所横断"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "kouwan-umiho-exchange-tower",
+          "name": "海帆港務取引塔",
+          "purpose": "港務局・海運取引所・VTS管制を収容する海上複合塔",
+          "dimensionsM": {
+            "width": 98,
+            "depth": 84,
+            "height": 72
+          },
+          "placement": "北西・港務広場",
+          "silhouette": "傾斜する三枚の帆型外殻が円筒管制室を抱く",
+          "roof": "三角シェル屋根と灯標状アンテナ冠",
+          "facade": "深い水平庇、波形セラミックルーバー、透明な吹抜け",
+          "materials": [
+            "淡灰GRC",
+            "海緑ガラス",
+            "陽極酸化アルミ",
+            "暗色花崗岩"
+          ],
+          "combatFlow": [
+            "大吹抜けを囲む二重回廊",
+            "港務車路からロビーへの三入口",
+            "外付け避難階段で管制デッキへ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "takadai": {
       "brief": "潮汐の島山全体を覆う巨大西洋修道城。外郭、城下街、切妻屋根、中央尖塔、大聖堂回廊。",
@@ -77,7 +512,94 @@
       "cameraHeight": 0.29,
       "targetHeight": 15,
       "sunAzimuth": 246,
-      "sunElevation": 18
+      "sunElevation": 18,
+      "cityProfile": {
+        "archetype": "潮汐修道城下高密街",
+        "targetBuildingCount": [
+          20,
+          26
+        ],
+        "coverageRatio": 0.63,
+        "highRiseRatio": 0.71,
+        "dominantHeightM": [
+          24,
+          46
+        ],
+        "secondaryHeightM": [
+          10,
+          20
+        ],
+        "streetWidthM": [
+          9,
+          16
+        ],
+        "blockPattern": "曲がる参詣坂に石造商家と修道院別棟を段状密集",
+        "roofLanguage": "急勾配スレート切妻・尖塔・鉛板回廊",
+        "facadeLanguage": "花崗岩扶壁、深い窓洞、木骨造上階と石アーチ",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "潮汐路・主参道・城壁前の火除け広場のみ確保",
+        "verticalityRule": "城壁上、屋根裏、階段坂を連続させ四段の高さを作る",
+        "forbiddenMotifs": [
+          "他ステージの修道城複製",
+          "近代ガラス箱",
+          "遠景画像",
+          "均一な円形塔反復"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "takadai-celestine-tidal-abbey",
+          "name": "セレスティン潮汐大修道城",
+          "purpose": "潮汐島の巡礼都市・大聖堂・城塞を一体化した既存主城",
+          "dimensionsM": {
+            "width": 128,
+            "depth": 102,
+            "height": 70
+          },
+          "placement": "中央高地・既存城位置",
+          "silhouette": "岩山から城下家屋、身廊、中央尖塔へ段階的に収束",
+          "roof": "急勾配スレート群、飛梁、銅尖塔",
+          "facade": "荒い花崗岩、薔薇窓、段状扶壁、木造回廊",
+          "materials": [
+            "灰花崗岩",
+            "青黒スレート",
+            "緑青銅",
+            "暗色オーク"
+          ],
+          "combatFlow": [
+            "外郭門から城下坂を上る主路",
+            "大聖堂左右側廊",
+            "城壁上と鐘楼下を繋ぐ高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "takadai-dawnkeep-crown-citadel",
+          "name": "暁冠王立城塞",
+          "purpose": "修道城を守る独立王城・兵站庫・潮見塔",
+          "dimensionsM": {
+            "width": 96,
+            "depth": 86,
+            "height": 76
+          },
+          "placement": "南西高台・主城と対角",
+          "silhouette": "八角主塔を半月形の低い城壁と細塔群が取り囲む",
+          "roof": "円錐スレート屋根と鋸壁付き鉛屋根",
+          "facade": "切石の斜面基壇、狭間、張出し櫓と赤い旗廊",
+          "materials": [
+            "温灰切石",
+            "鉛板",
+            "焦茶木材",
+            "鈍い赤漆喰"
+          ],
+          "combatFlow": [
+            "半月形外郭の左右分岐",
+            "主塔一階を貫く兵站路",
+            "螺旋階段と壁上歩廊の縦戦"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "sakyuu": {
       "brief": "風紋の残る砂漠装甲前線。埋没格納庫、掘削設備、露出した岩盤。",
@@ -90,7 +612,94 @@
       "cameraHeight": 0.2,
       "targetHeight": 7,
       "sunAzimuth": 138,
-      "sunElevation": 48
+      "sunElevation": 48,
+      "cityProfile": {
+        "archetype": "埋没装甲掘削都市",
+        "targetBuildingCount": [
+          21,
+          27
+        ],
+        "coverageRatio": 0.61,
+        "highRiseRatio": 0.73,
+        "dominantHeightM": [
+          20,
+          39
+        ],
+        "secondaryHeightM": [
+          8,
+          16
+        ],
+        "streetWidthM": [
+          13,
+          22
+        ],
+        "blockPattern": "半地下の格納庫を砂止め壁で束ね、上部に細い塔棟を密集",
+        "roofLanguage": "砂を受け流す傾斜シェル・埋没ヴォールト・集光塔",
+        "facadeLanguage": "砂磨耗した装甲板、埋込スリット、外露出冷却フィン",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "戦車回頭地と二本の車路を残し建物間は砂防路化",
+        "verticalityRule": "埋没床・砂防壁上・掘削塔の三高度",
+        "forbiddenMotifs": [
+          "古代神殿の安易な複製",
+          "木造家屋",
+          "遠景画像",
+          "一様な砂色箱"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "sakyuu-sunken-crawler-vault",
+          "name": "砂没移動城格納庫",
+          "purpose": "超大型砂漠クローラーと装甲車群を収容する地下格納庫",
+          "dimensionsM": {
+            "width": 138,
+            "depth": 76,
+            "height": 40
+          },
+          "placement": "北・砂丘切通し",
+          "silhouette": "砂丘から巨大分節扉と背面の三本換気背骨だけが突出",
+          "roof": "砂被覆ヴォールトと埋込採光溝",
+          "facade": "厚い傾斜扉、冷却フィン、砂で磨かれた防爆基壇",
+          "materials": [
+            "黄土色UHPC",
+            "褐色装甲鋼",
+            "耐熱ガラス",
+            "黒ゴムシール"
+          ],
+          "combatFlow": [
+            "巨大扉の中央路",
+            "左右整備ピット",
+            "換気背骨に沿う屋上塹壕"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "sakyuu-helios-drill-crown",
+          "name": "日輪螺旋掘削冠",
+          "purpose": "地下水と地熱を探査する太陽集熱・掘削複合塔",
+          "dimensionsM": {
+            "width": 86,
+            "depth": 72,
+            "height": 78
+          },
+          "placement": "南東・岩盤露頭",
+          "silhouette": "斜めの集光翼が螺旋掘削塔を三方向から囲む",
+          "roof": "回転放物面翼と環状機械冠",
+          "facade": "縦冷却リブ、露出昇降籠、反射を抑えた集熱板",
+          "materials": [
+            "耐候鋼",
+            "砂色セラミック",
+            "黒色集熱材",
+            "銅配管"
+          ],
+          "combatFlow": [
+            "塔基部の機械迷路",
+            "集光翼下の環状路",
+            "外付け螺旋階段の狙撃位置"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "setsugen": {
       "brief": "吹雪前の極地研究キャンパス。研究棟、ジオデシックドーム、アンテナ列。",
@@ -103,7 +712,94 @@
       "cameraHeight": 0.19,
       "targetHeight": 7,
       "sunAzimuth": 112,
-      "sunElevation": 16
+      "sunElevation": 16,
+      "cityProfile": {
+        "archetype": "極地連結研究高層区",
+        "targetBuildingCount": [
+          22,
+          28
+        ],
+        "coverageRatio": 0.62,
+        "highRiseRatio": 0.75,
+        "dominantHeightM": [
+          21,
+          42
+        ],
+        "secondaryHeightM": [
+          9,
+          18
+        ],
+        "streetWidthM": [
+          11,
+          18
+        ],
+        "blockPattern": "風下へ段階配置した高床研究棟を密閉スカイブリッジで結ぶ",
+        "roofLanguage": "空力曲面屋根・雪庇除け・ジオデシック冠",
+        "facadeLanguage": "白い断熱パネル、色分けされた気密扉、黒い設備帯",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "除雪幹線と緊急ヘリ面を確保し棟間は狭い防風路",
+        "verticalityRule": "高床下路、接続橋、観測屋上の三層",
+        "forbiddenMotifs": [
+          "木造山小屋だけの集落",
+          "氷の城",
+          "遠景画像",
+          "過剰な透明ガラス"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "setsugen-borealis-tripod-arcology",
+          "name": "北光三脚アーコロジー",
+          "purpose": "越冬居住・気象観測・生命維持を統合した極地都市核",
+          "dimensionsM": {
+            "width": 90,
+            "depth": 80,
+            "height": 58
+          },
+          "placement": "西・風上側",
+          "silhouette": "三本の円筒塔を三角ブリッジが結び中央に光井を作る",
+          "roof": "空力キャップと小型観測ドーム",
+          "facade": "高床脚、垂直色帯、霜付き連絡橋",
+          "materials": [
+            "白FRP",
+            "群青断熱パネル",
+            "低鉄三層ガラス",
+            "赤い救難塗装"
+          ],
+          "combatFlow": [
+            "三脚下の吹抜け路",
+            "二層の三角連絡橋",
+            "各塔の非常階段で非対称な上下戦"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "setsugen-aurora-data-cathedral",
+          "name": "極光データ聖堂",
+          "purpose": "電波望遠・気候計算・氷床試料庫を収める大空間研究棟",
+          "dimensionsM": {
+            "width": 108,
+            "depth": 60,
+            "height": 44
+          },
+          "placement": "北東・アンテナ列脇",
+          "silhouette": "結晶状の鋸歯屋根と二本の傾いたデータ塔",
+          "roof": "北向き採光鋸歯と雪を落とす急斜面",
+          "facade": "青黒い基壇、白いトラス外骨格、発光する狭窓",
+          "materials": [
+            "白塗装鋼",
+            "濃青複合板",
+            "乳白ポリカーボネート",
+            "氷結コンクリート"
+          ],
+          "combatFlow": [
+            "中央計算ホールの長軸戦",
+            "試料庫間の短い横路",
+            "外骨格メンテナンス路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "koushou": {
       "brief": "高熱の重工業製鉄所。溶鋼路、配管橋、炉塔、火花を放つ搬送設備。",
@@ -116,7 +812,94 @@
       "cameraHeight": 0.22,
       "targetHeight": 9,
       "sunAzimuth": 212,
-      "sunElevation": 12
+      "sunElevation": 12,
+      "cityProfile": {
+        "archetype": "溶鋼立体工業都市",
+        "targetBuildingCount": [
+          24,
+          30
+        ],
+        "coverageRatio": 0.7,
+        "highRiseRatio": 0.79,
+        "dominantHeightM": [
+          27,
+          52
+        ],
+        "secondaryHeightM": [
+          12,
+          22
+        ],
+        "streetWidthM": [
+          13,
+          21
+        ],
+        "blockPattern": "炉塔・圧延棟・配管街区を斜めの溶鋼輸送軸で密結合",
+        "roofLanguage": "鋸歯屋根・排煙冠・巨大トラス",
+        "facadeLanguage": "煤けた煉瓦基壇、波板鋼、露出配管と耐熱遮蔽板",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "溶鋼車線と冷却池だけを空け歩廊下は密な機械路",
+        "verticalityRule": "炉前床・配管橋・炉頂デッキの三段",
+        "forbiddenMotifs": [
+          "清潔な近未来研究所",
+          "同じ円筒タンク反復",
+          "遠景画像",
+          "装飾的な城塔"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "koushou-twin-furnace-citadel",
+          "name": "双炉熔鉄城",
+          "purpose": "二基の高炉と熱風炉を統合した製鉄所の心臓部",
+          "dimensionsM": {
+            "width": 116,
+            "depth": 80,
+            "height": 84
+          },
+          "placement": "北西・溶鋼軸上",
+          "silhouette": "二本の太い炉塔と斜行する装入橋が巨大なA字を作る",
+          "roof": "開放機械デッキと傘形排煙冠",
+          "facade": "耐火煉瓦炉腹、鋼製リング、密な配管と階段",
+          "materials": [
+            "黒化鋼",
+            "耐火赤煉瓦",
+            "焼けた銅",
+            "煤色コンクリート"
+          ],
+          "combatFlow": [
+            "炉間の溶鋼床",
+            "熱風炉を縫う環状路",
+            "装入橋から炉頂へ上る長い高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "koushou-redriver-caster-hall",
+          "name": "紅河連続鋳造殿",
+          "purpose": "溶鋼をスラブへ変える長大な鋳造・冷却工場",
+          "dimensionsM": {
+            "width": 130,
+            "depth": 68,
+            "height": 48
+          },
+          "placement": "南東・搬出路沿い",
+          "silhouette": "長い鋸歯屋根を巨大取鍋クレーン塔が横断",
+          "roof": "排熱モニター付き連続鋸歯屋根",
+          "facade": "煉瓦側壁、巨大ルーバー、赤熱開口と外露出水管",
+          "materials": [
+            "煤煉瓦",
+            "耐候鋼",
+            "青灰波板",
+            "湿った黒コンクリート"
+          ],
+          "combatFlow": [
+            "長軸のローラー床",
+            "両側冷却水路",
+            "天井クレーン保守歩廊"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "yoichi": {
       "brief": "雨の夜市と高架街区。屋台、濡れた路地、立体通路、ネオン尖塔。",
@@ -129,7 +912,94 @@
       "cameraHeight": 0.17,
       "targetHeight": 7,
       "sunAzimuth": 286,
-      "sunElevation": 10
+      "sunElevation": 10,
+      "cityProfile": {
+        "archetype": "雨夜垂直市場都市",
+        "targetBuildingCount": [
+          26,
+          34
+        ],
+        "coverageRatio": 0.73,
+        "highRiseRatio": 0.82,
+        "dominantHeightM": [
+          25,
+          50
+        ],
+        "secondaryHeightM": [
+          10,
+          22
+        ],
+        "streetWidthM": [
+          8,
+          14
+        ],
+        "blockPattern": "細い折れ路地を立体屋台・集合住宅・高架歩道が覆う",
+        "roofLanguage": "反り庇・積層テラス・ネオン機械冠",
+        "facadeLanguage": "濡れたタイル、看板格子、奥行きある店舗開口",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "交差点二箇所と市場荷捌き場だけを空ける",
+        "verticalityRule": "地上路地・二階市場・屋上高架を頻繁に接続",
+        "forbiddenMotifs": [
+          "一枚看板で覆う背景",
+          "同一屋台の機械反復",
+          "遠景画像",
+          "広すぎる直線道路"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "yoichi-thousand-sign-bazaar-tower",
+          "name": "千看板垂直市場塔",
+          "purpose": "生鮮・工房・住居を積層する24時間市場アーコロジー",
+          "dimensionsM": {
+            "width": 84,
+            "depth": 70,
+            "height": 78
+          },
+          "placement": "西・主路地終端",
+          "silhouette": "ずれた六層の市場テラスと一本の細い広告塔",
+          "roof": "屋上菜園、反り庇、設備冠の混成",
+          "facade": "店先の深い箱、半透明雨幕、密な縦看板と避難梯子",
+          "materials": [
+            "濡れた青タイル",
+            "黒鉄",
+            "赤い提灯ガラス",
+            "古いコンクリート"
+          ],
+          "combatFlow": [
+            "地上商店迷路",
+            "吹抜け周囲の二階環状市場",
+            "外部非常階段から屋上横断路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "yoichi-rainopera-exchange",
+          "name": "雨華歌劇取引殿",
+          "purpose": "ライブホール・魚市場・金融取引所が同居する都市門",
+          "dimensionsM": {
+            "width": 106,
+            "depth": 76,
+            "height": 50
+          },
+          "placement": "北東・高架下広場",
+          "silhouette": "巨大な灯籠状ホールを二本の低い市場翼が挟む",
+          "roof": "折紙状の発光屋根と雨水鎖",
+          "facade": "黒い石基壇、赤銅格子、半透明の音響外皮",
+          "materials": [
+            "黒花崗岩",
+            "赤銅",
+            "乳白ガラス",
+            "雨染みコンクリート"
+          ],
+          "combatFlow": [
+            "市場翼を貫く二本の路地",
+            "中央ホールの客席段床",
+            "舞台裏から屋根テラスへ上る経路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "okujou": {
       "brief": "複数の高層ビルを橋で結ぶ屋上戦域。ヘリパッド、設備階、都市の深い遠景。",
@@ -142,7 +1012,94 @@
       "cameraHeight": 0.26,
       "targetHeight": 10,
       "sunAzimuth": 104,
-      "sunElevation": 32
+      "sunElevation": 32,
+      "cityProfile": {
+        "archetype": "空中連結超高層区",
+        "targetBuildingCount": [
+          20,
+          26
+        ],
+        "coverageRatio": 0.68,
+        "highRiseRatio": 0.84,
+        "dominantHeightM": [
+          38,
+          74
+        ],
+        "secondaryHeightM": [
+          18,
+          32
+        ],
+        "streetWidthM": [
+          12,
+          20
+        ],
+        "blockPattern": "異なる高さの屋上島を三方向スカイブリッジで束ねる",
+        "roofLanguage": "機械ペントハウス・ヘリ庇・放送マスト",
+        "facadeLanguage": "カーテンウォールの深い縦割り、設備グリル、避難階段",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "ヘリ面と橋着地点だけを空け屋上機器で遮蔽",
+        "verticalityRule": "屋上高度差を階段室・橋・サービス床で常時接続",
+        "forbiddenMotifs": [
+          "地面レベルの郊外住宅",
+          "同高の箱ビル",
+          "遠景画像",
+          "無防護な落下端"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "okujou-cloudline-broadcast-spire",
+          "name": "雲端放送尖塔",
+          "purpose": "都市通信・気象レーダー・報道スタジオを束ねる放送塔",
+          "dimensionsM": {
+            "width": 78,
+            "depth": 72,
+            "height": 100
+          },
+          "placement": "北西・最高屋上",
+          "silhouette": "傾いた二枚の放送翼と針状マストが非対称なV字を描く",
+          "roof": "多段機械冠と細いアンテナ針",
+          "facade": "縦フィン外皮、黒いスタジオ窓、外露出保守ブリッジ",
+          "materials": [
+            "濃銀アルミ",
+            "黒ガラス",
+            "白FRP",
+            "警戒赤塗装"
+          ],
+          "combatFlow": [
+            "低層スタジオの環状路",
+            "放送翼間の横断橋",
+            "螺旋保守路の長い上昇"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "okujou-skyrail-atrium-hotel",
+          "name": "天軌アトリウムホテル",
+          "purpose": "空中駅・高層ホテル・避難拠点を一体化した屋上宮殿",
+          "dimensionsM": {
+            "width": 112,
+            "depth": 84,
+            "height": 66
+          },
+          "placement": "南東・連絡橋中心",
+          "silhouette": "中空の大アトリウムを二本の傾斜客室塔が抱く",
+          "roof": "段状屋上庭と張出しプール庇",
+          "facade": "深い客室リズム、透明アトリウム、金属メッシュ基壇",
+          "materials": [
+            "淡色UHPC",
+            "青灰ガラス",
+            "真鍮色メッシュ",
+            "黒玄武岩"
+          ],
+          "combatFlow": [
+            "アトリウム地上の交差路",
+            "客室階を繋ぐ二本の空中橋",
+            "駅ホームから屋上庭への縦路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "saisekiba": {
       "brief": "巨大な段状採石場。切削面、重機道、ベルトコンベア、砕石プラント。",
@@ -155,7 +1112,94 @@
       "cameraHeight": 0.25,
       "targetHeight": 8,
       "sunAzimuth": 146,
-      "sunElevation": 34
+      "sunElevation": 34,
+      "cityProfile": {
+        "archetype": "段丘採石工業町",
+        "targetBuildingCount": [
+          21,
+          28
+        ],
+        "coverageRatio": 0.6,
+        "highRiseRatio": 0.7,
+        "dominantHeightM": [
+          22,
+          43
+        ],
+        "secondaryHeightM": [
+          9,
+          18
+        ],
+        "streetWidthM": [
+          14,
+          22
+        ],
+        "blockPattern": "採掘段丘ごとに選鉱棟・作業住宅・貯鉱庫を高密度配置",
+        "roofLanguage": "重力シュート・鋸歯屋根・防塵フード",
+        "facadeLanguage": "粗いコンクリート、波板、露出骨材と橙色機械",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "大型重機の旋回地と一本の斜路を残す",
+        "verticalityRule": "段丘間の階段・コンベア橋・プラント塔を接続",
+        "forbiddenMotifs": [
+          "平地の倉庫街",
+          "同一岩の大量複製",
+          "遠景画像",
+          "華美な歴史建築"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "saisekiba-strata-crusher-ziggurat",
+          "name": "地層破砕階塔",
+          "purpose": "一次破砕・選別・貯鉱を重力順に積層した山状プラント",
+          "dimensionsM": {
+            "width": 120,
+            "depth": 78,
+            "height": 60
+          },
+          "placement": "北・切羽正面",
+          "silhouette": "段丘状コンクリート塊を斜めコンベアが縫う人工山",
+          "roof": "防塵フードと露出スクリーン塔",
+          "facade": "骨材の粗い壁、巨大漏斗、黄色い保守足場",
+          "materials": [
+            "骨材コンクリート",
+            "黄塗装鋼",
+            "錆鋼",
+            "黒ゴムベルト"
+          ],
+          "combatFlow": [
+            "下部破砕室の三入口",
+            "漏斗間の短い迷路",
+            "斜行コンベア脇の上昇歩廊"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "saisekiba-echo-span-processing-hall",
+          "name": "谺梁石材加工殿",
+          "purpose": "巨石切断・研磨・搬出を行う峡跨ぎ工場",
+          "dimensionsM": {
+            "width": 132,
+            "depth": 60,
+            "height": 48
+          },
+          "placement": "南西・段丘間",
+          "silhouette": "二つの崖棚を跨ぐ深いトラスと片側の垂直鋸塔",
+          "roof": "鋸歯採光屋根と吊りクレーン庇",
+          "facade": "開放トラス、石粉で白化したパネル、縦長切断窓",
+          "materials": [
+            "白化鋼",
+            "灰波板",
+            "濡れた切石",
+            "赤錆クレーン"
+          ],
+          "combatFlow": [
+            "橋下の重機路",
+            "加工床の長軸戦",
+            "トラス内保守歩廊"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "chikurin": {
       "brief": "深い竹林に包まれた山寺。参道、石灯籠、社殿、層塔。",
@@ -168,7 +1212,94 @@
       "cameraHeight": 0.16,
       "targetHeight": 6,
       "sunAzimuth": 160,
-      "sunElevation": 50
+      "sunElevation": 50,
+      "cityProfile": {
+        "archetype": "山寺門前高密木造町",
+        "targetBuildingCount": [
+          22,
+          30
+        ],
+        "coverageRatio": 0.62,
+        "highRiseRatio": 0.68,
+        "dominantHeightM": [
+          18,
+          35
+        ],
+        "secondaryHeightM": [
+          8,
+          16
+        ],
+        "streetWidthM": [
+          7,
+          13
+        ],
+        "blockPattern": "曲がる参道沿いに町家・宿坊・土蔵を段状連続配置",
+        "roofLanguage": "反り檜皮屋根・入母屋・銅板宝珠",
+        "facadeLanguage": "真壁木組、白漆喰、深い格子戸と苔むす石基壇",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "石段参道と小さな禊池のみ開け、竹は街区の隙間へ",
+        "verticalityRule": "石段、縁側、鐘楼台を細かく接続",
+        "forbiddenMotifs": [
+          "西洋大聖堂",
+          "全棟同一切妻",
+          "遠景画像",
+          "竹だけで建物不足を隠す構成"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "chikurin-nine-canopy-temple",
+          "name": "九蓋翠雲寺",
+          "purpose": "山寺の本堂・経蔵・多層塔を一体化した巡礼拠点",
+          "dimensionsM": {
+            "width": 94,
+            "depth": 78,
+            "height": 60
+          },
+          "placement": "北・参道最上段",
+          "silhouette": "九枚の異なる反り屋根が竹冠から階段状に現れる",
+          "roof": "入母屋群と細い九輪塔",
+          "facade": "太い木組、白漆喰小壁、深い金色格子",
+          "materials": [
+            "燻し檜",
+            "黒瓦",
+            "白漆喰",
+            "緑青銅"
+          ],
+          "combatFlow": [
+            "仁王門から本堂床下へ抜ける路",
+            "縁側を巡る左右回遊",
+            "経蔵階段から塔基壇へ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "chikurin-bamboo-scholar-citadel",
+          "name": "竹海修学院城",
+          "purpose": "武芸・写経・薬草研究を行う谷跨ぎ宿坊群",
+          "dimensionsM": {
+            "width": 110,
+            "depth": 70,
+            "height": 44
+          },
+          "placement": "南東・谷側",
+          "silhouette": "長い三段屋根と一本の鐘楼が竹林上に浮く",
+          "roof": "段違い寄棟と雨落ち中庭",
+          "facade": "木格子廊下、石垣脚、透かし竹壁と懸造柱",
+          "materials": [
+            "赤褐木材",
+            "灰瓦",
+            "苔石",
+            "竹編み"
+          ],
+          "combatFlow": [
+            "懸造床下の岩路",
+            "中庭を囲む回廊",
+            "鐘楼と薬草屋根を結ぶ高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "tanada": {
       "brief": "山腹の水田と集落。反射する棚田、石積み、木造家屋、水路。",
@@ -181,7 +1312,94 @@
       "cameraHeight": 0.22,
       "targetHeight": 7,
       "sunAzimuth": 252,
-      "sunElevation": 20
+      "sunElevation": 20,
+      "cityProfile": {
+        "archetype": "水階農業高層集落",
+        "targetBuildingCount": [
+          23,
+          30
+        ],
+        "coverageRatio": 0.58,
+        "highRiseRatio": 0.69,
+        "dominantHeightM": [
+          18,
+          34
+        ],
+        "secondaryHeightM": [
+          7,
+          15
+        ],
+        "streetWidthM": [
+          7,
+          13
+        ],
+        "blockPattern": "棚田段差に沿い高床家屋・乾燥塔・共同倉を密集",
+        "roofLanguage": "大きな茅葺・段葺板・水受け庇",
+        "facadeLanguage": "石積み基壇、焦茶木組、白土壁と水車樋",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "棚田水面と灌漑幹線を残し家屋は畦道沿いに連続",
+        "verticalityRule": "畦・屋根裏橋・水門台を段階接続",
+        "forbiddenMotifs": [
+          "都市ガラス塔",
+          "乾いた平地農村",
+          "遠景画像",
+          "同じ農家の回転コピー"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "tanada-cloudgranary-fortress",
+          "name": "雲稲段倉城",
+          "purpose": "共同穀倉・乾燥・避難所を段丘状に積層した農業城",
+          "dimensionsM": {
+            "width": 106,
+            "depth": 78,
+            "height": 48
+          },
+          "placement": "北西・上段棚田",
+          "silhouette": "巨大石垣から五棟の高い茅屋根が雁行する",
+          "roof": "急勾配茅葺と煙抜き越屋根",
+          "facade": "粗石基壇、木格子倉扉、白土の防火帯",
+          "materials": [
+            "稲藁",
+            "黒褐木",
+            "白土",
+            "濡れた石"
+          ],
+          "combatFlow": [
+            "石垣の三つの水門路",
+            "穀倉間の細い中庭",
+            "屋根裏乾燥廊下の高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "tanada-waterwheel-aqueduct-cloister",
+          "name": "千輪水渠院",
+          "purpose": "棚田全域へ送水する大水車・水道橋・共同会所",
+          "dimensionsM": {
+            "width": 120,
+            "depth": 60,
+            "height": 54
+          },
+          "placement": "南東・沢筋",
+          "silhouette": "三連大水車と弧状水道橋の上に細長い会所塔が立つ",
+          "roof": "板葺の長屋根と水樋塔冠",
+          "facade": "石アーチ、濡れた木樋、銅の水門と漆喰塔",
+          "materials": [
+            "苔石",
+            "栗材",
+            "緑青銅",
+            "白漆喰"
+          ],
+          "combatFlow": [
+            "水車下の飛石路",
+            "水道橋上の狭い横断",
+            "会所塔内の段階上昇"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "misaki": {
       "brief": "荒波の軍用岬。海蝕崖、沿岸道路、コンクリート壕、灯台。",
@@ -194,7 +1412,94 @@
       "cameraHeight": 0.21,
       "targetHeight": 8,
       "sunAzimuth": 136,
-      "sunElevation": 44
+      "sunElevation": 44,
+      "cityProfile": {
+        "archetype": "海蝕軍港城塞町",
+        "targetBuildingCount": [
+          20,
+          27
+        ],
+        "coverageRatio": 0.59,
+        "highRiseRatio": 0.72,
+        "dominantHeightM": [
+          21,
+          42
+        ],
+        "secondaryHeightM": [
+          9,
+          18
+        ],
+        "streetWidthM": [
+          10,
+          17
+        ],
+        "blockPattern": "岬尾根の防風建物を曲線道路と掩体壕で密結合",
+        "roofLanguage": "低い耐風曲屋根・灯標冠・偽装草屋根",
+        "facadeLanguage": "塩害コンクリート、厚い鋼扉、狭い観測窓",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "沿岸砲旋回地と崖沿い見通し帯を限定確保",
+        "verticalityRule": "壕内床・崖道・観測塔の高度差を階段で結ぶ",
+        "forbiddenMotifs": [
+          "温暖な港湾倉庫",
+          "砂漠要塞",
+          "遠景画像",
+          "電線による崖境界"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "misaki-stormglass-lighthouse-citadel",
+          "name": "嵐硝子灯台城",
+          "purpose": "灯台・沿岸管制・救難基地を一体化した岬の主堡",
+          "dimensionsM": {
+            "width": 88,
+            "depth": 78,
+            "height": 70
+          },
+          "placement": "西・岬先端",
+          "silhouette": "厚い半円要塞から角ばった灯室塔が風上へ傾く",
+          "roof": "銅板の段付き灯室冠と耐風曲面庇",
+          "facade": "傾斜コンクリート、深いスリット、波除けの石積み",
+          "materials": [
+            "塩害コンクリート",
+            "緑青銅",
+            "曇りガラス",
+            "黒玄武岩"
+          ],
+          "combatFlow": [
+            "波除け門から中央救難庫",
+            "半円堡の環状路",
+            "灯塔螺旋と外部観測デッキ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "misaki-whaleback-submarine-pen",
+          "name": "鯨背潜水艦庫",
+          "purpose": "崖に埋め込まれた潜水艇・魚雷整備基地",
+          "dimensionsM": {
+            "width": 138,
+            "depth": 70,
+            "height": 36
+          },
+          "placement": "北東・海蝕崖",
+          "silhouette": "鯨の背のような二連コンクリート殻と崖上換気塔",
+          "roof": "厚い楕円ヴォールトと偽装植生",
+          "facade": "巨大海扉、爆風隔壁、濡れたリブと排水溝",
+          "materials": [
+            "粗コンクリート",
+            "錆鋼",
+            "黒い海水",
+            "苔植生"
+          ],
+          "combatFlow": [
+            "二本のドック路",
+            "中央隔壁の横断口",
+            "崖上換気塔へ至る狭い整備階段"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "haieki": {
       "brief": "霧に沈む廃貨物駅。長い線路、車庫、跨線橋、放置列車。",
@@ -207,7 +1512,94 @@
       "cameraHeight": 0.18,
       "targetHeight": 7,
       "sunAzimuth": 116,
-      "sunElevation": 22
+      "sunElevation": 22,
+      "cityProfile": {
+        "archetype": "霧鉄道会社都市",
+        "targetBuildingCount": [
+          23,
+          30
+        ],
+        "coverageRatio": 0.68,
+        "highRiseRatio": 0.76,
+        "dominantHeightM": [
+          22,
+          44
+        ],
+        "secondaryHeightM": [
+          9,
+          19
+        ],
+        "streetWidthM": [
+          11,
+          18
+        ],
+        "blockPattern": "線路に沿う長尺工場と線路を跨ぐ職住棟を密集",
+        "roofLanguage": "鉄骨トレインシェッド・鋸歯工場屋根・時計塔",
+        "facadeLanguage": "煤煉瓦、鋳鉄柱、割れた採光窓と木製積込扉",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "主線二本と転車台だけを残し側線間は建物で圧縮",
+        "verticalityRule": "ホーム・跨線橋・屋根トラスを段階接続",
+        "forbiddenMotifs": [
+          "近代空港ターミナル",
+          "コンテナ港の複製",
+          "遠景画像",
+          "線路を境界壁として扱うこと"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "haieki-ironmist-grand-terminus",
+          "name": "鉄霧大終着殿",
+          "purpose": "旅客・貨物・修繕を一体化した廃線都市の巨大駅",
+          "dimensionsM": {
+            "width": 130,
+            "depth": 74,
+            "height": 44
+          },
+          "placement": "南・主線終端",
+          "silhouette": "三連トレインシェッドと崩れた中央時計塔が霧を切る",
+          "roof": "リベット鉄骨の三連ヴォールト",
+          "facade": "煤煉瓦の連続アーチ、割れたガラス、石の正面階段",
+          "materials": [
+            "煤赤煉瓦",
+            "黒鋳鉄",
+            "曇りガラス",
+            "灰石"
+          ],
+          "combatFlow": [
+            "三本のホーム長軸",
+            "地下荷物道の横断",
+            "跨線橋と屋根保守路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "haieki-clocktank-depot-citadel",
+          "name": "時鐘給水庫城",
+          "purpose": "蒸気機関車の給水塔・転車庫・乗務員宿舎の複合",
+          "dimensionsM": {
+            "width": 94,
+            "depth": 70,
+            "height": 64
+          },
+          "placement": "北西・転車台脇",
+          "silhouette": "巨大円筒水槽を抱く角塔と扇形機関庫",
+          "roof": "円錐水槽冠と扇形鋸歯屋根",
+          "facade": "煤けた煉瓦扶壁、巨大時計、木製扇形扉",
+          "materials": [
+            "暗赤煉瓦",
+            "錆鉄",
+            "黒スレート",
+            "油染み木材"
+          ],
+          "combatFlow": [
+            "扇形機関庫の放射路",
+            "水塔基部の環状路",
+            "外階段から水槽デッキへ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "kyokoku": {
       "brief": "赤い峡谷に築かれた要塞都市。断崖、門楼、石橋、見張塔。",
@@ -220,7 +1612,94 @@
       "cameraHeight": 0.23,
       "targetHeight": 9,
       "sunAzimuth": 150,
-      "sunElevation": 40
+      "sunElevation": 40,
+      "cityProfile": {
+        "archetype": "赤崖段丘要塞都市",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "coverageRatio": 0.64,
+        "highRiseRatio": 0.73,
+        "dominantHeightM": [
+          23,
+          46
+        ],
+        "secondaryHeightM": [
+          9,
+          19
+        ],
+        "streetWidthM": [
+          8,
+          15
+        ],
+        "blockPattern": "崖壁に貼り付く多層住宅と門楼を石段で高密接続",
+        "roofLanguage": "平らな土屋根・張出し木櫓・小塔冠",
+        "facadeLanguage": "赤岩積み、白漆喰帯、深い木格子と斜面扶壁",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "谷底道と二つの崖広場を残し段丘街区を密集",
+        "verticalityRule": "崖道・屋上・橋塔を連続する縦ループ",
+        "forbiddenMotifs": [
+          "欧州ゴシック城",
+          "均一な砂岩箱",
+          "遠景画像",
+          "橋だけを境界にする構成"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "kyokoku-redgate-cliff-palace",
+          "name": "赤門懸崖宮",
+          "purpose": "峡谷門・行政宮・穀倉を崖面に積層した都市核",
+          "dimensionsM": {
+            "width": 112,
+            "depth": 82,
+            "height": 66
+          },
+          "placement": "北・峡谷狭窄部",
+          "silhouette": "崖から張り出す三段宮殿と二本の角形門塔",
+          "roof": "平屋根テラスと木造日除け冠",
+          "facade": "巨石基壇、赤土壁、白い水平帯と暗い格子窓",
+          "materials": [
+            "赤砂岩",
+            "白石灰",
+            "焦茶木",
+            "青銅扉"
+          ],
+          "combatFlow": [
+            "谷底の三連門",
+            "段状中庭の左右回遊",
+            "崖内階段から最上部テラスへ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "kyokoku-skychain-aqueduct-fortress",
+          "name": "天鎖水道要塞",
+          "purpose": "両岸を結ぶ水道橋・兵舎・監視所の空中城",
+          "dimensionsM": {
+            "width": 130,
+            "depth": 56,
+            "height": 54
+          },
+          "placement": "南東・峡谷横断",
+          "silhouette": "巨大多層アーチ橋の中央に細長い堡塔が載る",
+          "roof": "石造ヴォールトと木製防風庇",
+          "facade": "赤いアーチ、懸垂水路、塔の小さな狭間",
+          "materials": [
+            "赤切石",
+            "暗色木材",
+            "緑青水管",
+            "鉄鎖"
+          ],
+          "combatFlow": [
+            "下段橋の広い横断",
+            "中段水路脇の狭路",
+            "中央堡塔の螺旋上昇"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "kohan": {
       "brief": "高山湖の観測施設。岩の湖岸、桟橋、山荘、湖畔天文台。",
@@ -233,7 +1712,94 @@
       "cameraHeight": 0.2,
       "targetHeight": 7,
       "sunAzimuth": 128,
-      "sunElevation": 36
+      "sunElevation": 36,
+      "cityProfile": {
+        "archetype": "湖畔観測学園都市",
+        "targetBuildingCount": [
+          21,
+          27
+        ],
+        "coverageRatio": 0.6,
+        "highRiseRatio": 0.71,
+        "dominantHeightM": [
+          20,
+          39
+        ],
+        "secondaryHeightM": [
+          8,
+          17
+        ],
+        "streetWidthM": [
+          9,
+          16
+        ],
+        "blockPattern": "湖岸曲線に沿い研究棟・山荘・船庫を段状密集",
+        "roofLanguage": "低反射ドーム・深い山荘屋根・張出し湖見庇",
+        "facadeLanguage": "石基壇、木ルーバー、暗いガラスと銅樋",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "水際遊歩道と二つの観測広場のみ開放",
+        "verticalityRule": "桟橋・テラス・観測ドームを上下接続",
+        "forbiddenMotifs": [
+          "海港クレーン",
+          "量産ログハウス",
+          "遠景画像",
+          "鏡面水による白飛び"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "kohan-mirrorstar-observatory",
+          "name": "鏡星三連天文殿",
+          "purpose": "湖面干渉計と三波長望遠鏡を統合した観測宮",
+          "dimensionsM": {
+            "width": 90,
+            "depth": 78,
+            "height": 56
+          },
+          "placement": "北西・岩棚",
+          "silhouette": "大小三つの非対称ドームと細いレーザー橋",
+          "roof": "分節回転ドームと低い機械屋根",
+          "facade": "暗石基壇、縦木ルーバー、白いドーム殻",
+          "materials": [
+            "黒花崗岩",
+            "白アルミ",
+            "温木材",
+            "低反射ガラス"
+          ],
+          "combatFlow": [
+            "三ドーム間の三角回廊",
+            "湖側観測テラス",
+            "中央ドーム下の螺旋機器路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "kohan-hydrocliff-grand-lodge",
+          "name": "水崖水力大山荘",
+          "purpose": "水力発電・宿泊・救難機能を崖際に統合した大型山荘",
+          "dimensionsM": {
+            "width": 112,
+            "depth": 74,
+            "height": 46
+          },
+          "placement": "南東・流出口",
+          "silhouette": "長い深屋根の下から二本の水車塔が湖へ落ちる",
+          "roof": "石板の大切妻と連続採光棟",
+          "facade": "粗石壁、木製バルコニー、銅水樋とガラスラウンジ",
+          "materials": [
+            "片岩",
+            "焦茶木",
+            "緑青銅",
+            "青灰ガラス"
+          ],
+          "combatFlow": [
+            "発電水路を跨ぐ地上路",
+            "山荘ロビーの二層回廊",
+            "崖側バルコニーと屋根裏路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "kuko": {
       "brief": "夕刻の国際空港エプロン。大型格納庫、誘導路、旅客機、管制塔。",
@@ -246,7 +1812,94 @@
       "cameraHeight": 0.24,
       "targetHeight": 8,
       "sunAzimuth": 248,
-      "sunElevation": 16
+      "sunElevation": 16,
+      "cityProfile": {
+        "archetype": "航空都市型高層エプロン",
+        "targetBuildingCount": [
+          22,
+          28
+        ],
+        "coverageRatio": 0.65,
+        "highRiseRatio": 0.8,
+        "dominantHeightM": [
+          30,
+          58
+        ],
+        "secondaryHeightM": [
+          12,
+          24
+        ],
+        "streetWidthM": [
+          18,
+          28
+        ],
+        "blockPattern": "ターミナル指状棟・整備棟・貨物塔を誘導路間に高密配置",
+        "roofLanguage": "大スパン波形屋根・航空管制冠・機体尾翼庇",
+        "facadeLanguage": "水平ルーバー、深い搭乗橋口、巨大整備扉",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "誘導路二本と航空機回頭円のみ空ける",
+        "verticalityRule": "搭乗橋、サービス中二階、管制デッキを接続",
+        "forbiddenMotifs": [
+          "小型ハンガーの反復",
+          "歴史城郭",
+          "遠景画像",
+          "滑走路上の障害物"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "kuko-aerocrown-terminal",
+          "name": "翼冠国際空港殿",
+          "purpose": "国際線ターミナル・鉄道駅・航空都市ホテルの巨大複合",
+          "dimensionsM": {
+            "width": 144,
+            "depth": 94,
+            "height": 54
+          },
+          "placement": "西・エプロン縁",
+          "silhouette": "三枚の翼形屋根が中央アトリウムから扇状に伸びる",
+          "roof": "波形大屋根と採光リボン",
+          "facade": "白い構造リブ、深いガラス面、金色搭乗庇",
+          "materials": [
+            "白塗装鋼",
+            "青灰ガラス",
+            "淡色石",
+            "金色アルミ"
+          ],
+          "combatFlow": [
+            "中央出発ホールの三分岐",
+            "手荷物階の低い横断路",
+            "搭乗橋と屋上庭の高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "kuko-orbit-control-citadel",
+          "name": "軌道航空管制城",
+          "purpose": "管制塔・気象センター・緊急指揮所をまとめた耐災害施設",
+          "dimensionsM": {
+            "width": 90,
+            "depth": 78,
+            "height": 80
+          },
+          "placement": "北東・誘導路交点",
+          "silhouette": "厚い楕円基壇から二段の多面管制室が立ち上がる",
+          "roof": "360度管制冠と気象レーダー",
+          "facade": "傾斜防爆壁、連続眺望窓、外露出避難螺旋",
+          "materials": [
+            "淡灰UHPC",
+            "黒ガラス",
+            "群青アルミ",
+            "赤白アンテナ鋼"
+          ],
+          "combatFlow": [
+            "基壇を貫く緊急車路",
+            "作戦階の環状路",
+            "外階段から管制冠直下へ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "onsengai": {
       "brief": "山間の温泉街。濡れた石畳、木造旅館、湯煙、紅葉、層塔。",
@@ -259,7 +1912,94 @@
       "cameraHeight": 0.18,
       "targetHeight": 7,
       "sunAzimuth": 238,
-      "sunElevation": 14
+      "sunElevation": 14,
+      "cityProfile": {
+        "archetype": "湯煙山岳旅館高密街",
+        "targetBuildingCount": [
+          24,
+          32
+        ],
+        "coverageRatio": 0.7,
+        "highRiseRatio": 0.72,
+        "dominantHeightM": [
+          20,
+          39
+        ],
+        "secondaryHeightM": [
+          8,
+          17
+        ],
+        "streetWidthM": [
+          6,
+          12
+        ],
+        "blockPattern": "曲がる石段沿いに多層旅館・共同浴場・商家を隙間なく配置",
+        "roofLanguage": "大入母屋・千鳥破風・湯気抜き越屋根",
+        "facadeLanguage": "濃木格子、白壁、石基壇、暖色行灯窓",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "川沿い湯畑と二つの共同浴場前だけを小広場化",
+        "verticalityRule": "石段・縁側・屋根付き渡廊下で三層回遊",
+        "forbiddenMotifs": [
+          "近代ホテル箱の反復",
+          "西洋パゴダ",
+          "遠景画像",
+          "湯煙で境界を隠す構成"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "onsengai-thousand-bath-ryokan",
+          "name": "千湯大旅籠",
+          "purpose": "複数源泉・宿泊棟・能舞台を抱く巨大温泉旅館",
+          "dimensionsM": {
+            "width": 120,
+            "depth": 86,
+            "height": 54
+          },
+          "placement": "北・川上",
+          "silhouette": "斜面に雁行する七棟の大屋根と中央湯煙塔",
+          "roof": "大入母屋群、千鳥破風、露天風呂庇",
+          "facade": "石積み一階、濃木格子、白漆喰、暖色窓",
+          "materials": [
+            "黒瓦",
+            "濃褐木",
+            "白漆喰",
+            "濡れた安山岩"
+          ],
+          "combatFlow": [
+            "玄関土間から内庭へ",
+            "左右客室棟の渡廊下",
+            "露天風呂と能舞台の屋上路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "onsengai-steamclock-pagoda",
+          "name": "蒸気時計湯塔",
+          "purpose": "共同浴場・源泉制御・町の時鐘を積層した温泉塔",
+          "dimensionsM": {
+            "width": 88,
+            "depth": 74,
+            "height": 68
+          },
+          "placement": "南東・湯畑脇",
+          "silhouette": "石の浴場基壇から四角い蒸気塔と銅時計冠が上がる",
+          "roof": "多段銅板屋根と湯気抜き塔",
+          "facade": "荒石アーチ、木格子、緑青時計面と露出湯管",
+          "materials": [
+            "濡れた石",
+            "緑青銅",
+            "赤褐木",
+            "白い湯垢"
+          ],
+          "combatFlow": [
+            "浴場の三つの湯路",
+            "源泉室周囲の環状路",
+            "外階段から時計デッキへ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z01": {
       "brief": "停電後の夜の廃市。死んだネオン、崩れた高架、浸水路、折れた塔。",
@@ -272,7 +2012,94 @@
       "cameraHeight": 0.18,
       "targetHeight": 7,
       "sunAzimuth": 294,
-      "sunElevation": 8
+      "sunElevation": 8,
+      "cityProfile": {
+        "archetype": "停電後浸水メガブロック",
+        "targetBuildingCount": [
+          25,
+          33
+        ],
+        "coverageRatio": 0.72,
+        "highRiseRatio": 0.81,
+        "dominantHeightM": [
+          26,
+          54
+        ],
+        "secondaryHeightM": [
+          11,
+          23
+        ],
+        "streetWidthM": [
+          8,
+          15
+        ],
+        "blockPattern": "崩れた高架を挟み商住塔・病院・駐車棟を過密配置",
+        "roofLanguage": "壊れた設備冠・陥没屋根・傾いた看板塔",
+        "facadeLanguage": "濡れた煤壁、割れ窓、露出鉄筋と死んだネオン",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "浸水交差点と瓦礫で狭窄した救援路を限定確保",
+        "verticalityRule": "崩落床・高架・屋上を破断橋で接続",
+        "forbiddenMotifs": [
+          "無傷の現代都市",
+          "明るい広告背景画",
+          "遠景画像",
+          "全棟同じ崩壊角度"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z01-blackout-municipal-megablock",
+          "name": "停電市政メガブロック",
+          "purpose": "市庁舎・病院・避難住宅が崩壊融合した巨大公共棟",
+          "dimensionsM": {
+            "width": 114,
+            "depth": 88,
+            "height": 60
+          },
+          "placement": "西・浸水交差点",
+          "silhouette": "三本のずれた塔と陥没した中央アトリウム",
+          "roof": "崩落設備屋根と非常通信マスト",
+          "facade": "濡れた石板、割れたカーテンウォール、露出床スラブ",
+          "materials": [
+            "煤コンクリート",
+            "青黒ガラス",
+            "錆鋼",
+            "退色した救難塗装"
+          ],
+          "combatFlow": [
+            "浸水ロビーの三方向路",
+            "崩れた議場の段床",
+            "外部救難梯子から病院塔へ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z01-broken-transit-crown",
+          "name": "折冠立体交通城",
+          "purpose": "地下鉄・バスターミナル・高架道路が事故融合した交通核",
+          "dimensionsM": {
+            "width": 98,
+            "depth": 76,
+            "height": 74
+          },
+          "placement": "北東・高架終端",
+          "silhouette": "折れた高架ループを細長い駅塔が貫く",
+          "roof": "半壊した波形コンコース屋根",
+          "facade": "煤タイル、裂けたコンクリート梁、暗い案内板",
+          "materials": [
+            "濡れたコンクリート",
+            "錆鉄",
+            "黄緑駅タイル",
+            "黒ガラス"
+          ],
+          "combatFlow": [
+            "バス床の円環路",
+            "地下コンコースの低い横断",
+            "傾いた高架と駅塔階段の高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z02": {
       "brief": "延焼中の都市区画。崩壊した競技場、燃える建物、瓦礫の車道。",
@@ -285,7 +2112,94 @@
       "cameraHeight": 0.2,
       "targetHeight": 8,
       "sunAzimuth": 220,
-      "sunElevation": 9
+      "sunElevation": 9,
+      "cityProfile": {
+        "archetype": "延焼競技都市区",
+        "targetBuildingCount": [
+          23,
+          31
+        ],
+        "coverageRatio": 0.69,
+        "highRiseRatio": 0.78,
+        "dominantHeightM": [
+          24,
+          49
+        ],
+        "secondaryHeightM": [
+          10,
+          21
+        ],
+        "streetWidthM": [
+          10,
+          17
+        ],
+        "blockPattern": "競技場を囲む高層住宅・消防棟・商業塔を焼けた路地で密結合",
+        "roofLanguage": "焦げた膜屋根・崩落テラス・排煙塔",
+        "facadeLanguage": "煤煉瓦、焼損パネル、露出鉄骨と赤熱開口",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "消防活動路と崩れた競技広場だけを空ける",
+        "verticalityRule": "観客席・連絡橋・屋上消防路を断続接続",
+        "forbiddenMotifs": [
+          "火炎板ポリゴンの乱用",
+          "無傷の郊外家屋",
+          "遠景画像",
+          "均等な炎配置"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z02-pyre-arena-basilica",
+          "name": "火葬競技大殿",
+          "purpose": "避難所化した巨大競技場が延焼崩壊した都市核",
+          "dimensionsM": {
+            "width": 134,
+            "depth": 100,
+            "height": 56
+          },
+          "placement": "中央南・競技広場",
+          "silhouette": "半壊した楕円観客席と片側だけ残る膜屋根塔",
+          "roof": "焦げた張力膜と露出リングトラス",
+          "facade": "煤けたPC段床、赤い避難ゲート、剥離した外装",
+          "materials": [
+            "焼損コンクリート",
+            "黒化鋼",
+            "焦げ膜材",
+            "非常赤塗装"
+          ],
+          "combatFlow": [
+            "競技面の長い横断",
+            "観客席下の放射状通路",
+            "崩れた客席から屋根リングへ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z02-firewatch-tenement-citadel",
+          "name": "火見集合塔城",
+          "purpose": "消防署・集合住宅・給水塔が籠城化した高層街区",
+          "dimensionsM": {
+            "width": 106,
+            "depth": 78,
+            "height": 70
+          },
+          "placement": "北西・消防路",
+          "silhouette": "二本の焼けた住棟を巨大給水塔橋が束ねる",
+          "roof": "崩れたテラスと監視鐘楼",
+          "facade": "煤煉瓦、黒いバルコニー、赤錆防火階段",
+          "materials": [
+            "暗赤煉瓦",
+            "黒鋼",
+            "錆銅",
+            "煤ガラス"
+          ],
+          "combatFlow": [
+            "消防車庫の通抜け",
+            "中庭を囲む住棟回廊",
+            "給水橋と外階段の上下戦"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z03": {
       "brief": "灰霧の廃港。沈みかけた埠頭、座礁船、折れたクレーン、冷たい海面。",
@@ -298,7 +2212,94 @@
       "cameraHeight": 0.2,
       "targetHeight": 8,
       "sunAzimuth": 106,
-      "sunElevation": 12
+      "sunElevation": 12,
+      "cityProfile": {
+        "archetype": "沈降霧港廃都",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "coverageRatio": 0.66,
+        "highRiseRatio": 0.74,
+        "dominantHeightM": [
+          23,
+          46
+        ],
+        "secondaryHeightM": [
+          9,
+          20
+        ],
+        "streetWidthM": [
+          13,
+          21
+        ],
+        "blockPattern": "沈んだ埠頭に船舶工場・冷蔵塔・港務住宅を傾斜密集",
+        "roofLanguage": "破断トラス・船殻屋根・霧笛塔",
+        "facadeLanguage": "塩錆鋼、藻付きコンクリート、割れた波板と索具",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "水路二本と座礁船周辺だけを空ける",
+        "verticalityRule": "沈降床・船体・クレーン歩廊を接続",
+        "forbiddenMotifs": [
+          "正常稼働の港",
+          "同じクレーン反復",
+          "遠景画像",
+          "霧だけで奥行きを隠す"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z03-capsized-drydock-cathedral",
+          "name": "転覆船渠大殿",
+          "purpose": "座礁した大型船体と乾ドック工場が融合した廃墟",
+          "dimensionsM": {
+            "width": 142,
+            "depth": 74,
+            "height": 46
+          },
+          "placement": "南・沈降船渠",
+          "silhouette": "横倒し船首が長い工場屋根を突き破る非対称巨塊",
+          "roof": "破断船殻と鋸歯ドック屋根",
+          "facade": "外板リブ、巨大プロペラ軸、崩れたドック門",
+          "materials": [
+            "塩錆鋼",
+            "藻コンクリート",
+            "黒い海水",
+            "退色青塗装"
+          ],
+          "combatFlow": [
+            "船底を貫く狭路",
+            "ドック床の左右水路",
+            "船殻リブ上の傾斜高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z03-fogbell-crane-palace",
+          "name": "霧鐘揚貨城",
+          "purpose": "港務局・冷蔵倉庫・霧信号塔を持つ巨大揚貨施設",
+          "dimensionsM": {
+            "width": 100,
+            "depth": 80,
+            "height": 74
+          },
+          "placement": "北西・旧岸壁",
+          "silhouette": "門型冷蔵塔から一本の折れたクレーン腕と霧笛冠が伸びる",
+          "roof": "機械冠と傾いたクレーン走行路",
+          "facade": "断熱煉瓦、錆ルーバー、曇り窓と吊りケーブル",
+          "materials": [
+            "白化煉瓦",
+            "赤錆鋼",
+            "曇りガラス",
+            "黒ゴム"
+          ],
+          "combatFlow": [
+            "冷蔵庫の短い格子路",
+            "荷役床の通抜け",
+            "クレーン塔外階段の高所戦"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z04": {
       "brief": "闇に沈む崩落西洋修道城。破断屋根、割れた薔薇窓、荒廃回廊、城下墓地。",
@@ -311,7 +2312,94 @@
       "cameraHeight": 0.21,
       "targetHeight": 9,
       "sunAzimuth": 284,
-      "sunElevation": 11
+      "sunElevation": 11,
+      "cityProfile": {
+        "archetype": "崩落修道城下墓都",
+        "targetBuildingCount": [
+          21,
+          27
+        ],
+        "coverageRatio": 0.65,
+        "highRiseRatio": 0.7,
+        "dominantHeightM": [
+          23,
+          45
+        ],
+        "secondaryHeightM": [
+          9,
+          19
+        ],
+        "streetWidthM": [
+          7,
+          14
+        ],
+        "blockPattern": "破断大聖堂を中心に墓地住宅・納骨堂・崩れた商家を密集",
+        "roofLanguage": "裂けたスレート切妻・骨組尖塔・崩落飛梁",
+        "facadeLanguage": "濡れた花崗岩、割れ薔薇窓、露出木組と蔦",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "墓地中央路と崩落広場だけを空ける",
+        "verticalityRule": "地下納骨道・回廊・破断屋根を断続接続",
+        "forbiddenMotifs": [
+          "takadai主城の無傷複製",
+          "明るい宮殿",
+          "遠景画像",
+          "墓石だけで密度を作る構成"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z04-severed-rose-abbey",
+          "name": "断薔薇大修道城",
+          "purpose": "崩落した大聖堂・城壁・修道街が一体化した死都主城",
+          "dimensionsM": {
+            "width": 128,
+            "depth": 102,
+            "height": 72
+          },
+          "placement": "中央高地・既存廃城位置",
+          "silhouette": "片側を失った身廊と折れた二本尖塔が鋭い空隙を作る",
+          "roof": "破断スレート屋根、露出小屋組、欠けた尖塔",
+          "facade": "割れ薔薇窓、濡れ扶壁、崩れた石回廊",
+          "materials": [
+            "黒濡れ花崗岩",
+            "腐食鉛",
+            "焦木",
+            "暗色ステンドガラス"
+          ],
+          "combatFlow": [
+            "瓦礫化した正門軸",
+            "片側だけ残る回廊",
+            "地下納骨堂から破断塔へ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z04-ossuary-bell-keep",
+          "name": "骸鐘納骨城楼",
+          "purpose": "集団墓所・鐘楼・隔離療養院が融合した副城",
+          "dimensionsM": {
+            "width": 94,
+            "depth": 84,
+            "height": 80
+          },
+          "placement": "南西・墓地端",
+          "silhouette": "中空鐘楼を四本の細い納骨塔と橋が囲む",
+          "roof": "骨組だけの鐘楼冠と鋭い鉛庇",
+          "facade": "頭骨意匠を抽象化したアーチ、鉄格子、蔦の石壁",
+          "materials": [
+            "冷灰石灰岩",
+            "黒鉄",
+            "緑青鉛",
+            "腐木"
+          ],
+          "combatFlow": [
+            "地下納骨路の十字交差",
+            "療養院二階回廊",
+            "外部飛梁から鐘楼デッキへ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z05": {
       "brief": "崩れた溶岩坑道。赤熱した裂け目、鉱山軌道、耐熱施設、排気塔。",
@@ -324,7 +2412,94 @@
       "cameraHeight": 0.19,
       "targetHeight": 8,
       "sunAzimuth": 206,
-      "sunElevation": 7
+      "sunElevation": 7,
+      "cityProfile": {
+        "archetype": "溶岩坑道立体鉱都",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "coverageRatio": 0.62,
+        "highRiseRatio": 0.73,
+        "dominantHeightM": [
+          22,
+          46
+        ],
+        "secondaryHeightM": [
+          9,
+          19
+        ],
+        "streetWidthM": [
+          10,
+          17
+        ],
+        "blockPattern": "坑口・冷却棟・鉱員街を玄武岩段丘へ高密挿入",
+        "roofLanguage": "耐熱シェル・排気フィン・岩被覆屋根",
+        "facadeLanguage": "黒玄武岩、焼け鋼、遮熱セラミックと赤い亀裂",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "溶岩割れ目と鉱車主線を開ける",
+        "verticalityRule": "坑道床・配管橋・立坑デッキを接続",
+        "forbiddenMotifs": [
+          "明るい研究所",
+          "同一円筒炉",
+          "遠景画像",
+          "溶岩面への過剰ブルーム"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z05-magma-shaft-elevator-citadel",
+          "name": "熔脈立坑昇降城",
+          "purpose": "深部鉱山の人員・鉱石・冷却材を運ぶ巨大立坑塔",
+          "dimensionsM": {
+            "width": 108,
+            "depth": 74,
+            "height": 84
+          },
+          "placement": "北・主坑口",
+          "silhouette": "二本の昇降塔を斜め巻上げ室と太い冷却管が結ぶ",
+          "roof": "開放巻上げ冠と耐熱フィン",
+          "facade": "黒石基壇、赤熱スリット、露出ケージと梯子",
+          "materials": [
+            "玄武岩",
+            "焼け鋼",
+            "白耐熱セラミック",
+            "赤銅管"
+          ],
+          "combatFlow": [
+            "立坑基部の鉱車路",
+            "巻上げ室下の横断",
+            "外部冷却管に沿う上昇路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z05-basalt-smelter-ark",
+          "name": "黒曜熔錬方舟",
+          "purpose": "溶岩流を跨ぐ鉱石精錬・避難居住複合棟",
+          "dimensionsM": {
+            "width": 130,
+            "depth": 70,
+            "height": 50
+          },
+          "placement": "南東・溶岩裂け目",
+          "silhouette": "厚い舟形耐熱殻が二本の玄武岩脚に載る",
+          "roof": "分節セラミックシェルと排熱背骨",
+          "facade": "黒い斜面壁、白い遮熱鱗、橙色の整備開口",
+          "materials": [
+            "黒玄武岩",
+            "白セラミック",
+            "黒化鋼",
+            "赤熱ガラス"
+          ],
+          "combatFlow": [
+            "方舟下の溶岩橋",
+            "内部精錬床の長軸",
+            "排熱背骨の高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z06": {
       "brief": "封鎖された精肉加工複合施設。冷蔵庫棟、搬送レール、排水溝、煙突。",
@@ -337,7 +2512,94 @@
       "cameraHeight": 0.17,
       "targetHeight": 7,
       "sunAzimuth": 312,
-      "sunElevation": 8
+      "sunElevation": 8,
+      "cityProfile": {
+        "archetype": "封鎖食肉工業高層区",
+        "targetBuildingCount": [
+          23,
+          30
+        ],
+        "coverageRatio": 0.7,
+        "highRiseRatio": 0.77,
+        "dominantHeightM": [
+          23,
+          48
+        ],
+        "secondaryHeightM": [
+          10,
+          21
+        ],
+        "streetWidthM": [
+          9,
+          16
+        ],
+        "blockPattern": "冷蔵塔・加工棟・労働住宅を搬送レール沿いに過密配置",
+        "roofLanguage": "断熱箱屋根・排気塔・吊送トラス",
+        "facadeLanguage": "白化タイル、錆ステンレス、暗い冷蔵扉と排水樋",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "車両洗浄路と中央搬送路だけを空ける",
+        "verticalityRule": "排水床・吊送歩廊・冷蔵塔を縦接続",
+        "forbiddenMotifs": [
+          "過剰な血液表現",
+          "牧歌的農場",
+          "遠景画像",
+          "清潔な白箱反復"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z06-coldchain-tower-palace",
+          "name": "冷鎖凍結塔城",
+          "purpose": "巨大冷蔵庫・アンモニア機械室・配電所の高層複合",
+          "dimensionsM": {
+            "width": 118,
+            "depth": 78,
+            "height": 60
+          },
+          "placement": "北西・冷蔵街区",
+          "silhouette": "無窓の三段塔を外付け配管と傾いた冷却冠が包む",
+          "roof": "蒸発冷却冠と段状機械屋根",
+          "facade": "白化断熱板、黒い縦目地、錆びた避難階段",
+          "materials": [
+            "汚れた白断熱板",
+            "錆ステンレス",
+            "黒ゴム",
+            "冷灰コンクリート"
+          ],
+          "combatFlow": [
+            "荷捌き床の三入口",
+            "冷蔵区画間の格子路",
+            "外階段と機械冠の高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z06-ironrail-processing-hall",
+          "name": "鉄索懸送加工殿",
+          "purpose": "屠体搬送・加工・焼却を一つの長大ラインにした工場",
+          "dimensionsM": {
+            "width": 134,
+            "depth": 72,
+            "height": 46
+          },
+          "placement": "南東・搬出側",
+          "silhouette": "長い鋸歯棟を赤錆の吊送トラスと二本煙突が横断",
+          "roof": "北向き鋸歯と排気モニター",
+          "facade": "白タイル基壇、大開口シャッター、外露出レール",
+          "materials": [
+            "白化タイル",
+            "赤錆鋼",
+            "煤煉瓦",
+            "濡れコンクリート"
+          ],
+          "combatFlow": [
+            "加工床の長軸",
+            "洗浄室の左右迂回",
+            "吊送トラス保守歩廊"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z07": {
       "brief": "雨の隔離検問所。コンクリートゲート、検査レーン、車両封鎖、監視塔。",
@@ -350,7 +2612,94 @@
       "cameraHeight": 0.18,
       "targetHeight": 8,
       "sunAzimuth": 288,
-      "sunElevation": 9
+      "sunElevation": 9,
+      "cityProfile": {
+        "archetype": "隔離検疫ゲート都市",
+        "targetBuildingCount": [
+          24,
+          31
+        ],
+        "coverageRatio": 0.68,
+        "highRiseRatio": 0.79,
+        "dominantHeightM": [
+          25,
+          50
+        ],
+        "secondaryHeightM": [
+          10,
+          21
+        ],
+        "streetWidthM": [
+          12,
+          20
+        ],
+        "blockPattern": "検査レーンを高層宿舎・医療棟・物資庫が両側から圧縮",
+        "roofLanguage": "防爆フラット屋根・気密連絡橋・監視冠",
+        "facadeLanguage": "傾斜PC壁、黄色い気密扉、曇り検査窓と外配管",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "三本の検査車路と除染広場だけを空ける",
+        "verticalityRule": "レーン床・連絡橋・監視塔を接続",
+        "forbiddenMotifs": [
+          "一般的な国境ゲート",
+          "木造市街",
+          "遠景画像",
+          "車両だけで封鎖を表現"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z07-quarantine-gate-fortress",
+          "name": "封疫大関門城",
+          "purpose": "車両検疫・収容・物資移送を一体化した巨大封鎖門",
+          "dimensionsM": {
+            "width": 130,
+            "depth": 84,
+            "height": 48
+          },
+          "placement": "西・主進入路",
+          "silhouette": "三本の厚い門塔を長い検査橋が一枚に束ねる",
+          "roof": "防爆庇と監視スリット冠",
+          "facade": "傾斜壁、巨大除染ノズル、黄色い分節扉",
+          "materials": [
+            "灰UHPC",
+            "黄塗装鋼",
+            "黒ガラス",
+            "白化タイル"
+          ],
+          "combatFlow": [
+            "三つの車両検査トンネル",
+            "収容棟の左右回廊",
+            "上部検査橋の横断路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z07-aegis-decon-hospital",
+          "name": "白盾除染病院塔",
+          "purpose": "感染症治療・除染・指揮を垂直分離した救急要塞",
+          "dimensionsM": {
+            "width": 94,
+            "depth": 78,
+            "height": 72
+          },
+          "placement": "北東・隔離広場",
+          "silhouette": "三枚の楔形病棟が中央の赤い換気塔を囲む",
+          "roof": "負圧排気冠とヘリ救急庇",
+          "facade": "白い深庇、青い気密窓、赤い縦換気リブ",
+          "materials": [
+            "白GRC",
+            "青防眩ガラス",
+            "赤塗装鋼",
+            "灰セラミック"
+          ],
+          "combatFlow": [
+            "救急車庫から除染ロビー",
+            "三病棟の環状連絡階",
+            "外部救難階段からヘリ庇へ"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z08": {
       "brief": "残灯だけが点く地下商業街。駅コンコース、アーチ天井、浸水店舗。",
@@ -363,7 +2712,94 @@
       "cameraHeight": 0.15,
       "targetHeight": 6,
       "sunAzimuth": 180,
-      "sunElevation": 6
+      "sunElevation": 6,
+      "cityProfile": {
+        "archetype": "地下商業駅郭都市",
+        "targetBuildingCount": [
+          25,
+          33
+        ],
+        "coverageRatio": 0.74,
+        "highRiseRatio": 0.75,
+        "dominantHeightM": [
+          18,
+          34
+        ],
+        "secondaryHeightM": [
+          7,
+          15
+        ],
+        "streetWidthM": [
+          7,
+          13
+        ],
+        "blockPattern": "商店街・駅舎・換気塔基部をアーチ天井下へ高密配置",
+        "roofLanguage": "リブヴォールト・ガラスブロック天井・換気井冠",
+        "facadeLanguage": "釉薬タイル、真鍮見切り、閉鎖シャッターと浸水跡",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "中央コンコースと水路状ホームだけを空ける",
+        "verticalityRule": "店舗中二階・跨線橋・換気井を上下接続",
+        "forbiddenMotifs": [
+          "地上の青空背景",
+          "同一シャッター列",
+          "遠景画像",
+          "暗黒だけで奥行きを表現"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z08-subterranean-exchange-rotunda",
+          "name": "地下環状交易宮",
+          "purpose": "商業街・地下鉄・避難都市を束ねる巨大円形コンコース",
+          "dimensionsM": {
+            "width": 126,
+            "depth": 98,
+            "height": 40
+          },
+          "placement": "中央・地下広場",
+          "silhouette": "同心アーチと大換気井が地底の王冠を作る",
+          "roof": "リブ付き環状ヴォールトと中央光井",
+          "facade": "緑釉タイル、真鍮列柱、閉じた店舗アーチ",
+          "materials": [
+            "緑釉タイル",
+            "煤真鍮",
+            "濡れ花崗岩",
+            "乳白ガラスブロック"
+          ],
+          "combatFlow": [
+            "中央ロトンダの環状戦",
+            "四本の放射商店街",
+            "中二階バルコニーと光井階段"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z08-floodgate-station-cathedral",
+          "name": "残灯防潮駅大殿",
+          "purpose": "地下河川水門・鉄道駅・非常発電所を統合した深層施設",
+          "dimensionsM": {
+            "width": 114,
+            "depth": 74,
+            "height": 46
+          },
+          "placement": "東・浸水ホーム",
+          "silhouette": "高い駅ヴォールトを巨大な水門梁と発電塔が横切る",
+          "roof": "鉄骨バレルヴォールトと換気フィン",
+          "facade": "白タイルアーチ、黒い水門、残光する案内帯",
+          "materials": [
+            "白化タイル",
+            "黒鋼",
+            "青緑水",
+            "赤錆銅"
+          ],
+          "combatFlow": [
+            "二本のホーム長軸",
+            "水門機械室の横断",
+            "跨線橋から発電塔への高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z09": {
       "brief": "降灰に埋もれた遊園地。壊れた観覧車、入場門、枯れ木、火山の遠景。",
@@ -376,7 +2812,94 @@
       "cameraHeight": 0.2,
       "targetHeight": 8,
       "sunAzimuth": 232,
-      "sunElevation": 13
+      "sunElevation": 13,
+      "cityProfile": {
+        "archetype": "降灰娯楽都市廃園",
+        "targetBuildingCount": [
+          22,
+          29
+        ],
+        "coverageRatio": 0.63,
+        "highRiseRatio": 0.7,
+        "dominantHeightM": [
+          21,
+          43
+        ],
+        "secondaryHeightM": [
+          8,
+          18
+        ],
+        "streetWidthM": [
+          9,
+          16
+        ],
+        "blockPattern": "劇場・ホテル・遊具機械棟を環状園路沿いに高密配置",
+        "roofLanguage": "破れたテント冠・遊具骨格・アールデコ塔",
+        "facadeLanguage": "退色スタッコ、錆鋼、割れ鏡と灰堆積",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "中央パレード路と観覧車足元のみ開ける",
+        "verticalityRule": "地下サービス路・客席段床・遊具保守路を接続",
+        "forbiddenMotifs": [
+          "遊具だけで建築不足を隠す",
+          "新品のカラフル遊園地",
+          "遠景画像",
+          "同じ売店反復"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z09-ashcrown-wheel-citadel",
+          "name": "灰冠大観覧城",
+          "purpose": "観覧車・展望ホテル・機械館が崩壊融合した遊園地の王冠",
+          "dimensionsM": {
+            "width": 130,
+            "depth": 98,
+            "height": 68
+          },
+          "placement": "北・中央園路",
+          "silhouette": "巨大観覧輪を二本のホテル翼と歯車館が基壇化",
+          "roof": "半壊した輪骨とアールデコ冠",
+          "facade": "退色した幾何学壁、錆フレーム、割れた展望窓",
+          "materials": [
+            "灰色スタッコ",
+            "赤錆鋼",
+            "割れガラス",
+            "退色青塗装"
+          ],
+          "combatFlow": [
+            "機械館の歯車迷路",
+            "ホテル翼の二層回廊",
+            "輪基部の保守階段と高所横断"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z09-eclipse-funhouse-palace",
+          "name": "蝕影鏡迷宮殿",
+          "purpose": "鏡迷路・劇場・屋内遊具を収める巨大娯楽宮",
+          "dimensionsM": {
+            "width": 106,
+            "depth": 84,
+            "height": 50
+          },
+          "placement": "南東・劇場通り",
+          "silhouette": "歪んだ三つのアーチ塔と傾く月形サイン",
+          "roof": "破れたテントドームと階段状劇場屋根",
+          "facade": "割れ鏡、白黒幾何学壁、深い舞台開口",
+          "materials": [
+            "煤鏡",
+            "白黒タイル",
+            "紫錆鋼",
+            "灰積み屋根"
+          ],
+          "combatFlow": [
+            "鏡迷路の短い分岐",
+            "劇場客席の段床",
+            "舞台裏からサイン塔への保守路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "z10": {
       "brief": "火口縁の最終要塞。溶岩の裂け目、円形防衛施設、熱遮蔽塔、火山雲。",
@@ -389,7 +2912,94 @@
       "cameraHeight": 0.23,
       "targetHeight": 9,
       "sunAzimuth": 214,
-      "sunElevation": 8
+      "sunElevation": 8,
+      "cityProfile": {
+        "archetype": "火口環状防衛鉱都",
+        "targetBuildingCount": [
+          21,
+          27
+        ],
+        "coverageRatio": 0.61,
+        "highRiseRatio": 0.76,
+        "dominantHeightM": [
+          24,
+          50
+        ],
+        "secondaryHeightM": [
+          10,
+          20
+        ],
+        "streetWidthM": [
+          12,
+          20
+        ],
+        "blockPattern": "火口縁に沿う円弧兵舎・熱交換棟・砲台塔を高密配置",
+        "roofLanguage": "遮熱シェル・火山灰落とし・蒸気冠",
+        "facadeLanguage": "黒玄武岩、白耐熱鱗、赤熱換気溝と厚い鋼扉",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "火口観測帯と緊急車路一周だけを空ける",
+        "verticalityRule": "環状塹壕・熱交換橋・塔デッキを接続",
+        "forbiddenMotifs": [
+          "中世の溶岩城",
+          "開放的リゾート",
+          "遠景画像",
+          "ブルームで輪郭を失う溶岩"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "z10-caldera-shield-command-ring",
+          "name": "火輪遮蔽司令環",
+          "purpose": "火口監視・避難・最終防衛を担う巨大環状要塞",
+          "dimensionsM": {
+            "width": 138,
+            "depth": 106,
+            "height": 48
+          },
+          "placement": "中央・火口縁",
+          "silhouette": "切れ目のある厚い円環と三枚の傾斜熱盾が火口を囲む",
+          "roof": "分節耐熱シェルと蒸気排出スロット",
+          "facade": "黒い斜面基壇、白い遮熱板、赤い狭窓",
+          "materials": [
+            "黒玄武岩",
+            "白セラミック",
+            "黒化鋼",
+            "赤熱ガラス"
+          ],
+          "combatFlow": [
+            "円環内部の二方向回遊",
+            "三つの火口観測トンネル",
+            "熱盾上の段状狙撃路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "z10-geothermal-needle-fortress",
+          "name": "地熱針塔城",
+          "purpose": "深部熱交換井・発電・噴火観測を担う垂直要塞",
+          "dimensionsM": {
+            "width": 90,
+            "depth": 74,
+            "height": 88
+          },
+          "placement": "北東・火口外輪",
+          "silhouette": "太い玄武岩基壇から白い冷却針と三本蒸気塔が伸びる",
+          "roof": "尖った冷却冠と環状蒸気庇",
+          "facade": "黒石リブ、白い交換器、露出する赤銅管",
+          "materials": [
+            "玄武岩",
+            "白耐熱合金",
+            "赤銅",
+            "黒ガラス"
+          ],
+          "combatFlow": [
+            "発電床の機械迷路",
+            "基壇外周の環状路",
+            "外部交換器に沿う螺旋高所路"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     },
     "renshujo": {
       "brief": "山岳基地の小規模訓練区画。射撃塔、開放格納庫、土塁、近距離障害物。",
@@ -402,7 +3012,94 @@
       "cameraHeight": 0.17,
       "targetHeight": 6,
       "sunAzimuth": 144,
-      "sunElevation": 46
+      "sunElevation": 46,
+      "cityProfile": {
+        "archetype": "山岳訓練基地町",
+        "targetBuildingCount": [
+          20,
+          26
+        ],
+        "coverageRatio": 0.62,
+        "highRiseRatio": 0.7,
+        "dominantHeightM": [
+          20,
+          38
+        ],
+        "secondaryHeightM": [
+          8,
+          16
+        ],
+        "streetWidthM": [
+          10,
+          17
+        ],
+        "blockPattern": "斜面に指揮棟・兵舎・標的工房を段状密集",
+        "roofLanguage": "雪切り片流れ・偽装草屋根・監視冠",
+        "facadeLanguage": "荒いPC、深い木ルーバー、迷彩鋼板と石基壇",
+        "horizonStrategy": "foreground境界・midground街区・distant低詳細実メッシュの3層。画像マット/円筒背景は禁止",
+        "openSpaceRule": "近距離訓練路三本と集合広場だけを空ける",
+        "verticalityRule": "塹壕・屋上・尾根塔を短い階段で接続",
+        "forbiddenMotifs": [
+          "kunrenの縮小コピー",
+          "観光山小屋",
+          "遠景画像",
+          "電線を斜面境界にすること"
+        ]
+      },
+      "megaLandmarks": [
+        {
+          "id": "renshujo-ridge-command-lodge",
+          "name": "連峰統合指揮館",
+          "purpose": "山岳戦教育・救難・通信を収める斜面型司令棟",
+          "dimensionsM": {
+            "width": 98,
+            "depth": 70,
+            "height": 50
+          },
+          "placement": "北西・尾根中腹",
+          "silhouette": "三段の石基壇と斜めに伸びる通信翼が山稜へ同化",
+          "roof": "大きな片流れ屋根と偽装植生冠",
+          "facade": "荒石基壇、縦木ルーバー、傾斜PC防壁",
+          "materials": [
+            "山石",
+            "焦茶木",
+            "迷彩鋼",
+            "低反射ガラス"
+          ],
+          "combatFlow": [
+            "車庫を貫く一階路",
+            "中庭を囲む二階回廊",
+            "尾根側屋上と通信翼への上昇"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        },
+        {
+          "id": "renshujo-twinridge-target-tower",
+          "name": "双稜可変標的城",
+          "purpose": "可動標的・近接訓練街・観測塔を一体化した教育巨構",
+          "dimensionsM": {
+            "width": 90,
+            "depth": 62,
+            "height": 64
+          },
+          "placement": "南東・射撃路終端",
+          "silhouette": "二本の異高観測塔を可動標的壁と橋が結ぶ",
+          "roof": "開放監視冠と雪切り庇",
+          "facade": "番号付きPC面、可動鋼壁、橙色安全フレーム",
+          "materials": [
+            "灰PC",
+            "黒鋼",
+            "橙塗装",
+            "白い防雪板"
+          ],
+          "combatFlow": [
+            "可変壁の三レーン",
+            "塔脚の短い回遊",
+            "橋と外階段の高所横断"
+          ],
+          "lodPolicy": "LOD0は入口・主稜線・接触影を保持し、LOD1は窓/手摺をアトラス化、LOD2は屋根と塔の輪郭だけをHLOD化"
+        }
+      ]
     }
   }
 }

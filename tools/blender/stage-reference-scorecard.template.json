@@ -1,0 +1,23 @@
+{
+  "stageId": "replace-me",
+  "referenceSha256": "replace-me",
+  "renderSha256": "replace-me",
+  "reviewer": "replace-me",
+  "notes": "Compare the approved 1.65 m hero view directly against the private ImageGen reference. Record concrete visual evidence for every low score.",
+  "verdict": "NO-SHIP",
+  "scores": {
+    "composition": 0,
+    "heroSilhouettes": 0,
+    "architecturalGrammar": 0,
+    "facadeOpeningQuality": 0,
+    "humanScale": 0,
+    "materialRealism": 0,
+    "nearMidFarDensity": 0,
+    "terrainAndWorldContinuity": 0,
+    "landmarkInteriorLegibility": 0,
+    "gameplayReadability": 0,
+    "propsAndStorytelling": 0,
+    "lightingAndAtmosphere": 0,
+    "referenceIdentity": 0
+  }
+}
