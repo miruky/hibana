@@ -30,7 +30,10 @@
 
 ## プロジェクト鉄則
 
-- **アセットレス**: バイナリ資産ゼロ。Three.js primitives / procedural GLSL / 頂点カラー / WebAudio合成 / DOM+CSS+inline-SVG のみ。外部fetch不可。
+- **アセットレスは2026-07-19に完全撤回（ユーザー明示）**。環境・敵兵の見た目は Blender 5.2 LTS で制作し glTF 2.0 (`public/assets/aaa/`) で配信する。正典は `docs/REQUIREMENTS.md`「Blender 配信アセットの実装境界」と `AGENTS.md`。
+  - ただし**フェイルオープンは維持**: GLB 欠損/不正 manifest/読込・コンパイル失敗/low画質では決定論的な TypeScript 外装へ必ず戻る。音は引き続き WebAudio 全面合成、UI は DOM+CSS+inline-SVG。
+  - **衝突・スポーン・経路・破壊物・物理は TypeScript / Rapier 側が正典**（`src/game/stage.ts` / `stages.ts`）。Blender 資産は表示のみで、当たり判定や動線を宣言で作らない。
+  - 配信予算・検証ゲートは `docs/STAGE_WORLD_CATALOG.md` と `npm run blender:validate` に従う。技術PASSは視覚PASSではない（ImageGen参照スコアカードが別ゲート）。
 - 固定60Hzロジック＋可変レンダ、snapshot()→DOM一方向、試合ごとdispose、コライダー不変。
 - canvas上のパネルに filter/backdrop-filter を載せない。bloom閾値0.9を超える発光を足さない（白飛び再発禁止）。
 - 空の明暗調整は match.ts `applySky` の可視空 scale/clamp のみ（envSky=IBLは触らない＝ステージの明るさ維持）。

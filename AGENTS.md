@@ -21,6 +21,16 @@
 - Water should use stage-appropriate real geometry and lightweight environment reflection. Do not add a full-scene planar reflection pass without a measured performance budget.
 - Cinematic depth of field belongs to thumbnails and article renders. Normal gameplay must preserve target readability unless the existing ADS design explicitly asks for depth of field.
 
+## Current dense-world production contract
+
+- Treat all 31 fixed stages as distinct, dense settlements. Preserve roads, plazas, firing lanes, and traversal clearance, but make tall buildings the majority and low buildings the minority.
+- Every stage must contain exactly two stage-exclusive mega-landmarks at castle scale. Across the full catalog, all 62 landmark identities, silhouettes, roof languages, materials, and narrative functions must be unique. The existing Takadai abbey remains Takadai-only and requires a different second landmark.
+- Do not use distant raster images or cylindrical picture walls as the authored horizon. After the Blender asset loads, the visible exterior must be actual layered 3D terrain, buildings, infrastructure, vegetation, water, and atmospheric depth.
+- Reusable modules are allowed internally, but each stage must have a dedicated facade kit, roof profile, skyline composition, material palette, and district arrangement that prevents the buildings from reading as cloned across maps.
+- Enemy soldiers must be authored and animated in Blender from a clean shared skeleton. External reference GLBs are observation-only unless their redistribution license is verified; do not ship copied or embedded unknown-license source meshes or textures.
+- First-person finger quality is a release gate: inspect all weapon families, exotic weapons, four kunai modes, ADS, fire, and multiple reload timestamps in real muted background browser captures.
+- Update README and production documentation, then validate, push `main`, and verify the exact deployed SHA before marking this phase complete.
+
 ## Validation
 
 - Keep routine browser validation headless, muted, and background-only.
