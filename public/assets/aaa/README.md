@@ -1,4 +1,4 @@
-# Hibana AAA asset drop zone
+# Hibana high-density asset drop zone
 
 `manifest.json` is the runtime contract for optional high-density environment assets.
 Models must be original or properly licensed glTF/GLB files. Meshopt is supported by default;

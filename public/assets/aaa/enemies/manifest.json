@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "packVersion": 1,
+  "id": "hibana-enemy-soldiers",
+  "authorship": "Original procedural Hibana asset",
+  "referenceSourceIncluded": false,
+  "sharedSkeleton": "ARM_Enemy_Shared",
+  "heightMeters": 1.8,
+  "forwardAxis": "-Z",
+  "variants": [
+    "rifleman",
+    "breacher",
+    "scout",
+    "marksman",
+    "support",
+    "medic"
+  ],
+  "animations": [
+    "AN_Soldier_Idle",
+    "AN_Soldier_RifleReady",
+    "AN_Soldier_Aim",
+    "AN_Soldier_Fire",
+    "AN_Soldier_Reload",
+    "AN_Soldier_WalkForward",
+    "AN_Soldier_WalkBackward",
+    "AN_Soldier_StrafeLeft",
+    "AN_Soldier_StrafeRight",
+    "AN_Soldier_RunForward",
+    "AN_Soldier_HitFront",
+    "AN_Soldier_HitBack",
+    "AN_Soldier_DeathFront",
+    "AN_Soldier_DeathBack"
+  ],
+  "lods": [
+    {
+      "level": 0,
+      "url": "soldier-pack-lod0.glb",
+      "screenHeightMin": 0.24
+    },
+    {
+      "level": 1,
+      "url": "soldier-pack-lod1.glb",
+      "screenHeightMin": 0.09
+    },
+    {
+      "level": 2,
+      "url": "soldier-pack-lod2.glb",
+      "screenHeightMin": 0.0
+    }
+  ],
+  "budgets": {
+    "maxMaterials": 8,
+    "maxBones": 32,
+    "maxTriangles": {
+      "lod0": 90000,
+      "lod1": 42000,
+      "lod2": 18000
+    },
+    "maxBytes": {
+      "lod0": 5500000,
+      "lod1": 3500000,
+      "lod2": 2500000
+    }
+  }
+}
