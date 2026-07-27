@@ -414,6 +414,12 @@ export class ZombieCrowdRenderer {
     return this.activeSlots;
   }
 
+  /** Query-gated stage screenshot audit: keep compaction/AI ownership intact, hide draws only. */
+  setVisible(visible: boolean): void {
+    for (const mesh of this.all) mesh.visible = visible;
+    if (this.prewarmGroup) this.prewarmGroup.visible = visible;
+  }
+
   setPrewarm(enabled: boolean): void {
     if (enabled) {
       if (!this.prewarmGroup) {

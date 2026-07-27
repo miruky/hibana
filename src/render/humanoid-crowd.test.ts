@@ -493,4 +493,21 @@ describe('HumanoidCrowdRenderer(スロット管理とGPUバッファ)', () => {
     crowd.dispose(scene);
     expect(scene.children.length).toBe(before);
   });
+
+  it('stage audit visibilityはslot/countを変えず群メッシュだけ隠す', () => {
+    const scene = new THREE.Scene();
+    const crowd = new HumanoidCrowdRenderer(scene);
+    const slot = crowd.acquire();
+    crowd.pose(slot, emptyPose());
+    crowd.commit();
+    const before = crowd.activeCount();
+    crowd.setVisible(false);
+    expect(scene.children.filter((child) => child instanceof THREE.InstancedMesh))
+      .toHaveLength(11);
+    expect(scene.children.every((child) => child.visible === false)).toBe(true);
+    expect(crowd.activeCount()).toBe(before);
+    crowd.setVisible(true);
+    expect(scene.children.every((child) => child.visible === true)).toBe(true);
+    crowd.dispose(scene);
+  });
 });

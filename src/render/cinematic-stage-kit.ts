@@ -763,6 +763,9 @@ function buildDistantWorld(
 ): THREE.Group {
   const root = new THREE.Group();
   root.name = 'aaa:distant-world';
+  // 外部Blenderステージが失敗した時だけ残す、実ジオメトリのfail-open遠景。
+  // AaaStageAssetPipelineはGLBのロードとcompileが成功した後にだけこのrootを隠す。
+  root.userData.proceduralDistantWorldFallback = true;
   markObject(root);
   const isNatural = family === 'wilderness' || family === 'arctic' || family === 'geothermal';
 
@@ -812,6 +815,9 @@ function buildDistantWorld(
   });
   const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
   terrain.name = 'aaa:continuous-world-terrain';
+  // 不可視のゲーム境界とは独立した視覚境界。電線や画像マットではなく、地形そのものが
+  // プレイ領域の外へ連続することを回帰テストから識別できるようにする。
+  terrain.userData.hibanaVisualBoundary = 'continuous-terrain';
   terrain.receiveShadow = false;
   terrain.castShadow = false;
   markObject(terrain, 0);
@@ -949,22 +955,33 @@ function utilityCabinetGeometry(): THREE.BufferGeometry {
 }
 
 /**
- * 不可視境界のすぐ外へ、人間スケールのインフラを連続配置する。
- * プレイヤー／AI／弾道とは交差せず、箱庭の外にも道路と生活圏が続くことだけを示す。
- * highでも pole/lamp/cabinet/cable の最大4DCに固定する。
+ * 不可視境界のすぐ外へ、人間スケールの道路設備を点在させる。
+ * プレイヤー／AI／弾道とは交差せず、箱庭の外にも生活圏が続くことだけを示す。
+ * 電線で周囲を一周させると境界線に見えるため、独立した街灯・盤だけを最大3DCで置く。
  */
-function buildBoundaryInfrastructure(
+function buildPerimeterStreetInfrastructure(
   stage: StageDef,
   family: StageVisualFamily,
   budget: StageKitBudget,
   rand: Rand,
 ): THREE.Group {
   const root = new THREE.Group();
-  root.name = 'aaa:boundary-infrastructure';
+  root.name = 'aaa:perimeter-street-infrastructure';
   markObject(root, 0);
   const anchors: Array<{ x: number; z: number; height: number; yaw: number; lean: number }> = [];
+  // 連続した円環は、ケーブルが無くても「ここが境界」と読まれやすい。三つの進入路沿いへ
+  // 街灯列を分割し、十分に大きい無設置区間を残して地形・建築を境界の主役にする。
+  const clusterCount = 3;
+  const slotsPerCluster = Math.ceil(budget.infrastructure / clusterCount);
+  const clusterOffset = rand() * Math.PI * 2;
   for (let i = 0; i < budget.infrastructure; i += 1) {
-    const angle = (i / budget.infrastructure) * Math.PI * 2 + (rand() - 0.5) * 0.1;
+    const cluster = i % clusterCount;
+    const slot = Math.floor(i / clusterCount);
+    const clusterT = slotsPerCluster <= 1 ? 0 : slot / (slotsPerCluster - 1) - 0.5;
+    const angle = clusterOffset
+      + cluster * (Math.PI * 2 / clusterCount)
+      + clusterT * 0.42
+      + (rand() - 0.5) * 0.035;
     const radius = stage.size * (0.535 + rand() * 0.055);
     const height = 0.86 + rand() * 0.24;
     anchors.push({
@@ -1067,120 +1084,6 @@ function buildBoundaryInfrastructure(
     root.add(configureInstances(cabinets, 2));
   }
 
-  if (budget.utilityCabinets > 0 && family !== 'airport') {
-    const cableParts: THREE.BufferGeometry[] = [];
-    for (let i = 0; i < anchors.length; i += 1) {
-      const a = anchors[i]!;
-      const b = anchors[(i + 1) % anchors.length]!;
-      const ay = 4.72 * a.height;
-      const by = 4.72 * b.height;
-      const points = [
-        new THREE.Vector3(a.x, ay, a.z),
-        new THREE.Vector3((a.x * 2 + b.x) / 3, THREE.MathUtils.lerp(ay, by, 1 / 3) - 0.22, (a.z * 2 + b.z) / 3),
-        new THREE.Vector3((a.x + b.x * 2) / 3, THREE.MathUtils.lerp(ay, by, 2 / 3) - 0.22, (a.z + b.z * 2) / 3),
-        new THREE.Vector3(b.x, by, b.z),
-      ];
-      cableParts.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 8, 0.018, 3, false));
-    }
-    const cables = new THREE.Mesh(
-      mergedFixtureGeometry(cableParts, 'stage overhead cables'),
-      new THREE.MeshStandardMaterial({ color: 0x111317, roughness: 0.58, metalness: 0.34, fog: true }),
-    );
-    cables.name = 'aaa:perimeter-overhead-cables';
-    cables.castShadow = false;
-    cables.receiveShadow = false;
-    markObject(cables, 3);
-    root.add(cables);
-  }
-  return root;
-}
-
-/**
- * ステージ別生成アートを、プレイ境界よりも外側の遠景だけに合成する。
- *
- * サムネイルを床や衝突物の代わりに貼る「ハリボテ」ではなく、上で生成した
- * 実体建築・連続地形・ヒーローランドマークのさらに奥でのみ使う matte painting。
- * 640x368 WebP 1枚、1 draw call、ステージ交換時にテクスチャをdisposeする。lowでは読み込まない。
- */
-function buildDistantStageMatte(stage: StageDef, tier: GraphicsQuality): THREE.Group {
-  const root = new THREE.Group();
-  root.name = 'aaa:distant-stage-matte-root';
-  markObject(root, 1);
-  if (tier === 'low' || !FIXED_IDENTITIES[stage.id]) return root;
-
-  const base = import.meta.env.BASE_URL.endsWith('/')
-    ? import.meta.env.BASE_URL
-    : `${import.meta.env.BASE_URL}/`;
-  const url = `${base}assets/stage-thumbs/${stage.id}.webp`;
-  const canLoadImage = typeof document !== 'undefined' && typeof document.createElementNS === 'function';
-  const texture = !canLoadImage
-    ? new THREE.DataTexture(new Uint8Array([96, 104, 112, 255]), 1, 1)
-    : new THREE.TextureLoader().load(url);
-  texture.name = `stage-matte:${stage.id}`;
-  texture.colorSpace = THREE.SRGBColorSpace;
-  // 左右端を鏡面反復し、環境マット間の縦シームを消す。
-  texture.wrapS = THREE.MirroredRepeatWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-  texture.repeat.set(4, 1);
-  texture.offset.x = ((stage.seed * 37) % 100) / 100;
-  texture.minFilter = THREE.LinearMipmapLinearFilter;
-  texture.magFilter = THREE.LinearFilter;
-  texture.needsUpdate = true;
-
-  const radius = stage.size * 0.92;
-  // 1リピート分の物理アスペクトを元画像(640/368)に合わせ、横伸びを防ぐ。
-  const sourceAspect = 640 / 368;
-  const imageHeightAtCorrectAspect = (Math.PI * 2 * radius / 4) / sourceAspect;
-  // サムネイルの天井・橋・クレーンを360度パノラマの頭上に再利用すると、
-  // 「巨大な天井」に見える。正しい縦横比の高さだけを使い、上偲42%を長くフェードして
-  // 実3D遠景とSky.jsへ戻す。マットは地平線の低い帯に限定する。
-  const height = imageHeightAtCorrectAspect;
-  texture.repeat.y = 1;
-  texture.offset.y = 0;
-  const alphaBytes = new Uint8Array(64 * 4);
-  for (let i = 0; i < 64; i += 1) {
-    const t = i / 63;
-    const bottom = THREE.MathUtils.clamp(t / 0.12, 0, 1);
-    const top = THREE.MathUtils.clamp((1 - t) / 0.42, 0, 1);
-    const x = Math.min(bottom, top);
-    const smooth = x * x * (3 - 2 * x);
-    const value = Math.round(smooth * 255);
-    alphaBytes[i * 4] = value;
-    alphaBytes[i * 4 + 1] = value;
-    alphaBytes[i * 4 + 2] = value;
-    alphaBytes[i * 4 + 3] = 255;
-  }
-  const alphaMap = new THREE.DataTexture(alphaBytes, 1, 64, THREE.RGBAFormat);
-  alphaMap.name = `stage-matte-alpha:${stage.id}`;
-  alphaMap.wrapS = THREE.ClampToEdgeWrapping;
-  alphaMap.wrapT = THREE.ClampToEdgeWrapping;
-  alphaMap.repeat.set(1, 1);
-  alphaMap.offset.y = 0;
-  alphaMap.minFilter = THREE.LinearFilter;
-  alphaMap.magFilter = THREE.LinearFilter;
-  alphaMap.needsUpdate = true;
-  const geometry = new THREE.CylinderGeometry(radius, radius, height, tier === 'high' ? 72 : 48, 1, true);
-  const undead = /^z\d\d$/.test(stage.id);
-  const material = new THREE.MeshBasicMaterial({
-    color: undead ? new THREE.Color(1.28, 1.28, 1.28) : new THREE.Color(0xffffff),
-    map: texture,
-    alphaMap,
-    side: THREE.BackSide,
-    transparent: true,
-    opacity: undead ? 0.40 : 0.28,
-    depthWrite: false,
-    fog: true,
-    toneMapped: false,
-  });
-  material.userData.ownedMaps = [texture, alphaMap];
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.name = 'aaa:distant-stage-matte';
-  mesh.position.y = height / 2 - 4;
-  mesh.rotation.y = ((stage.seed * 0.61803398875) % 1) * Math.PI * 2;
-  mesh.renderOrder = -3;
-  mesh.frustumCulled = false;
-  markObject(mesh, 1);
-  root.add(mesh);
   return root;
 }
 
@@ -1465,8 +1368,7 @@ export function buildCinematicStageKit(options: CinematicStageKitOptions): THREE
   root.add(buildGroundingLayer(options.stage, identity.family, options.boxes, budget, rand));
   root.add(buildMacroRubble(options.stage, identity.family, options.boxes, options.propPlacements, budget.rubble, rand));
   root.add(buildDistantWorld(options.stage, identity.family, budget.skyline, rand));
-  root.add(buildBoundaryInfrastructure(options.stage, identity.family, budget, rand));
-  root.add(buildDistantStageMatte(options.stage, options.tier));
+  root.add(buildPerimeterStreetInfrastructure(options.stage, identity.family, budget, rand));
   root.add(buildHeroLandmark(options.stage, identity));
   root.add(buildCinematicEnvironment({
     stage: options.stage,

@@ -530,6 +530,21 @@ describe('ZombieCrowdRenderer(スロット管理とGPUバッファ)', () => {
     crowd.dispose(scene);
     expect(scene.children.length).toBe(before);
   });
+
+  it('stage audit visibilityはactive slotを保持したまま14本の群メッシュだけ隠す', () => {
+    const scene = new THREE.Scene();
+    const crowd = new ZombieCrowdRenderer(scene);
+    crowd.acquire();
+    const before = crowd.activeCount();
+    crowd.setVisible(false);
+    expect(scene.children.filter((child) => child instanceof THREE.InstancedMesh))
+      .toHaveLength(14);
+    expect(scene.children.every((child) => child.visible === false)).toBe(true);
+    expect(crowd.activeCount()).toBe(before);
+    crowd.setVisible(true);
+    expect(scene.children.every((child) => child.visible === true)).toBe(true);
+    crowd.dispose(scene);
+  });
 });
 
 // ★HF(R54): シャンブルポーズの前方性回帰テスト。R53以前から「前=+Z」前提で

@@ -370,6 +370,11 @@ export class HumanoidCrowdRenderer {
     return c;
   }
 
+  /** Query-gated stage screenshot audit: keep slots/pose work intact, hide rendering only. */
+  setVisible(visible: boolean): void {
+    for (const mesh of this.all) mesh.visible = visible;
+  }
+
   /** 試合dispose: シーンから外しインスタンス属性+aGlow用cloneジオメトリを解放。
    * 正準ジオメトリ/共有マテリアルはモジュール寿命(有界)なので解放しない。 */
   dispose(scene: THREE.Scene): void {

@@ -24,8 +24,20 @@ export function createGltfRuntime(renderer, base, options) {
     loader.setDRACOLoader(draco);
   }
   return {
-    async loadScene(url) {
-      const result = await loader.loadAsync(url);
+    async loadScene(url, signal) {
+      // GLTFLoader.loadAsync does not expose AbortSignal. Fetch the GLB body
+      // explicitly so a disposed match cannot retain an unbounded body
+      // request, then hand the completed bytes to the official parser. The
+      // decoder/parser phase itself remains governed by Three's loader APIs.
+      const response = await globalThis.fetch(url, { signal, cache: 'force-cache' });
+      if (!response.ok) throw new Error(`GLB HTTP ${response.status}: ${url}`);
+      const payload = await response.arrayBuffer();
+      const slash = url.lastIndexOf('/');
+      const resourcePath = slash >= 0 ? url.slice(0, slash + 1) : '';
+      const result = await loader.parseAsync(payload, resourcePath);
+      // Object3D.animationsはThree標準の保管場所。小さなfacadeを保ったまま、
+      // 環境GLBと共通のMeshopt/Draco/KTX2 loaderでスキンアニメも取得できる。
+      result.scene.animations = result.animations;
       return result.scene;
     },
     clone(source) {

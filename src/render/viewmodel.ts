@@ -356,10 +356,17 @@ function getShared(): SharedMats {
       // コヨーテブラウンの戦闘服 + 茶系タクティカルグローブ。色相・粗さを分け、
       // 黒い銃やダークマターにも埋没せず、肌ではなく兵士の装備として読める配色にする。
       sleeve,
-      glove: clothMat(0x291f17, 0.96),
-      glovePalm: clothMat(0x49382a, 0.99),
-      gloveArmor: clothMat(0x171819, 0.86),
-      gloveStitch: clothMat(0x9b7b55, 0.94),
+      // V7: palm, fingers and thumb are one dark tactical glove family. The
+      // previous orange/tan palette produced skin-coloured outlines under the
+      // reload key light. Shape and roughness now describe the anatomy; muted
+      // value steps retain cloth/pad separation without detached bright seams.
+      // Lift only the diffuse value by ~18%; roughness stays near one, so the
+      // glove remains non-glossy while its finger silhouette is legible on the
+      // blue-grey QA stage without adding a gameplay light or draw call.
+      glove: clothMat(0x50544a, 0.96),
+      glovePalm: clothMat(0x5b594f, 0.99),
+      gloveArmor: clothMat(0x292b2c, 0.94),
+      gloveStitch: clothMat(0x56534b, 0.98),
       skin: clothMat(0x6e4b33, 0.9),
     };
   }
@@ -1929,6 +1936,28 @@ export function buildGunBody(
     boxP(metalParts, C_DARK, 0.04, 0.008, 0.012, 0, -0.062, 0.05, 0, 0, 0, 'flat');
   }
 
+  // 拳銃は弾倉がグリップ内に収まるため feed:'none' だが、リロードでは
+  // 弾倉本体が必要。グリップ内部に収納した可動マガジンを別ノードにし、
+  // restでは底板だけが見え、下降時にグリップから引き出される構造にする。
+  if (sil.magInGrip && sil.feed === 'none') {
+    const mv = newMovable('vm:magazine');
+    bakeAt(
+      mv.poly,
+      chamferBox(0.038, 0.105, 0.044, 0.003),
+      C_POLY,
+      0,
+      -0.122,
+      0.1,
+      0.3,
+      0,
+      0,
+    );
+    boxP(mv.metal, C_RIM, 0.044, 0.009, 0.05, 0, -0.174, 0.116, 0.3, 0, 0, 'flat');
+    for (let i = 0; i < 3; i += 1) {
+      boxP(mv.poly, C_GROOVE, 0.039, 0.004, 0.038, 0, -0.114 - i * 0.018, 0.108, 0.3, 0, 0, 'flat');
+    }
+  }
+
   // ── 給弾部(着脱弾倉/フォアエンドは可動 vm:*) ──
   switch (sil.feed) {
     case 'mag-curved': {
@@ -2568,13 +2597,112 @@ export interface FirstPersonGripProfile {
   readonly reloadGesture: 'magazine' | 'staff' | 'heavy' | 'blade' | 'generic';
 }
 
+/** 引き金のない柄物で人差し指だけが伸びるのを防ぐ。 */
+export function resolveFirstPersonRightGrip(def: WeaponDef): 'trigger' | 'power' {
+  switch (def.shape) {
+    case 'fists':
+    case 'lightning-staff':
+    case 'bow-japanese':
+    case 'war-fan':
+    case 'shuriken-hand':
+      return 'power';
+    default:
+      return 'trigger';
+  }
+}
+
+/** 片手で扱う扇・手裏剣の空いた左手は、銃の支持形ではなく閉じた近接ガードにする。 */
+export function resolveFirstPersonLeftGrip(def: WeaponDef): 'support' | 'guard' {
+  switch (def.shape) {
+    case 'fists':
+    case 'war-fan':
+    case 'shuriken-hand':
+      return 'guard';
+    default:
+      return 'support';
+  }
+}
+
+export type SupportHandPoseDelta = readonly [
+  x: number,
+  y: number,
+  z: number,
+  pitch: number,
+  yaw: number,
+  roll: number,
+];
+
+const ZERO_SUPPORT_HAND_DELTA: SupportHandPoseDelta = [0, 0, 0, 0, 0, 0];
+
+/**
+ * Real-browser close-up calibration kept separate from the family grip pose.
+ * Kaede is the visual gate: its hand turns into a shallow V beneath the FAMAS
+ * handguard in idle/ADS, while reload blends this delta completely out before
+ * the authored magazine contact rotation. Other weapon families stay unchanged
+ * until the Kaede gate is approved.
+ */
+export function resolveSupportHandIdleCalibration(def: WeaponDef): SupportHandPoseDelta {
+  return def.id === 'kaede-ar'
+    // Twenty degrees of additional inward forearm rotation from Q15. The palm
+    // now faces the handguard, thumb remains on the outer/top rail and the
+    // four terminal pads disappear beneath it instead of facing the camera.
+    // Q17j adds a further inward yaw so the metacarpal plane clears the
+    // fixed-camera silhouette instead of projecting as a triangular terminal
+    // cap. The same yaw is carried by the absolute family pose below so the
+    // existing supportReach blend still removes it before reload contact.
+    ? [0.004, -0.034, 0.051, -0.60, -0.22, 1.7]
+    : ZERO_SUPPORT_HAND_DELTA;
+}
+
+/**
+ * 武器族ごとの支持点補正。長銃用の回転を拳銃・杖・重火器へ流用すると、支持手が
+ * スライド横へ浮く／シャフトを外す／大型レシーバへ埋まるため、接触形状ごとに分ける。
+ */
+export function resolveSupportHandPoseDelta(def: WeaponDef): SupportHandPoseDelta {
+  if (def.id === 'kaede-ar') {
+    // default long-gun support [0.02, 0.01, 0, 0, 0, -0.12]
+    // plus the fixed-camera calibration above. Q17h removes the remaining
+    // 12mm screen-right drift: the old rest left the compact palm behind the
+    // FAMAS handguard, so only two terminal pads appeared at the sleeve tip;
+    // Q17j keeps the matching -0.22 yaw in this absolute family pose. Reload
+    // contact remains geometry-derived and therefore unchanged.
+    return [0.024, -0.009, 0.051, -0.60, -0.22, 1.58];
+  }
+  switch (def.shape ?? classDefault(def.class)) {
+    case 'pistol':
+    case 'revolver':
+    case 'machine-pistol':
+      return [0.035, 0.01, -0.015, 0, 0, 0.05];
+    case 'lightning-staff':
+    case 'bow-japanese':
+      return [0.005, 0.005, 0, 0, 0, -0.06];
+    case 'minigun':
+    case 'launcher':
+    case 'lmg-belt':
+    case 'lmg-drum':
+      return [0.01, 0.005, 0, 0, 0, -0.08];
+    default:
+      return [0.02, 0.01, 0, 0, 0, -0.12];
+  }
+}
+
+export type MagazineReloadFamily = 'conventional' | 'bullpup' | 'pistol';
+
+/** Detachable-magazine contact point family used only by the first-person animation. */
+export function resolveMagazineReloadFamily(def: WeaponDef): MagazineReloadFamily {
+  const shape = def.shape ?? classDefault(def.class);
+  if (shape === 'pistol' || shape === 'machine-pistol') return 'pistol';
+  if (shape === 'bullpup' || def.modelKey === 'ar-famas') return 'bullpup';
+  return 'conventional';
+}
+
 /**
  * 武器形状ごとの二点保持姿勢。手から前腕は hand 階層内で接続済みなので、ここでは
  * 「どこを握るか」だけを決める。特殊武器へ汎用AR姿勢を流用しないことが重要。
  */
 export function resolveFirstPersonGripProfile(def: WeaponDef): FirstPersonGripProfile {
   const bs = def.bodyScale ?? resolveSilhouette(def).bodyScale;
-  switch (def.shape) {
+  switch (def.shape ?? classDefault(def.class)) {
     case 'fists':
       return {
         right: {
@@ -2598,7 +2726,7 @@ export function resolveFirstPersonGripProfile(def: WeaponDef): FirstPersonGripPr
         },
         left: {
           arm: [-0.13, -0.2, 0.02, 0.48, 0.2, 0.2],
-          hand: [-0.036, -0.052, -0.245, 0.18, 0.24, -1.44],
+          hand: [-0.036, -0.052, -0.245, 0.52, 0.24, -1.44],
         },
         reloadGesture: 'staff',
       };
@@ -2610,7 +2738,7 @@ export function resolveFirstPersonGripProfile(def: WeaponDef): FirstPersonGripPr
         },
         left: {
           arm: [-0.16, -0.21, 0.03, 0.5, 0.22, 0.22],
-          hand: [-0.04, -0.044, -0.205, 0.16, 0.28, -1.46],
+          hand: [-0.04, -0.044, -0.205, 0.54, 0.28, -1.46],
         },
         reloadGesture: 'blade',
       };
@@ -2623,7 +2751,7 @@ export function resolveFirstPersonGripProfile(def: WeaponDef): FirstPersonGripPr
         },
         left: {
           arm: [-0.15, -0.22, 0.08, 0.5, 0.2, 0.24],
-          hand: [-0.092, -0.102, -0.08, 0.22, 0.3, -1.42],
+          hand: [-0.092, -0.102, -0.08, 0.42, 0.3, -1.42],
         },
         reloadGesture: 'blade',
       };
@@ -2638,7 +2766,7 @@ export function resolveFirstPersonGripProfile(def: WeaponDef): FirstPersonGripPr
         },
         left: {
           arm: [-0.17, -0.25, 0.05, 0.6, 0.28, 0.32],
-          hand: [-0.045, -0.07, -0.21 * bs, 0.34, 0.3, -1.44],
+          hand: [-0.045, -0.07, -0.21 * bs, 0.58, 0.3, -1.44],
         },
         reloadGesture: 'heavy',
       };
@@ -2652,7 +2780,7 @@ export function resolveFirstPersonGripProfile(def: WeaponDef): FirstPersonGripPr
         },
         left: {
           arm: [-0.16, -0.29, 0.19, 0.52, 0.2, 0.22],
-          hand: [-0.035, -0.084, 0.014, 0.3, 0.3, -1.48],
+          hand: [-0.035, -0.084, 0.014, 0.56, 0.3, -1.48],
         },
         reloadGesture: 'magazine',
       };
@@ -2664,7 +2792,7 @@ export function resolveFirstPersonGripProfile(def: WeaponDef): FirstPersonGripPr
         },
         left: {
           arm: [-0.16, -0.23, 0.06, 0.58, 0.28, 0.32],
-          hand: [-0.052, -0.058, -0.17 * bs, 0.34, 0.32, -1.46],
+          hand: [-0.052, -0.058, -0.17 * bs, 0.6, 0.32, -1.46],
         },
         reloadGesture: 'generic',
       };
@@ -2712,6 +2840,22 @@ interface MovableRig {
   bolt?: THREE.Object3D; // ボルトアクション(側面ハンドル)
   charging?: THREE.Object3D; // チャージングハンドル(AR/SMG)
   magazine?: THREE.Object3D; // 着脱弾倉(リロードで落下)
+  /** 弾倉ローカルの把持点。setWeapon時に一度だけ実ジオメトリから求める。 */
+  magazineGripPoint?: THREE.Vector3;
+  /** magazine.parent から supportHand.parent への固定変換。 */
+  magazineToSupportParent?: THREE.Matrix4;
+  /** 弾倉自身の回転へ追従する、実ジオメトリのローカル境界。 */
+  magazineBounds?: THREE.Box3;
+  /** 4指先と対置親指の中点(支持手ローカル)。 */
+  supportGripAnchor?: THREE.Vector3;
+  supportFingerTips?: THREE.Vector3[];
+  supportFingerTipRadii?: number[];
+  supportThumbTip?: THREE.Vector3;
+  supportThumbTipRadius?: number;
+  /** Diagnostic/contact glove mesh carrying the Kaede support-hand metadata. */
+  supportGlove?: THREE.Mesh;
+  /** Every Kaede hand material mesh participating in the synchronized idle morph. */
+  supportHandMorphMeshes?: THREE.Mesh[];
   cylinder?: THREE.Object3D; // 回転シリンダ(発砲で回る)
   forend?: THREE.Object3D; // ポンプ・フォアエンド(前後)
   // R53-W1 F3: 修羅(ミニガン)バレルクラスタ(スピンで回る)。setWeapon時に一度だけ捕捉し、
@@ -2731,12 +2875,34 @@ interface RigPoseNode {
   readonly rotation: THREE.Euler;
 }
 
+/**
+ * root自身のローカル空間で、子メッシュ全体の境界を一度だけ求める。
+ * Box3.setFromObjectのワールドAABBを逆変換すると、回転時に過大評価になるため、
+ * 各ジオメトリのローカルAABBをroot空間へ変換して合成する。
+ */
+function objectLocalBounds(root: THREE.Object3D): THREE.Box3 {
+  root.updateWorldMatrix(true, true);
+  const inverseRoot = root.matrixWorld.clone().invert();
+  const bounds = new THREE.Box3().makeEmpty();
+  root.traverse((node) => {
+    if (!(node instanceof THREE.Mesh)) return;
+    node.geometry.computeBoundingBox();
+    const geometryBounds = node.geometry.boundingBox;
+    if (!geometryBounds) return;
+    const toRoot = inverseRoot.clone().multiply(node.matrixWorld);
+    bounds.union(geometryBounds.clone().applyMatrix4(toRoot));
+  });
+  return bounds;
+}
+
 export interface ReloadAnimationPose {
   readonly magazineDrop: number;
   readonly magazineForward: number;
   readonly magazineTilt: number;
   readonly supportReach: number;
   readonly supportPull: number;
+  readonly supportExchangeSide: number;
+  readonly supportExchangeLift: number;
   readonly weaponWave: number;
 }
 
@@ -2750,7 +2916,15 @@ function smootherstepRange(value: number, start: number, end: number): number {
 export function reloadAnimationPose(ratio: number): ReloadAnimationPose {
   const t = THREE.MathUtils.clamp(ratio, 0, 1);
   const reachIn = smootherstepRange(t, 0.04, 0.2);
-  const reachOut = 1 - smootherstepRange(t, 0.76, 0.97);
+  // Begin the final release a frame earlier and finish by 96.5%. Besides
+  // reading as a deliberate return rather than a late snap, this keeps even
+  // the short pistol magazine a measured 30mm away by ratio 0.9.
+  // Q17 releases immediately after the 57% insertion proof frame. By the
+  // 71% audit frame the complete hand and connected sleeve have already
+  // travelled most of the way back to the fore-end, eliminating the vertical
+  // mitten left at the bottom edge by Q15/Q16. The quintic endpoints remain
+  // zero-velocity and the final 30mm magazine clearance contract is preserved.
+  const reachOut = 1 - smootherstepRange(t, 0.56, 0.84);
   const supportReach = reachIn * reachOut;
   const pullOut = smootherstepRange(t, 0.18, 0.36);
   const insert = smootherstepRange(t, 0.56, 0.78);
@@ -2758,6 +2932,16 @@ export function reloadAnimationPose(ratio: number): ReloadAnimationPose {
   const supportPull =
     smootherstepRange(t, 0.2, 0.38) *
     (1 - smootherstepRange(t, 0.54, 0.74));
+  // 左右交換の位相に smootherstep を直接掛けると、中央で位相速度が
+  // 約1.875倍へ集中し、240fpsでも手が左右へ跳んで見える。位相は等速のまま、
+  // 両端で一・二階微分が0になるquintic包絡線で振幅だけを開閉する。
+  // これにより、掴み→旧弾倉を外へ→新弾倉を内へ→挿入がC1連続になる。
+  const exchangePhase = THREE.MathUtils.clamp((t - 0.25) / (0.75 - 0.25), 0, 1);
+  const exchangeEnvelope =
+    smootherstepRange(t, 0.25, 0.42) *
+    (1 - smootherstepRange(t, 0.58, 0.75));
+  const supportExchangeLift = Math.sin(exchangePhase * Math.PI) * exchangeEnvelope;
+  const supportExchangeSide = Math.sin(exchangePhase * Math.PI * 2) * exchangeEnvelope;
   const easedTime = smootherstepRange(t, 0, 1);
   return {
     magazineDrop,
@@ -2765,6 +2949,8 @@ export function reloadAnimationPose(ratio: number): ReloadAnimationPose {
     magazineTilt: magazineDrop * -0.24,
     supportReach,
     supportPull,
+    supportExchangeSide,
+    supportExchangeLift,
     weaponWave: Math.sin(easedTime * Math.PI),
   };
 }
@@ -2980,6 +3166,13 @@ export class ViewModel {
   private adsY = -0.142;
   private readonly adsTarget = new THREE.Vector3(ADS_X, -0.142, ADS_Z);
   private readonly _pos = new THREE.Vector3();
+  private readonly _supportGripTarget = new THREE.Vector3();
+  private readonly _supportGripOffset = new THREE.Vector3();
+  private readonly _supportGripDesired = new THREE.Vector3();
+  private readonly _supportContactMatrix = new THREE.Matrix4();
+  private readonly _supportContactInverse = new THREE.Matrix4();
+  private readonly _supportContactPoint = new THREE.Vector3();
+  private readonly _supportContactAxis = new THREE.Vector3();
 
   private swayX = 0;
   private swayY = 0;
@@ -2990,6 +3183,12 @@ export class ViewModel {
   private shotParity = 1;
   private visualRecoil: VisualRecoilProfile = { back: 0.045, pitch: 0.09, yaw: 0.005, roll: 0.008 };
   private reloadGesture: FirstPersonGripProfile['reloadGesture'] = 'generic';
+  private magazineReloadFamily: MagazineReloadFamily = 'conventional';
+  private supportHandIdleCalibration: SupportHandPoseDelta = ZERO_SUPPORT_HAND_DELTA;
+  private supportHandIdleMorphEnabled = false;
+  // `?armaudit` only: a temporary local-space offset used to calibrate the support
+  // hand from real screenshots.  Normal gameplay never sets this value.
+  private armAuditLeftHandDelta: readonly [number, number, number, number, number, number] | null = null;
   private flashTimer = 0;
   private bobPhase = 0;
   // 着地インパルス(着地の瞬間に銃が沈んで戻る)。タイマー方式で固定step発火・可変dt減衰
@@ -3246,9 +3445,18 @@ export class ViewModel {
     // フィールドなので常に解決できる(fists含む)。武器切替のたびに再取得すれば十分安全。
     this._accentMat = getAccent(def.tracerColor);
     this.muzzle.add(this.flashLight);
+    this.supportHandIdleMorphEnabled = def.id === 'kaede-ar';
     this.captureRig();
+    for (const mesh of this.rig.supportHandMorphMeshes ?? []) {
+      const supportMorph = mesh.morphTargetInfluences;
+      if (!supportMorph?.length) continue;
+      supportMorph[0] = this.supportHandIdleMorphEnabled ? 1 : 0;
+      if (supportMorph.length > 1) supportMorph[1] = 0;
+    }
     const gripProfile = resolveFirstPersonGripProfile(def);
     this.reloadGesture = gripProfile.reloadGesture;
+    this.magazineReloadFamily = resolveMagazineReloadFamily(def);
+    this.supportHandIdleCalibration = resolveSupportHandIdleCalibration(def);
     this.visualRecoil = resolveVisualRecoilProfile(def);
     // サプレッサー装着状態をキャッシュ(fire() フラッシュ減光で参照する)
     this.isSuppressed = !!def.suppressed || (def.attachmentIds ?? []).includes('suppressor');
@@ -3293,21 +3501,113 @@ export class ViewModel {
       });
     }
     const magazine = g?.getObjectByName('vm:magazine');
+    const leftArm = poseNode('vm:leftArm');
+    const leftHand = poseNode('vm:leftHand');
+    const rightArm = poseNode('vm:rightArm');
+    const rightHand = poseNode('vm:rightHand');
+    let magazineGripPoint: THREE.Vector3 | undefined;
+    let magazineToSupportParent: THREE.Matrix4 | undefined;
+    let magazineBounds: THREE.Box3 | undefined;
+    let supportGripAnchor: THREE.Vector3 | undefined;
+    let supportFingerTips: THREE.Vector3[] | undefined;
+    let supportFingerTipRadii: number[] | undefined;
+    let supportThumbTip: THREE.Vector3 | undefined;
+    let supportThumbTipRadius: number | undefined;
+    let supportGlove: THREE.Mesh | undefined;
+    const supportHandMorphMeshes: THREE.Mesh[] = [];
+    if (magazine && leftHand?.node.parent) {
+      const glove = leftHand.node.getObjectByName('vm:leftGloveSkin');
+      if (glove instanceof THREE.Mesh) supportGlove = glove;
+      leftHand.node.traverse((node) => {
+        if (
+          node instanceof THREE.Mesh &&
+          node.geometry.morphAttributes.position?.length
+        ) {
+          supportHandMorphMeshes.push(node);
+        }
+      });
+      const supportGrip = glove instanceof THREE.Mesh
+        ? glove.geometry.userData.supportGrip as {
+            anchor?: readonly number[];
+            thumbTip?: readonly number[];
+            thumbTipRadius?: number;
+          } | undefined
+        : undefined;
+      const fingerDiagnostics = glove instanceof THREE.Mesh
+        ? glove.geometry.userData.fingerDiagnostics as Array<{
+            joints?: Array<readonly number[]>;
+            tipRadius?: number;
+          }> | undefined
+        : undefined;
+      const bounds = objectLocalBounds(magazine);
+      if (!bounds.isEmpty() && supportGrip?.anchor?.length === 3) {
+        magazineGripPoint = bounds.getCenter(new THREE.Vector3());
+        magazineBounds = bounds.clone();
+        // 関係行列は共通祖先のroot/カメラ変換を相殺し、リロード中も固定。
+        // 毎フレームはmagazine自身の局所変換だけを更新すればよい。
+        magazine.parent?.updateWorldMatrix(true, false);
+        leftHand.node.parent.updateWorldMatrix(true, false);
+        if (magazine.parent) {
+          magazineToSupportParent = leftHand.node.parent.matrixWorld
+            .clone()
+            .invert()
+            .multiply(magazine.parent.matrixWorld);
+          supportGripAnchor = new THREE.Vector3(
+            supportGrip.anchor[0],
+            supportGrip.anchor[1],
+            supportGrip.anchor[2],
+          );
+          if (
+            supportGrip.thumbTip?.length === 3 &&
+            Number.isFinite(supportGrip.thumbTipRadius) &&
+            fingerDiagnostics?.length === 4 &&
+            fingerDiagnostics.every((finger) =>
+              finger.joints?.[3]?.length === 3 && Number.isFinite(finger.tipRadius),
+            )
+          ) {
+            supportFingerTips = fingerDiagnostics.map((finger) =>
+              new THREE.Vector3(
+                finger.joints![3]![0]!,
+                finger.joints![3]![1]!,
+                finger.joints![3]![2]!,
+              ),
+            );
+            supportFingerTipRadii = fingerDiagnostics.map((finger) => finger.tipRadius!);
+            supportThumbTip = new THREE.Vector3(
+              supportGrip.thumbTip[0]!,
+              supportGrip.thumbTip[1]!,
+              supportGrip.thumbTip[2]!,
+            );
+            supportThumbTipRadius = supportGrip.thumbTipRadius;
+          }
+        }
+      }
+    }
     this.rig = g
       ? {
           slide: g.getObjectByName('vm:slide'),
           bolt: g.getObjectByName('vm:bolt'),
           charging: g.getObjectByName('vm:charging'),
           magazine,
+          magazineGripPoint,
+          magazineToSupportParent,
+          magazineBounds,
+          supportGripAnchor,
+          supportFingerTips,
+          supportFingerTipRadii,
+          supportThumbTip,
+          supportThumbTipRadius,
+          supportGlove,
+          supportHandMorphMeshes,
           cylinder: g.getObjectByName('vm:cylinder'),
           forend: g.getObjectByName('vm:forend'),
           barrel: g.getObjectByName('vm:barrel'),
           shurikenBlades,
           crystal,
-          leftArm: poseNode('vm:leftArm'),
-          leftHand: poseNode('vm:leftHand'),
-          rightArm: poseNode('vm:rightArm'),
-          rightHand: poseNode('vm:rightHand'),
+          leftArm,
+          leftHand,
+          rightArm,
+          rightHand,
         }
       : {};
     // R53: 帝王溜め段は武器切替で必ず解除(発光ブーストの復元も含む — キャッシュ越境防止)
@@ -3365,6 +3665,7 @@ export class ViewModel {
       // vm:fist* として名付け、update が rest↔ガードを補間する(FIST_POSES の rest と一致)
       const arms = buildFirstPersonArms(armMaterials, {
         fists: true,
+        rightGrip: resolveFirstPersonRightGrip(def),
         leftGrip: 'guard',
         right: grip.right,
         left: grip.left,
@@ -3386,9 +3687,33 @@ export class ViewModel {
       return { gun, muzzle };
     }
     // 武器形状別の二点保持。袖はhand配下なので、支持点を動かしても手首から離れない。
+    const leftGrip = resolveFirstPersonLeftGrip(def);
+    // 支持手は手の甲をカメラ側、掌を武器側へ向ける。武器族ごとの接触位置を保ち、
+    // 長銃用の補正で拳銃／杖／重火器を外さない。
+    const supportDelta = resolveSupportHandPoseDelta(def);
+    const leftPose = leftGrip === 'support'
+      ? {
+          arm: grip.left.arm,
+          hand: [
+            grip.left.hand[0] + supportDelta[0],
+            grip.left.hand[1] + supportDelta[1],
+            grip.left.hand[2] + supportDelta[2],
+            grip.left.hand[3] + supportDelta[3],
+            grip.left.hand[4] + supportDelta[4],
+            grip.left.hand[5] + supportDelta[5],
+          ] as const,
+        }
+      : grip.left;
     gun.add(buildFirstPersonArms(armMaterials, {
+      rightGrip: resolveFirstPersonRightGrip(def),
+      leftGrip,
+      // Kaede's 48mm bullpup magazine is narrower than the shared long-gun
+      // grasp. Inset only its terminal pads; other weapon families retain the
+      // approved geometry until this visual gate is accepted and rolled out.
+      supportContactInset: def.id === 'kaede-ar' ? 0.003 : 0,
+      supportGripVariant: def.id === 'kaede-ar' ? 'kaede-q17' : 'shared',
       right: grip.right,
-      left: grip.left,
+      left: leftPose,
     }));
     return { gun, muzzle };
   }
@@ -3632,8 +3957,37 @@ export class ViewModel {
     }
     const reloadPose =
       state.reloadRatio !== null ? reloadAnimationPose(state.reloadRatio) : null;
+    const supportHandMorphMeshes = this.rig.supportHandMorphMeshes ?? [];
+    if (supportHandMorphMeshes.length) {
+      // Target 1 is a local exchange corrective, not an alternate rest pose.
+      // It reaches full strength only while the loose magazine is centred.
+      // Keep the correction through r04 so the returning hand cannot briefly
+      // re-expand into the old oval palm before it clears the magazine.
+      const exchangeCorrectionInfluence =
+        this.supportHandIdleMorphEnabled && state.reloadRatio !== null
+          ? smootherstepRange(state.reloadRatio, 0.38, 0.46) *
+            (1 - smootherstepRange(state.reloadRatio, 0.64, 0.76))
+          : 0;
+      for (const mesh of supportHandMorphMeshes) {
+        const supportMorph = mesh.morphTargetInfluences;
+        if (!supportMorph?.length) continue;
+        const idleInfluence = this.supportHandIdleMorphEnabled && state.reloadRatio === null
+          ? 1
+          : 0;
+        supportMorph[0] = idleInfluence;
+        if (supportMorph.length > 1) supportMorph[1] = exchangeCorrectionInfluence;
+      }
+    }
     if (this.rig.magazine) {
-      this.rig.magazine.position.y = reloadPose ? -reloadPose.magazineDrop * 0.12 : 0;
+      // 真下にだけ抜くとブルパップの後部レシーバーに隠れ続ける。
+      // 左手が掴む側へ小さく退避し、弾倉が実際に抜けたことを画面で読ませる。
+      const sideClearance = this.magazineReloadFamily === 'bullpup'
+        ? 0.12
+        : this.magazineReloadFamily === 'pistol'
+          ? 0.035
+          : 0.045;
+      this.rig.magazine.position.x = reloadPose ? -reloadPose.magazineDrop * sideClearance : 0;
+      this.rig.magazine.position.y = reloadPose ? -reloadPose.magazineDrop * 0.07 : 0;
       this.rig.magazine.position.z = reloadPose?.magazineForward ?? 0;
       this.rig.magazine.rotation.z = reloadPose?.magazineTilt ?? 0;
     }
@@ -3641,18 +3995,114 @@ export class ViewModel {
       const hasDetachableMagazine = this.rig.magazine !== undefined;
       const gesture = this.reloadGesture;
       if (hasDetachableMagazine) {
-        // 支持手を画面内で弾倉の左下へ運び、抜く区間では弾倉と同じ下向き軌道を足す。
-        // 実中心へ直行させると大型レシーバ内部へ隠れる銃があるため、rest基準の可視軌道にする。
+        // 弾倉位置は通常長銃／ブルパップ／拳銃で大きく違う。V6の固定オフセットは
+        // 掌の大きなAABBだけを弾倉に交差させ、実指先は5〜15cm浮いていた。V7では
+        // setWeapon時に実ジオメトリから求めた弾倉中心と、4指／親指の実把持中心を合わせる。
+        const rotation = this.magazineReloadFamily === 'bullpup'
+          // A slightly stronger yaw presents the magazine-side contact plane:
+          // the four compressed wedges read against the -X face instead of
+          // showing their round end caps frontally in Kaede close-up.
+          // Q14d real-browser orthogonal sweep: the former +0.53 yaw hid the
+          // palm behind the magazine and projected all four fingers as a row
+          // of parallel hoses. +0.28 keeps the opposed thumb on the far face
+          // while exposing more of the palm, wrist and curled PIP/DIP chain.
+          ? [-0.28, 0.28, 2.35] as const
+          : this.magazineReloadFamily === 'pistol'
+            // Pistol wells are narrow and almost vertical. This orientation
+            // makes the four terminal pads coplanar with the magazine side;
+            // the former long-gun angle spread them by 6.2mm across X.
+            ? [0.1, 0.7, 1.9] as const
+            : [-0.28, 0.18, 2.35] as const;
         applyRigPoseDelta(
           this.rig.leftHand,
-          -0.035,
-          -0.045 - reloadPose.supportPull * 0.035,
-          0.095 + reloadPose.supportPull * 0.02,
-          -0.42,
-          0.22,
-          -0.2,
+          0,
+          0,
+          0,
+          rotation[0] - this.supportHandIdleCalibration[3],
+          rotation[1] - this.supportHandIdleCalibration[4],
+          rotation[2] - this.supportHandIdleCalibration[5],
           reloadPose.supportReach,
         );
+        const hand = this.rig.leftHand;
+        const magazine = this.rig.magazine;
+        const magazineGripPoint = this.rig.magazineGripPoint;
+        const magazineToSupportParent = this.rig.magazineToSupportParent;
+        const supportGripAnchor = this.rig.supportGripAnchor;
+        if (
+          hand &&
+          magazine &&
+          magazineGripPoint &&
+          magazineToSupportParent &&
+          supportGripAnchor
+        ) {
+          magazine.updateMatrix();
+          this._supportGripTarget
+            .copy(magazineGripPoint)
+            .applyMatrix4(magazine.matrix)
+            .applyMatrix4(magazineToSupportParent);
+          this._supportGripOffset
+            .copy(supportGripAnchor)
+            .applyQuaternion(hand.node.quaternion);
+          this._supportGripDesired
+            .copy(this._supportGripTarget)
+            .sub(this._supportGripOffset);
+          hand.node.position
+            .copy(hand.position)
+            .lerp(this._supportGripDesired, reloadPose.supportReach);
+          // 弾倉自身の抜き出しへ追従するため、手だけを5cm引く二重移動は不要。
+          // 接触を壊さない数mmの圧縮とC1交換弧だけを残す。
+          hand.node.position.y -= reloadPose.supportPull * 0.006;
+          hand.node.position.x += reloadPose.supportExchangeSide * 0.006;
+          hand.node.position.y += reloadPose.supportExchangeLift * 0.006;
+          hand.node.position.z -= reloadPose.supportExchangeLift * 0.004;
+
+          const magazineBounds = this.rig.magazineBounds;
+          const supportFingerTips = this.rig.supportFingerTips;
+          const supportFingerTipRadii = this.rig.supportFingerTipRadii;
+          const supportThumbTip = this.rig.supportThumbTip;
+          const supportThumbTipRadius = this.rig.supportThumbTipRadius;
+          if (
+            magazineBounds &&
+            supportFingerTips?.length === 4 &&
+            supportFingerTipRadii?.length === 4 &&
+            supportThumbTip &&
+            supportThumbTipRadius !== undefined
+          ) {
+            // Use the four real terminal pads and opposed thumb, transformed
+            // into the magazine's own local basis. A single translation along
+            // magazine X removes the common center error without scaling the
+            // hand or running a world-AABB traversal per frame.
+            this._supportContactMatrix
+              .copy(magazineToSupportParent)
+              .multiply(magazine.matrix);
+            this._supportContactInverse.copy(this._supportContactMatrix).invert();
+            let fingerSurface = 0;
+            for (let index = 0; index < supportFingerTips.length; index += 1) {
+              fingerSurface += this._supportContactPoint
+                .copy(supportFingerTips[index]!)
+                .applyQuaternion(hand.node.quaternion)
+                .add(hand.node.position)
+                .applyMatrix4(this._supportContactInverse).x + supportFingerTipRadii[index]!;
+            }
+            fingerSurface /= supportFingerTips.length;
+            const thumbSurface = this._supportContactPoint
+              .copy(supportThumbTip)
+              .applyQuaternion(hand.node.quaternion)
+              .add(hand.node.position)
+              .applyMatrix4(this._supportContactInverse).x - supportThumbTipRadius;
+            const correction = THREE.MathUtils.clamp(
+              ((magazineBounds.min.x - fingerSurface) +
+                (magazineBounds.max.x - thumbSurface)) * 0.5,
+              -0.02,
+              0.02,
+            );
+            this._supportContactAxis
+              .set(1, 0, 0)
+              .transformDirection(this._supportContactMatrix)
+              .multiplyScalar(correction);
+            hand.node.position.add(this._supportContactAxis);
+          }
+        }
       } else {
         // 特殊武器は「存在しない弾倉」を掴まない。杖は前方へ握り直し、刃物は守り手を
         // 少し開き、重量物は短く支持位置を変える。いずれも前腕はhandへ接続済み。
@@ -3684,6 +4134,15 @@ export class ViewModel {
       resetRigPose(this.rig.leftHand);
       resetRigPose(this.rig.rightArm);
       resetRigPose(this.rig.rightHand);
+    }
+    if (this.armAuditLeftHandDelta && this.rig.leftHand) {
+      const [px, py, pz, rx, ry, rz] = this.armAuditLeftHandDelta;
+      this.rig.leftHand.node.position.x += px;
+      this.rig.leftHand.node.position.y += py;
+      this.rig.leftHand.node.position.z += pz;
+      this.rig.leftHand.node.rotation.x += rx;
+      this.rig.leftHand.node.rotation.y += ry;
+      this.rig.leftHand.node.rotation.z += rz;
     }
 
     // 視覚ADSはeaseOutQuintで「素早く構えて最後に据わる」BO2の所作にする。
@@ -3820,7 +4279,12 @@ export class ViewModel {
       const wave = reloadPose?.weaponWave ?? 0;
       rotX -= wave * 0.2;
       rotZ = wave * 0.1;
-      this.root.position.y -= wave * 0.04;
+      // 後部弾倉を実指で掴むと、手の中心は通常姿勢より15〜20cm下へ移る。
+      // 銃だけを残して手を画面内へ偏移するのではなく、FPSの標準的な
+      // 「銃全体を左上へカントしてマグウェルを見せる」リロード姿勢にする。
+      // 弾倉・左手・右手・袖は同一rootのままなので接続は不変。
+      this.root.position.x -= wave * 0.08;
+      this.root.position.y += wave * 0.28;
     }
     const recoilSideAtten = 1 - adsVis * 0.72;
     this.root.rotation.set(
@@ -4157,6 +4621,19 @@ export class ViewModel {
       const mat = this.rig.crystal.material as THREE.MeshStandardMaterial;
       if (mat.emissive) mat.emissiveIntensity = 0.1 + this._staffCharge01 * 0.75;
     }
+  }
+
+  /** Query-only support-hand calibration hook. Null restores the authored pose. */
+  debugSetArmAuditLeftHandDelta(
+    delta: readonly [number, number, number, number, number, number] | null,
+  ): readonly [number, number, number, number, number, number] | null {
+    if (delta === null) {
+      this.armAuditLeftHandDelta = null;
+      return null;
+    }
+    if (delta.length !== 6 || delta.some((value) => !Number.isFinite(value))) return null;
+    this.armAuditLeftHandDelta = [...delta] as const;
+    return this.armAuditLeftHandDelta;
   }
 
   setMinigunSpin(spin01: number): void {

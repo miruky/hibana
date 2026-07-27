@@ -6,7 +6,7 @@ export interface GltfRuntimeOptions {
 }
 
 export interface GltfRuntime {
-  loadScene(url: string): Promise<THREE.Object3D>;
+  loadScene(url: string, signal?: AbortSignal): Promise<THREE.Object3D>;
   clone(source: THREE.Object3D): THREE.Object3D;
   dispose(): void;
 }

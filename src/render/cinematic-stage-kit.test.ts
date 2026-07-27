@@ -67,17 +67,51 @@ describe('cinematic stage kit', () => {
     expect((root.getObjectByName('aaa:distant-skyline') as THREE.InstancedMesh).count).toBe(42);
     expect(root.getObjectByName('aaa:facade-base-grime')).toBeTruthy();
     expect(root.getObjectByName('aaa:facade-downspouts')).toBeTruthy();
-    expect((root.getObjectByName('aaa:perimeter-utility-poles') as THREE.InstancedMesh).count).toBe(20);
+    const perimeterPoles = root.getObjectByName('aaa:perimeter-utility-poles') as THREE.InstancedMesh;
+    expect(perimeterPoles.count).toBe(20);
     expect((root.getObjectByName('aaa:perimeter-practical-lamps') as THREE.InstancedMesh).count).toBe(20);
     expect((root.getObjectByName('aaa:perimeter-utility-cabinets') as THREE.InstancedMesh).count).toBe(8);
-    expect(root.getObjectByName('aaa:perimeter-overhead-cables')).toBeTruthy();
+    // 電線は装飾であって境界ではない。旧来の連続リングは生成せず、実地形を視覚境界にする。
+    expect(root.getObjectByName('aaa:perimeter-overhead-cables')).toBeUndefined();
+    expect(root.getObjectByName('aaa:boundary-infrastructure')).toBeUndefined();
+    expect(root.getObjectByName('aaa:perimeter-street-infrastructure')).toBeTruthy();
+    const terrain = root.getObjectByName('aaa:continuous-world-terrain');
+    expect(terrain?.userData.hibanaVisualBoundary).toBe('continuous-terrain');
+    const poleAngles: number[] = [];
+    const matrix = new THREE.Matrix4();
+    const position = new THREE.Vector3();
+    for (let i = 0; i < perimeterPoles.count; i += 1) {
+      perimeterPoles.getMatrixAt(i, matrix);
+      position.setFromMatrixPosition(matrix);
+      poleAngles.push((Math.atan2(position.z, position.x) + Math.PI * 2) % (Math.PI * 2));
+    }
+    poleAngles.sort((a, b) => a - b);
+    const angularGaps = poleAngles.map((angle, index) => {
+      const next = poleAngles[(index + 1) % poleAngles.length]!;
+      return (next - angle + Math.PI * 2) % (Math.PI * 2);
+    });
+    // 旧円環配置では最大間隔≈0.31rad。1.3rad超の空白を必須にして、街灯を境界線にしない。
+    expect(Math.max(...angularGaps)).toBeGreaterThan(1.3);
+    expect(root.getObjectByName('aaa:distant-world')?.userData.proceduralDistantWorldFallback).toBe(true);
     expect(root.getObjectByName('aaa:cinematic-environment')).toBeTruthy();
-    expect(root.getObjectByName('aaa:distant-stage-matte')).toBeTruthy();
+    // サムネイル画像を貼った平面／円筒matteは通常ゲーム画面へ一切生成しない。
+    expect(root.getObjectByName('aaa:distant-stage-matte-root')).toBeUndefined();
+    expect(root.getObjectByName('aaa:distant-stage-matte')).toBeUndefined();
+    const rasterMatteTextures: string[] = [];
+    root.traverse((node) => {
+      if (!(node instanceof THREE.Mesh)) return;
+      const materials = Array.isArray(node.material) ? node.material : [node.material];
+      for (const material of materials) {
+        if (!(material instanceof THREE.MeshBasicMaterial || material instanceof THREE.MeshStandardMaterial)) continue;
+        if (material.map?.name.startsWith('stage-matte:')) rasterMatteTextures.push(material.map.name);
+      }
+    });
+    expect(rasterMatteTextures).toEqual([]);
     let drawCalls = 0;
     root.traverse((node) => {
       if (node instanceof THREE.Mesh) drawCalls += 1;
     });
-    expect(drawCalls).toBeLessThanOrEqual(30);
+    expect(drawCalls).toBeLessThanOrEqual(28);
     dispose(root);
   });
 

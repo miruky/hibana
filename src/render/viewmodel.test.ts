@@ -5,8 +5,13 @@ import {
   CamoStandardMaterial,
   reloadAnimationPose,
   resolveFirstPersonGripProfile,
+  resolveFirstPersonLeftGrip,
+  resolveFirstPersonRightGrip,
+  resolveMagazineReloadFamily,
   resolveMuzzleFlashProfile,
   resolveSightY,
+  resolveSupportHandIdleCalibration,
+  resolveSupportHandPoseDelta,
   resolveViewmodelAdsTarget,
   resolveVisualRecoilProfile,
   sightYOverride,
@@ -21,7 +26,22 @@ import { CAMO_IDS, CAMO_VISUALS } from '../game/camo';
 // 一人称腕は sleeve/glove の固有色で塗られる。銃本体にこれらが混ざっていなければ
 // 「腕なし」と判定できる(dark/darker/accent とは別色)。
 const SLEEVE_HEX = 0x4f3e2b;
-const GLOVE_HEX = 0x291f17;
+const GLOVE_HEX = 0x50544a;
+
+function objectLocalBounds(root: THREE.Object3D): THREE.Box3 {
+  root.updateWorldMatrix(true, true);
+  const inverseRoot = root.matrixWorld.clone().invert();
+  const bounds = new THREE.Box3().makeEmpty();
+  root.traverse((node) => {
+    if (!(node instanceof THREE.Mesh)) return;
+    node.geometry.computeBoundingBox();
+    if (!node.geometry.boundingBox) return;
+    bounds.union(node.geometry.boundingBox.clone().applyMatrix4(
+      inverseRoot.clone().multiply(node.matrixWorld),
+    ));
+  });
+  return bounds;
+}
 
 describe('reloadAnimationPose', () => {
   it('開始/終了は静止し、中盤だけマガジンと支持手を動かす', () => {
@@ -53,13 +73,217 @@ describe('reloadAnimationPose', () => {
     expect(frames.at(-2)!.weaponWave).toBeLessThan(0.0001);
   });
 
+  it('弾倉交換弧は外向き→内向きに切り替わり、窓端でC1連続になる', () => {
+    const outward = reloadAnimationPose(0.42);
+    const inward = reloadAnimationPose(0.58);
+    expect(outward.supportExchangeSide).toBeGreaterThan(0.5);
+    expect(inward.supportExchangeSide).toBeLessThan(-0.5);
+    expect(outward.supportExchangeLift).toBeGreaterThan(0.7);
+    expect(inward.supportExchangeLift).toBeGreaterThan(0.7);
+
+    const epsilon = 1e-4;
+    for (const boundary of [0.25, 0.42, 0.58, 0.75]) {
+      for (const key of ['supportExchangeSide', 'supportExchangeLift'] as const) {
+        const leftSlope =
+          (reloadAnimationPose(boundary)[key] - reloadAnimationPose(boundary - epsilon)[key]) /
+          epsilon;
+        const rightSlope =
+          (reloadAnimationPose(boundary + epsilon)[key] - reloadAnimationPose(boundary)[key]) /
+          epsilon;
+        expect(Math.abs(rightSlope - leftSlope), `${key}@${boundary}`).toBeLessThan(0.03);
+      }
+    }
+  });
+
+  it('拳銃・ブルパップ・通常長銃を別系統の弾倉接触点へ運ぶ', () => {
+    const defs = {
+      pistol: WEAPON_DEFS.suzume!,
+      bullpup: WEAPON_DEFS['kaede-ar']!,
+      conventional: WEAPON_DEFS['tobikuma-ar']!,
+    } as const;
+    expect(resolveMagazineReloadFamily(defs.pistol)).toBe('pistol');
+    expect(resolveMagazineReloadFamily(defs.bullpup)).toBe('bullpup');
+    expect(resolveMagazineReloadFamily(defs.conventional)).toBe('conventional');
+
+    const state = {
+      adsProgress: 0,
+      mouseDX: 0,
+      mouseDY: 0,
+      moveFactor: 0,
+      grounded: true,
+      raiseRatio: 0,
+      motionScale: 1,
+      alive: true,
+      scopeReveal01: 0,
+      reloadRatio: 0.45,
+    };
+    const displacement = (def: WeaponDef): {
+      delta: THREE.Vector3;
+      restGeometryGap: number;
+      exchangeGeometryGap: number;
+      magazineSide: number;
+    } => {
+      const camera = new THREE.PerspectiveCamera();
+      const vm = new ViewModel(camera);
+      vm.setWeapon(def);
+      const hand = vm.root.getObjectByName('vm:leftHand');
+      const glove = vm.root.getObjectByName('vm:leftGloveSkin');
+      const magazine = vm.root.getObjectByName('vm:magazine');
+      expect(hand, def.id).toBeTruthy();
+      expect(glove, def.id).toBeTruthy();
+      expect(magazine, def.id).toBeTruthy();
+      const rest = hand!.position.clone();
+      const geometryGap = (a: THREE.Box3, b: THREE.Box3): number => Math.hypot(
+        Math.max(0, a.min.x - b.max.x, b.min.x - a.max.x),
+        Math.max(0, a.min.y - b.max.y, b.min.y - a.max.y),
+        Math.max(0, a.min.z - b.max.z, b.min.z - a.max.z),
+      );
+      camera.updateMatrixWorld(true);
+      const restGeometryGap = geometryGap(
+        new THREE.Box3().setFromObject(glove!),
+        new THREE.Box3().setFromObject(magazine!),
+      );
+      vm.update(0, state);
+      const delta = hand!.position.clone().sub(rest);
+      camera.updateMatrixWorld(true);
+      const exchangeGeometryGap = geometryGap(
+        new THREE.Box3().setFromObject(glove!),
+        new THREE.Box3().setFromObject(magazine!),
+      );
+      const magazineSide = magazine!.position.x;
+      vm.dispose();
+      return { delta, restGeometryGap, exchangeGeometryGap, magazineSide };
+    };
+    const pistol = displacement(defs.pistol);
+    const bullpup = displacement(defs.bullpup);
+    const conventional = displacement(defs.conventional);
+
+    // 後方給弾のブルパップはz方向の到達量が最大、拳銃が最小。
+    // どの系統も弾倉中心へ実際に近づき、銃の右側へ突き抜けない。
+    expect(pistol.delta.z).toBeLessThan(conventional.delta.z);
+    expect(conventional.delta.z).toBeLessThan(bullpup.delta.z);
+    for (const [family, sample] of Object.entries({ pistol, bullpup, conventional })) {
+      expect(sample.delta.length(), family).toBeGreaterThan(0.08);
+      expect(sample.delta.x, family).toBeLessThan(0);
+      expect(sample.exchangeGeometryGap, family).toBeLessThan(1e-6);
+      expect(sample.magazineSide, family).toBeLessThan(-0.03);
+    }
+    // 特に後方弾倉のブルパップは、前方支持のrestから実際の
+    // 弾倉まで手を運び、交換時にグローブと弾倉のAABBが接触する。
+    expect(bullpup.restGeometryGap).toBeGreaterThan(0.1);
+    expect(bullpup.exchangeGeometryGap).toBe(0);
+  });
+
+  it('交換中央では4指と対置親指が弾倉の両側へ接触し、復帰時は離れる', () => {
+    const state = {
+      adsProgress: 0,
+      mouseDX: 0,
+      mouseDY: 0,
+      moveFactor: 0,
+      grounded: true,
+      raiseRatio: 0,
+      motionScale: 1,
+      alive: true,
+      scopeReveal01: 0,
+    };
+    for (const def of [
+      WEAPON_DEFS.suzume!,
+      WEAPON_DEFS['kaede-ar']!,
+      WEAPON_DEFS['tobikuma-ar']!,
+      WEAPON_DEFS['raicho-sniper']!,
+    ]) {
+      const camera = new THREE.PerspectiveCamera();
+      const vm = new ViewModel(camera);
+      vm.setWeapon(def);
+      const hand = vm.root.getObjectByName('vm:leftHand')!;
+      const glove = vm.root.getObjectByName('vm:leftGloveSkin') as THREE.Mesh;
+      const magazine = vm.root.getObjectByName('vm:magazine')!;
+      const fingers = glove.geometry.userData.fingerDiagnostics as Array<{
+        joints: Array<readonly [number, number, number]>;
+        tipRadius: number;
+      }>;
+      const support = glove.geometry.userData.supportGrip as {
+        thumbTip: readonly [number, number, number];
+        thumbTipRadius: number;
+      };
+      if (def.id === 'kaede-ar') {
+        // Q15 is intentionally Kaede-only until the real-browser anatomy gate
+        // passes. Keeping the version assertion here prevents an accidental
+        // catalogue-wide rollout of the experimental magazine grasp.
+        expect(glove.geometry.userData.anatomyVersion, def.id).toBe(10);
+      } else {
+        expect(glove.geometry.userData.anatomyVersion, def.id).toBe(7);
+      }
+      const magazineBounds = objectLocalBounds(magazine);
+      const pointsInMagazineSpace = (): {
+        fingertips: THREE.Vector3[];
+        thumb: THREE.Vector3;
+      } => {
+        magazine.updateWorldMatrix(true, true);
+        hand.updateWorldMatrix(true, true);
+        const handToMagazine = magazine.matrixWorld.clone().invert().multiply(hand.matrixWorld);
+        return {
+          fingertips: fingers.map((finger) =>
+            new THREE.Vector3(...finger.joints[3]!).applyMatrix4(handToMagazine)),
+          thumb: new THREE.Vector3(...support.thumbTip).applyMatrix4(handToMagazine),
+        };
+      };
+
+      vm.update(0, { ...state, reloadRatio: 0.45 });
+      const exchange = pointsInMagazineSpace();
+      for (const [index, fingertip] of exchange.fingertips.entries()) {
+        const radius = fingers[index]!.tipRadius;
+        // 4指の内側表面を弾倉-X面へ合わせる。中心点だけ外側にある旧テストでは
+        // 1〜2cm浮いても合格したため、実表面誤差を4mm以内で直接測る。
+        expect(
+          Math.abs((fingertip.x + radius) - magazineBounds.min.x),
+          [def.id, 'finger', index, 'negative-surface-error'].join(':'),
+        ).toBeLessThan(def.id === 'kaede-ar' ? 0.002 : 0.0041);
+        expect(fingertip.y, [def.id, 'finger', index, 'height'].join(':'))
+          .toBeGreaterThan(magazineBounds.min.y - 0.03);
+        expect(fingertip.y, [def.id, 'finger', index, 'height'].join(':'))
+          .toBeLessThan(magazineBounds.max.y + 0.03);
+        expect(fingertip.z, [def.id, 'finger', index, 'depth'].join(':'))
+          .toBeGreaterThan(magazineBounds.min.z - 0.02);
+        expect(fingertip.z, [def.id, 'finger', index, 'depth'].join(':'))
+          .toBeLessThan(magazineBounds.max.z + 0.02);
+      }
+      // 親指は反対の+X面。平均中心補正後の表面誤差は1.5mm以内。
+      expect(
+        Math.abs((exchange.thumb.x - support.thumbTipRadius) - magazineBounds.max.x),
+        [def.id, 'thumb', 'positive-surface-error'].join(':'),
+      ).toBeLessThan(0.0015);
+      expect(exchange.thumb.y, [def.id, 'thumb', 'height'].join(':'))
+        .toBeGreaterThan(magazineBounds.min.y - 0.03);
+      expect(exchange.thumb.y, [def.id, 'thumb', 'height'].join(':'))
+        .toBeLessThan(magazineBounds.max.y + 0.03);
+      expect(exchange.thumb.z, [def.id, 'thumb', 'depth'].join(':'))
+        .toBeGreaterThan(magazineBounds.min.z - 0.02);
+      expect(exchange.thumb.z, [def.id, 'thumb', 'depth'].join(':'))
+        .toBeLessThan(magazineBounds.max.z + 0.02);
+
+      vm.update(0, { ...state, reloadRatio: 0.9 });
+      const returning = pointsInMagazineSpace();
+      const nearestReturningPoint = Math.min(
+        ...returning.fingertips.map((point) => magazineBounds.distanceToPoint(point)),
+        magazineBounds.distanceToPoint(returning.thumb),
+      );
+      // 3cm以上の実空間で完全に離れ、復帰中の指／弾倉クリップを禁止。
+      expect(nearestReturningPoint, [def.id, 'return-clearance'].join(':'))
+        .toBeGreaterThan(0.03);
+      vm.dispose();
+    }
+  });
+
   it('実ViewModelで支持手と弾倉が動き、完了後は正確に静止位置へ戻る', () => {
     const camera = new THREE.PerspectiveCamera();
     const vm = new ViewModel(camera);
     vm.setWeapon(WEAPON_DEFS['kaede-ar']!);
     const leftHand = vm.root.getObjectByName('vm:leftHand');
+    const supportGlove = vm.root.getObjectByName('vm:leftGloveSkin') as THREE.Mesh;
     const magazine = vm.root.getObjectByName('vm:magazine');
     expect(leftHand).toBeTruthy();
+    expect(supportGlove).toBeTruthy();
     expect(magazine).toBeTruthy();
     const restPosition = leftHand!.position.clone();
     const restRotation = leftHand!.rotation.clone();
@@ -77,14 +301,78 @@ describe('reloadAnimationPose', () => {
 
     vm.update(0, { ...state, reloadRatio: 0.45 });
     expect(leftHand!.position.distanceTo(restPosition)).toBeGreaterThan(0.05);
-    expect(magazine!.position.y).toBeLessThan(-0.1);
+    expect(supportGlove.morphTargetInfluences?.[0]).toBeCloseTo(0, 7);
+    expect(supportGlove.morphTargetInfluences?.[1]).toBeGreaterThan(0.98);
+    const expectedExchangeInfluence = [0, 0, 1, 0.9235888838083629, 0];
+    for (const [index, reloadRatio] of [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6].entries()) {
+      vm.update(0, { ...state, reloadRatio });
+      // Idle never leaks into reload. The exchange correction is a pure
+      // centre-window influence with exact zeroes before/after the hand-off.
+      expect(supportGlove.morphTargetInfluences?.[0], `reload:${reloadRatio}`)
+        .toBeCloseTo(0, 7);
+      expect(supportGlove.morphTargetInfluences?.[1], `reload:${reloadRatio}`)
+        .toBeCloseTo(expectedExchangeInfluence[index]!, 7);
+    }
+    vm.update(0, { ...state, reloadRatio: 0.45 });
+    // 7cm下降+12cm左退避で、後部レシーバーとHUDの両方から弾倉を露出させる。
+    expect(magazine!.position.x).toBeCloseTo(-0.12, 5);
+    expect(magazine!.position.y).toBeCloseTo(-0.07, 5);
+    expect(magazine!.position.z).toBeGreaterThan(0.03);
+
+    // The correction stays visible through r04, then reaches exact zero before
+    // r05. The rest-only target remains zero until reload completes.
+    vm.update(0, { ...state, reloadRatio: 5 / 7 });
+    expect(supportGlove.morphTargetInfluences?.[0]).toBeCloseTo(0, 7);
+    expect(supportGlove.morphTargetInfluences?.[1]).toBeCloseTo(0.28507816040788403, 7);
 
     vm.update(0, { ...state, reloadRatio: null });
+    expect(supportGlove.morphTargetInfluences?.[0]).toBeCloseTo(1, 7);
+    expect(supportGlove.morphTargetInfluences?.[1]).toBeCloseTo(0, 7);
     expect(leftHand!.position.distanceTo(restPosition)).toBeLessThan(1e-7);
     expect(leftHand!.rotation.x).toBeCloseTo(restRotation.x, 7);
     expect(leftHand!.rotation.y).toBeCloseTo(restRotation.y, 7);
     expect(leftHand!.rotation.z).toBeCloseTo(restRotation.z, 7);
     expect(magazine!.position.length()).toBeLessThan(1e-7);
+    vm.dispose();
+  });
+
+  it('Kaede exchange morphは武器キャッシュ往復で残留せずidleへ原子的にresetする', () => {
+    const camera = new THREE.PerspectiveCamera();
+    const vm = new ViewModel(camera);
+    const state = {
+      adsProgress: 0,
+      mouseDX: 0,
+      mouseDY: 0,
+      moveFactor: 0,
+      grounded: true,
+      raiseRatio: 0,
+      motionScale: 1,
+      alive: true,
+      scopeReveal01: 0,
+    };
+    vm.setWeapon(WEAPON_DEFS['kaede-ar']!);
+    vm.update(0, { ...state, reloadRatio: 0.5 });
+    const exchangeGlove = vm.root.getObjectByName('vm:leftGloveSkin') as THREE.Mesh;
+    const exchangeMeshes: THREE.Mesh[] = [];
+    vm.root.traverse((node) => {
+      if (node instanceof THREE.Mesh && node.morphTargetInfluences?.length === 2) {
+        exchangeMeshes.push(node);
+      }
+    });
+    expect(exchangeMeshes).toHaveLength(4);
+    for (const mesh of exchangeMeshes) expect(mesh.morphTargetInfluences).toEqual([0, 1]);
+
+    vm.setWeapon(WEAPON_DEFS['tsubaki-smg']!);
+    const sharedGlove = vm.root.getObjectByName('vm:leftGloveSkin') as THREE.Mesh;
+    expect(sharedGlove.morphTargetInfluences?.every((value) => value === 0)).toBe(true);
+
+    // Returning to the cached Kaede entry must not expose the old r03 frame.
+    vm.setWeapon(WEAPON_DEFS['kaede-ar']!);
+    const restoredGlove = vm.root.getObjectByName('vm:leftGloveSkin') as THREE.Mesh;
+    expect(restoredGlove).toBe(exchangeGlove);
+    for (const mesh of exchangeMeshes) expect(mesh.morphTargetInfluences).toEqual([1, 0]);
+    vm.update(0, { ...state, reloadRatio: null });
+    for (const mesh of exchangeMeshes) expect(mesh.morphTargetInfluences).toEqual([1, 0]);
     vm.dispose();
   });
 });
@@ -115,6 +403,44 @@ describe('武器別の腕姿勢・ADS・視覚反動', () => {
       );
       expect(inward.x, def.id).toBeGreaterThan(0.25);
     }
+  });
+
+  it('トリガーの無い柄物はpower握り、銃器だけは人差し指を分ける', () => {
+    const powerShapes = new Set([
+      'fists',
+      'lightning-staff',
+      'bow-japanese',
+      'war-fan',
+      'shuriken-hand',
+    ]);
+    const camera = new THREE.PerspectiveCamera();
+    const vm = new ViewModel(camera);
+    for (const def of Object.values(WEAPON_DEFS)) {
+      const expected = powerShapes.has(def.shape ?? '') ? 'power' : 'trigger';
+      expect(resolveFirstPersonRightGrip(def), def.id).toBe(expected);
+      vm.setWeapon(def);
+      const rightHand = vm.root.getObjectByName(
+        def.shape === 'fists' ? 'vm:fistRHand' : 'vm:rightHand',
+      );
+      expect(rightHand?.userData.handGrip, def.id).toBe(expected);
+    }
+    vm.dispose();
+  });
+
+  it('空いた左手だけを閉じたガードにし、両手武器と銃は支持握りを維持する', () => {
+    const guardShapes = new Set(['fists', 'war-fan', 'shuriken-hand']);
+    const camera = new THREE.PerspectiveCamera();
+    const vm = new ViewModel(camera);
+    for (const def of Object.values(WEAPON_DEFS)) {
+      const expected = guardShapes.has(def.shape ?? '') ? 'guard' : 'support';
+      expect(resolveFirstPersonLeftGrip(def), def.id).toBe(expected);
+      vm.setWeapon(def);
+      const leftHand = vm.root.getObjectByName(
+        def.shape === 'fists' ? 'vm:fistLHand' : 'vm:leftHand',
+      );
+      expect(leftHand?.userData.handGrip, def.id).toBe(expected);
+    }
+    vm.dispose();
   });
 
   it('全武器で一人称腕は必ず1リグ・左右各5メッシュだけで、袖は手から分離しない', () => {
@@ -155,11 +481,42 @@ describe('武器別の腕姿勢・ADS・視覚反動', () => {
       const leftHand = vm.root.getObjectByName('vm:leftHand');
       expect(leftHand, def.id).toBeDefined();
       leftHand!.updateWorldMatrix(true, false);
-      // 左手メッシュはZ軸180°反転後の local +Y が掌側。
-      const palmNormal = new THREE.Vector3(0, 1, 0).transformDirection(leftHand!.matrixWorld);
-      expect(palmNormal.x, def.id).toBeGreaterThan(0.75);
+      if (def.id === 'kaede-ar') {
+        // Q17jは掌をハンドガード側へ20°内旋し、追加Y yawで
+        // 三角形に重なった掌面をカメラ側へ開く。
+        // 各軸を個別に固定すると内旋のたびに破綻するため、スクリーン内の
+        // 武器方向(+X/-Y)との角度で「内面が武器を向く」ことを直接固定する。
+        const glove = leftHand!.getObjectByName('vm:leftGloveSkin') as THREE.Mesh;
+        expect(glove.geometry.userData.anatomyVersion, def.id).toBe(10);
+        const support = glove.geometry.userData.supportGrip as {
+          palmInteriorNormal: readonly [number, number, number];
+        };
+        const palmNormal = new THREE.Vector3(...support.palmInteriorNormal)
+          .transformDirection(leftHand!.matrixWorld);
+        expect(
+          palmNormal.dot(new THREE.Vector3(1, -1, 0).normalize()),
+          def.id,
+        ).toBeGreaterThan(Math.cos(30 * Math.PI / 180));
+        expect(Math.abs(palmNormal.z), def.id).toBeGreaterThan(Math.sin(27 * Math.PI / 180));
+        expect(Math.abs(palmNormal.z), def.id).toBeLessThan(Math.sin(31 * Math.PI / 180));
+      } else {
+        // 従来支持姿勢はlocal +Yが掌側。Kaedeゲートの姿勢を波及させない。
+        const palmNormal = new THREE.Vector3(0, 1, 0).transformDirection(leftHand!.matrixWorld);
+        expect(palmNormal.x, def.id).toBeGreaterThan(0.75);
+      }
     }
     vm.dispose();
+  });
+
+  it('Kaede Q17j idleは内旋を保ったままY yawを同量揃え、他武器へ波及しない', () => {
+    const kaede = resolveSupportHandIdleCalibration(WEAPON_DEFS['kaede-ar']!);
+    const absolute = resolveSupportHandPoseDelta(WEAPON_DEFS['kaede-ar']!);
+    expect(kaede[3]).toBeCloseTo(-0.60, 7);
+    expect(kaede[4]).toBeCloseTo(-0.22, 7);
+    expect(absolute[4]).toBeCloseTo(kaede[4], 7);
+    expect((-0.25 - kaede[3]) * 180 / Math.PI).toBeCloseTo(20.05, 1);
+    expect(resolveSupportHandIdleCalibration(WEAPON_DEFS['tobikuma-ar']!))
+      .toEqual([0, 0, 0, 0, 0, 0]);
   });
 
   it('天雷杖は前後2点保持かつADSで後端をカメラから遠ざける', () => {
