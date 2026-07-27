@@ -106,6 +106,14 @@ import {
 } from '../render/cinematic-lighting';
 import { installCinematicSky, type CinematicSkyHandle } from '../render/cinematic-sky';
 import { AaaStageAssetPipeline } from '../render/aaa-asset-pipeline';
+import {
+  ENEMY_CLIP_NAMES,
+  ENEMY_VARIANT_IDS,
+  EnemyAssetPipeline,
+  type EnemyAssetAuditSnapshot,
+  type EnemyClipName,
+  type EnemyVariantId,
+} from '../render/enemy-asset-pipeline';
 import { supportsAdvancedRendering, supportsN8aoRendering } from '../render/render-budget';
 import type { PropMatFamily } from '../render/prop-visuals';
 import {
@@ -200,6 +208,7 @@ import {
   generateStage,
   type BuildingKind,
   type StageDef,
+  type StageLayout,
   type MoodId,
   type PropPlacement,
 } from './stage';
@@ -644,10 +653,21 @@ export class Match {
   // R100: updateBotsの個体ごとのContext/コールバック生成を廃止。Bot.updateは同期的に
   // コールバックを消費するため、現在個体だけ差し替える1組のスクラッチで安全に再利用できる。
   private botUpdateBot: Bot | null = null;
+  // `?enemyaudit` の無遮蔽近接撮影中に、実戦AIが撮影者を倒して
+  // カメラ/リスポーンを動かさないためのquery-onlyゲート。通常URLからは
+  // public debugフックが呼ばれないため false のまま。AI/物理更新自体は継続する。
+  private enemyAuditCombatSuppressed = false;
+  private stageAuditBotsHidden = false;
+  // `?armaudit` の意味フレーム撮影だけが設定する。undefined=実Weapon状態、0..1=その
+  // reloadRatioでViewModelを保持。PNG保存時間で高速リロード後半を失わないための描画専用値で、
+  // 弾数・Weapon・入力・ゲーム進行は一切変更しない。
+  private armAuditReloadRatio: number | undefined;
   private readonly botUpdateOnShoot = (origin: THREE.Vector3, dir: THREE.Vector3): void => {
+    if (this.enemyAuditCombatSuppressed) return;
     if (this.botUpdateBot) this.botShoot(this.botUpdateBot, origin, dir);
   };
   private readonly botUpdateOnMelee = (bot: Bot): void => {
+    if (this.enemyAuditCombatSuppressed) return;
     this.zombie.zombieMelee(bot);
   };
   private readonly botUpdateContext: BotContext = {
@@ -711,6 +731,9 @@ export class Match {
   private postfxActive = false; // PostFX(medium/high)有効
   private atmosphere: Atmosphere | null = null; // 映画的アトモスフィア(草/フォグ/粒子/遠景)
   private aaaAssetPipeline: AaaStageAssetPipeline | null = null;
+  private enemyAssetPipeline: EnemyAssetPipeline | null = null;
+  private enemyAuditIsolationUid: number | null = null;
+  private readonly enemyAuditOriginalVisibility = new Map<number, boolean>();
   private postfx: PostFXPass | null = null; // ジュース専用PostFX(被弾パルス・enable-gate)
   private baseDpr = 0; // 動的DPRの基準(初回setで確定=main.tsが設定した実効pixelRatio)
   private resScale = 1; // 現在の解像度スケール 0.6..1
@@ -1147,6 +1170,9 @@ export class Match {
     replayViewmodelShot: () => {
       this.viewModel.fire(this.activeWeapon.def.scope === true, true);
     },
+    replayEnemyShot: (uid) => {
+      this.enemyAssetPipeline?.notifyReplayShot(uid);
+    },
   });
 
   constructor(
@@ -1191,7 +1217,11 @@ export class Match {
     // buildStageScene 内の resolveWetness→applyMacroFloor で焼き込まれるため)。
     // ゾンビは既存ムード優先=天候ロール無し('clear' のまま)。
     if (config.mode !== 'zombie' && config.mode !== 'training') this.weatherKind = rollWeather(config.stage.seed);
-    this.buildStageScene(layout.boxes, layout.propPlacements);
+    this.buildStageScene(
+      layout.boxes,
+      layout.propPlacements,
+      layout.placementProvenance,
+    );
     // ミニマップ用ボックスデータは buildStageScene 内で ghost/decor 除外しながら登録済み
     // ステージの床材質(足音に使用)
     this.stageSurfaceFloor = deriveSurfaceMaterials(config.stage.palette).floor;
@@ -1498,6 +1528,26 @@ export class Match {
     } finally {
       for (const bot of this.bots) bot.prewarmDissolve(false);
     }
+
+    // Blender兵士はmedium/highの敵人型だけを「表示差し替え」する。初期ボットは
+    // 既に物理/AI/ヒットボックスを持っており、pipelineは全LOD読込・検証・compileが
+    // 完了するまで従来rigを隠さない。失敗はreportに留め、試合開始を止めない。
+    const tier = resolveGraphicsTier(
+      this.settings.graphicsQuality,
+      this.renderer.capabilities.isWebGL2,
+    );
+    if (tier !== 'low' && this.config.mode !== 'zombie' && this.config.mode !== 'training') {
+      const pipeline = new EnemyAssetPipeline(this.scene, this.renderer, this.camera);
+      this.enemyAssetPipeline = pipeline;
+      for (const bot of this.bots) this.registerEnemyAssetBot(bot);
+      const report = await pipeline.load();
+      if (this.enemyAssetPipeline === pipeline) {
+        this.scene.userData.enemyAssetReport = report;
+        globalThis.dispatchEvent?.(
+          new CustomEvent('hibana:enemy-assets', { detail: report }),
+        );
+      }
+    }
   }
 
   // ポストプロセス: medium/high のみ Render→Bloom→SMAA→Output の最小4パス。
@@ -1678,6 +1728,7 @@ export class Match {
   private buildStageScene(
     boxes: ReturnType<typeof generateStage>['boxes'],
     propPlacements: readonly PropPlacement[],
+    placementProvenance: StageLayout['placementProvenance'],
   ): void {
     // R12軽量化: 画質ティアを1回だけ算出して影/フォグ/草へ配線(hoist)
     const tier = resolveGraphicsTier(
@@ -1810,6 +1861,14 @@ export class Match {
       material: THREE.MeshStandardMaterial;
       specs: Array<(typeof boxes)[number]>;
     }>();
+    // Fail-open visual roots. Physics/collider ownership never moves to GLB;
+    // only these duplicate render meshes are switched off after load+compile.
+    const proceduralStageShellRoot = new THREE.Group();
+    proceduralStageShellRoot.name = 'stage:procedural-stage-shell';
+    this.scene.add(proceduralStageShellRoot);
+    const proceduralPropRoot = new THREE.Group();
+    proceduralPropRoot.name = 'stage:procedural-props';
+    this.scene.add(proceduralPropRoot);
 
     // R53-W2 M2c: プロップ超リアル化v2の適用判定。v2Placements は buildPropVisual で置換する
     // インスタンス一覧、skipBoxes は旧箱ビジュアル(マージ/個別/shadowCaster全経路)の生成を
@@ -1929,7 +1988,7 @@ export class Match {
             mesh.scale.set(spec.w, spec.h, spec.d);
             mesh.castShadow = isShadowCaster;
             mesh.receiveShadow = true;
-            this.scene.add(mesh);
+            proceduralPropRoot.add(mesh);
           } else {
             // 破壊されない建築・遮蔽物は色/材質ごとのInstancedMeshへ畳む。
             // 新地区を増やしてもコライダー数と見た目は維持したままdraw callを増やさない。
@@ -1974,7 +2033,7 @@ export class Match {
       mesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
       mesh.instanceMatrix.needsUpdate = true;
       mesh.computeBoundingSphere();
-      this.scene.add(mesh);
+      proceduralStageShellRoot.add(mesh);
     }
 
     // R41a: prop合流バッファをマージしてシーンへ追加(色キーごとに1メッシュ)
@@ -1987,7 +2046,7 @@ export class Match {
       const mergedPropMesh = new THREE.Mesh(merged, mat);
       mergedPropMesh.castShadow = false;
       mergedPropMesh.receiveShadow = true;
-      this.scene.add(mergedPropMesh);
+      proceduralPropRoot.add(mergedPropMesh);
     }
 
     // R53-W2 M2c: プロップ超リアル化v2 — family(metal/wood/stone/foliage/paint/accent/shadow)
@@ -1995,9 +2054,6 @@ export class Match {
     // 差し替わる分、正味のDC増はこれ未満に収まる=プランナー#7予算+8DC以内)。
     // rand は視覚専用の独立mulberry32(stage.seedから派生。stage.ts内部の既存乱数消費列は
     // 一切消費しない=既存ステージの配置結果・当たり判定は完全不変)。
-    const proceduralPropRoot = new THREE.Group();
-    proceduralPropRoot.name = 'stage:procedural-props';
-    this.scene.add(proceduralPropRoot);
     if (v2Placements.length > 0) {
       const visRand = mulberry32(this.config.stage.seed ^ 0x53a1e42c);
       const familyGeos = buildPropVisualFamilyGeometries(v2Placements, palette, visRand);
@@ -2043,7 +2099,7 @@ export class Match {
     this.cinematicDetailRoots.push(stageKit);
     const distantStageMatte = stageKit.getObjectByName('aaa:distant-stage-matte-root');
     // 障害物のビジュアル装飾(当たり判定には一切触れない・純粋に飾り)
-    buildStagePropDecor(this.scene, visibleBoxes, palette);
+    const proceduralShellDecor = buildStagePropDecor(this.scene, visibleBoxes, palette);
     this.buildAtmosphere(this.config.stage.palette, this.config.stage.size);
     // ステージパレットから床/遮蔽物の材質を推定し、足音・着弾音のテクスチャを決める
     this.sounds.setSurfaceMaterial(deriveSurfaceMaterials(this.config.stage.palette));
@@ -2091,10 +2147,14 @@ export class Match {
     // manifestに登録されたglTF/GLBだけを表示前compile後に重ねる。ロード失敗で試合を止めない。
     this.aaaAssetPipeline = new AaaStageAssetPipeline(this.scene, this.renderer, this.camera);
     const pipeline = this.aaaAssetPipeline;
+    const stageWorldAuditEnabled =
+      typeof globalThis.location !== 'undefined' &&
+      new URLSearchParams(globalThis.location.search).has('stageaudit');
     void pipeline.load({
       stageId: this.config.stage.id,
       tier,
       propPlacements: v2Placements,
+      placementProvenance,
     }).then((report) => {
       if (this.aaaAssetPipeline === pipeline) {
         this.scene.userData.aaaAssetReport = report;
@@ -2105,6 +2165,43 @@ export class Match {
         // 破壊可能プロップはBlenderへ焼かず個別Three.jsメッシュを維持する。
         // 非破壊プロップだけ、GLBの読込・compile成功後に旧統合メッシュを隠す。
         if (pipeline.hasProceduralPropReplacement) proceduralPropRoot.visible = false;
+        // Blender LOD0はBoxSpec外殻・外装・屋根・道路・ランドマークを一式で持つ。
+        // 旧Three.js外殻を同時描画すると全面が二重化し、z-fightingと「壁の中に
+        // 入った」ような見え方になるため、compile成功を境に視覚だけ原子的に交代する。
+        if (pipeline.hasProceduralStageShellReplacement) {
+          proceduralStageShellRoot.visible = false;
+          proceduralShellDecor.visible = false;
+          stageKit.visible = false;
+        }
+        // Query-gated release audit hook. This exposes only aggregate scene-root
+        // state to headless QA and leaves the normal AAA report event unchanged.
+        if (stageWorldAuditEnabled) {
+          const externalRoots = this.scene.children.filter(
+            (node) => node.name === 'aaa:external-stage-assets',
+          );
+          globalThis.dispatchEvent?.(new CustomEvent('hibana:stage-world-state', {
+            detail: {
+              stageId: this.config.stage.id,
+              tier,
+              externalRootCount: externalRoots.length,
+              externalRootVisibleCount: externalRoots.filter((node) => node.visible).length,
+              externalRootChildCount: externalRoots.reduce(
+                (count, node) => count + node.children.length,
+                0,
+              ),
+              proceduralStageShellVisible: proceduralStageShellRoot.visible,
+              proceduralPropsVisible: proceduralPropRoot.visible,
+              proceduralDecorVisible: proceduralShellDecor.visible,
+              stageKitVisible: stageKit.visible,
+              distantStageMatteVisible: distantStageMatte?.visible ?? null,
+              replacementFlags: {
+                distantWorld: pipeline.hasDistantWorldReplacement,
+                proceduralProps: pipeline.hasProceduralPropReplacement,
+                proceduralStageShell: pipeline.hasProceduralStageShellReplacement,
+              },
+            },
+          }));
+        }
       }
     }).catch((error: unknown) => {
       if (this.aaaAssetPipeline === pipeline) {
@@ -3390,6 +3487,15 @@ export class Match {
     this.zombie.feedZombieCrowd(this.camera);
     // R54-W1 F4: humanoid群InstancedMeshも同タイミングで自己修復+姿勢反映
     this.feedHumanoidCrowd();
+    // `?enemyaudit` の近接撮影中だけ、選択個体以外の自前rigを隠す。
+    // feedHumanoidCrowd()/Bot.update() は group.visible を正規状態へ戻すため、
+    // 全bot更新後に再適用する。通常URLでは uid=null の即returnのみ。
+    this.applyEnemyAuditIsolation();
+    // 群slotの割当/解放が確定した後だけ、近接個体のスキンアニメを進める。
+    this.enemyAssetPipeline?.update(dt);
+    // `?stageaudit` のステージ証跡だけ、個体rigと両Crowdの描画を隠す。
+    // 各更新がvisibilityを正規状態へ戻すため、tick末尾で再適用する。
+    this.applyStageAuditBotVisibility();
     // 瀕死の聴覚こもり(差分ガードはSoundKit側。死亡中は解除して観戦を明瞭に)
     this.sounds.setHealthState(this.player.alive ? this.player.hp / this.player.maxHp : 1);
   }
@@ -3670,7 +3776,7 @@ export class Match {
       mouseDY: this.lastLookDY,
       moveFactor: this.player.moveFactor,
       grounded: this.player.grounded,
-      reloadRatio: weapon.reloading ? weapon.reloadRatio : null,
+      reloadRatio: this.armAuditReloadRatio ?? (weapon.reloading ? weapon.reloadRatio : null),
       raiseRatio: Math.max(weapon.raiseRatio, this.cooking ? 0.65 : 0),
       motionScale: this.settings.reduceMotion ? 0.25 : 1,
       alive: this.player.alive && !this.rcxdActive, // V31: RC操縦ビューに銃が浮かないように
@@ -6640,7 +6746,14 @@ export class Match {
       bot.team === PLAYER_TEAM ? this.colors.allyTracer : this.colors.enemyTracer,
     );
     if (this.config.mode !== 'zombie') {
-      this.killcam.recordShot(origin, end, bot.team === PLAYER_TEAM ? this.colors.allyTracer : this.colors.enemyTracer, this.elapsed);
+      this.killcam.recordShot(
+        origin,
+        end,
+        bot.team === PLAYER_TEAM ? this.colors.allyTracer : this.colors.enemyTracer,
+        this.elapsed,
+        false,
+        bot.uid,
+      );
     }
 
     // 発砲音は方向と距離をつけて鳴らす。敵弾のみ遮蔽レイ1本で「壁越しのこもり」を判定
@@ -8686,6 +8799,15 @@ export class Match {
 
   // ── R6 キャンペーン: 敵生成・波・目的進行 ───────────────────────
   // Bot生成の3点セット(コライダーtag登録+scene追加+配列push)を共有する
+  private registerEnemyAssetBot(bot: Bot): void {
+    if (
+      bot.team !== PLAYER_TEAM &&
+      (bot.kind === 'humanoid' || bot.kind === 'master')
+    ) {
+      this.enemyAssetPipeline?.register(bot);
+    }
+  }
+
   private spawnBot(
     name: string,
     spawn: THREE.Vector3,
@@ -8720,6 +8842,8 @@ export class Match {
     for (const c of bot.extraColliders) this.tags.set(c.handle, { kind: 'bot', bot, part: 'body' });
     this.scene.add(bot.group);
     this.bots.push(bot);
+    // ミッション波などprepareRendering後の動的spawnも同じ表示経路へ収束させる。
+    this.registerEnemyAssetBot(bot);
     return bot;
   }
 
@@ -9331,6 +9455,7 @@ export class Match {
     // (score-victory等の経路は既にfeedHumanoidCrowd/frame()側で解放済みのため
     // 冪等=無害)。
     this.releaseHumanoidCrowdAll();
+    this.enemyAssetPipeline?.beginReplay();
     this.killcam.begin();
     return true;
   }
@@ -9369,6 +9494,12 @@ export class Match {
   /** finalKillcam 中に毎フレーム呼ぶ。完了(窓を抜けた)なら true、継続なら false を返す。 */
   advanceFinalKillcam(dt: number): boolean {
     const done = this.killcam.advance(dt);
+    // killcam.advance() は録画フレームの visible を復元するため、
+    // 目視QA時のみ選択個体隔離をこの後に再適用する。
+    this.applyEnemyAuditIsolation();
+    // 実時間dtではなく録画カーソルの進行量を使う。0.2×スローと
+    // キル瞬間フリーズの間も、発砲/死亡骨アニメが背景と分離しない。
+    this.enemyAssetPipeline?.update(this.killcam.replayDeltaS);
     // R54-F7: final killcam 中は frame() が呼ばれない(main.tsの二重update防止ゲート)ため、
     // uCinema 封筒と postfx.enabled のidleゲートをここで所有する。完了時は必ず0へ戻す
     if (this.postfx) {
@@ -9405,9 +9536,15 @@ export class Match {
    * ── main.ts が URL に `?fkdemo` を含むときのみ window.__fkDemo() 経由で呼ぶ想定。
    * ゾンビ/既にover/生存bot不在なら何もせず false を返す。
    */
-  debugForceFinalKill(): boolean {
+  debugForceFinalKill(preferredVictimUid?: number): boolean {
     if (this.config.mode === 'zombie' || this.over) return false;
-    const victim = this.bots.find((b) => b.alive);
+    // チーム戦で味方配列が先に並ぶ場合も、プレイヤーの決着キルは
+    // 必ず敵を選ぶ。これでBlender敵兵の死亡clipも実キルカム経路を通る。
+    const preferred = preferredVictimUid === undefined
+      ? null
+      : this.bots.find((bot) =>
+        bot.uid === preferredVictimUid && bot.alive && bot.team !== PLAYER_TEAM) ?? null;
+    const victim = preferred ?? this.bots.find((b) => b.alive && b.team !== PLAYER_TEAM);
     if (!victim) return false;
     const distM = Math.round(
       Math.hypot(
@@ -9418,6 +9555,191 @@ export class Match {
     this.killcam.noteKill(true, -1, this.bots.indexOf(victim), this.elapsed, this.activeWeapon.def.name, distM);
     this.over = true;
     return true;
+  }
+
+  /** Read-only scene truth for the `?enemyaudit` headless-browser harness. */
+  debugEnemyAssetSnapshot(): (EnemyAssetAuditSnapshot & {
+    killcamPlaying: boolean;
+    killcamFirstPerson: boolean;
+  }) | null {
+    const snapshot = this.enemyAssetPipeline?.debugSnapshot();
+    return snapshot ? {
+      ...snapshot,
+      killcamPlaying: this.killcam.playing,
+      killcamFirstPerson: this.killcam.firstPerson,
+    } : null;
+  }
+
+  private applyEnemyAuditIsolation(): void {
+    const uid = this.enemyAuditIsolationUid;
+    if (uid === null) return;
+    for (const bot of this.bots) {
+      if (!this.enemyAuditOriginalVisibility.has(bot.uid)) {
+        this.enemyAuditOriginalVisibility.set(bot.uid, bot.group.visible);
+      }
+      bot.group.visible = bot.uid === uid &&
+        (this.enemyAuditOriginalVisibility.get(bot.uid) ?? true);
+    }
+  }
+
+  private isolateEnemyAuditActor(uid: number): void {
+    this.enemyAuditIsolationUid = uid;
+    this.applyEnemyAuditIsolation();
+  }
+
+  private applyStageAuditBotVisibility(): void {
+    if (!this.stageAuditBotsHidden) return;
+    for (const bot of this.bots) bot.group.visible = false;
+    this.humanoidCrowd?.setVisible(false);
+    this.zombie.zombieCrowd?.setVisible(false);
+  }
+
+  /**
+   * `?stageaudit` 専用。全BotのAI/物理/当たり判定はそのまま進め、
+   * 個体Object3Dとhumanoid/zombie crowdの可視性だけを無効化する。
+   */
+  debugPrepareStageAudit(): void {
+    this.stageAuditBotsHidden = true;
+    this.applyStageAuditBotVisibility();
+  }
+
+  /**
+   * `?stageaudit` の固定証跡専用。監査用に指定座標へ安全に再配置し、
+   * target を正面に据える。通常プレイでは stageAuditBotsHidden が立たないため
+   * 呼び出しても何も変更しない。
+   */
+  debugSetStageAuditPose(
+    x: number,
+    z: number,
+    targetX: number,
+    targetZ: number,
+  ): ReturnType<Match['debugStageAuditSnapshot']> {
+    if (!this.stageAuditBotsHidden) return null;
+    if (![x, z, targetX, targetZ].every(Number.isFinite)) return null;
+    const dx = targetX - x;
+    const dz = targetZ - z;
+    if (dx * dx + dz * dz < 1e-6) return null;
+    this.player.respawnAt(new THREE.Vector3(x, 0, z));
+    const invLength = 1 / Math.hypot(dx, dz);
+    this.player.yaw = Math.atan2(-dx * invLength, -dz * invLength);
+    this.player.pitch = 0;
+    this.shakeTrauma = 0;
+    this.syncCamera();
+    return this.debugStageAuditSnapshot();
+  }
+
+  /** Read-only partner for debugSetStageAuditPose; never exposed without `?stageaudit`. */
+  debugStageAuditSnapshot(): {
+    x: number;
+    y: number;
+    z: number;
+    yaw: number;
+    pitch: number;
+    grounded: boolean;
+  } | null {
+    if (!this.stageAuditBotsHidden) return null;
+    const position = this.player.position;
+    return {
+      x: position.x,
+      y: position.y,
+      z: position.z,
+      yaw: this.player.yaw,
+      pitch: this.player.pitch,
+      grounded: this.player.grounded,
+    };
+  }
+
+  /**
+   * `?armaudit` 専用。実R入力の成立確認後、ViewModelだけを意味のある進捗率へ保持する。
+   * nullで直ちに実Weapon状態へ戻す。main.tsは同クエリ時だけこのメソッドを公開する。
+   */
+  debugSetArmAuditReloadRatio(ratio: number | null): number | null {
+    if (ratio === null) {
+      this.armAuditReloadRatio = undefined;
+      return null;
+    }
+    if (!Number.isFinite(ratio)) return null;
+    this.armAuditReloadRatio = THREE.MathUtils.clamp(ratio, 0, 1);
+    return this.armAuditReloadRatio;
+  }
+
+  /** `?armaudit` only: calibrate the rendered support-hand pose without changing gameplay. */
+  debugSetArmAuditLeftHandDelta(
+    delta: readonly [number, number, number, number, number, number] | null,
+  ): readonly [number, number, number, number, number, number] | null {
+    return this.viewModel.debugSetArmAuditLeftHandDelta(delta);
+  }
+
+  /**
+   * `?enemyaudit` 専用。物理/AI/アニメは進めたままBotの弾丸と近接命中だけを
+   * 抑制し、長時間の14clip撮影中にプレイヤー死亡で構図が変わるのを防ぐ。
+   * main.tsは同クエリを明示したヘッドレス監査の固定更新前にのみ呼ぶ。
+   */
+  debugPrepareEnemyAssetAudit(): void {
+    if (this.config.mode === 'zombie') return;
+    this.enemyAuditCombatSuppressed = true;
+    if (this.player.alive) this.player.hp = this.player.maxHp;
+  }
+
+  /** Drive one real imported AnimationClip; exposed only by main.ts under `?enemyaudit`. */
+  debugEnemyAssetPlayClip(
+    clip: string,
+    variantId?: string,
+    holdS?: number,
+    startAt01?: number,
+    framingYawDeg?: number,
+    framingDistanceM?: number,
+    preferredUid?: number,
+  ): number | null {
+    if (!(ENEMY_CLIP_NAMES as readonly string[]).includes(clip)) return null;
+    if (variantId && !(ENEMY_VARIANT_IDS as readonly string[]).includes(variantId)) return null;
+    const uid = this.enemyAssetPipeline?.debugPlayClip(
+      clip as EnemyClipName,
+      variantId as EnemyVariantId | undefined,
+      holdS,
+      startAt01,
+      framingYawDeg,
+      framingDistanceM,
+      preferredUid,
+    ) ?? null;
+    if (uid !== null) this.isolateEnemyAuditActor(uid);
+    return uid;
+  }
+
+  /** Keep one exact integrated actor readable in ignored visual-QA captures. */
+  debugEnemyAssetFrameActor(
+    uid: number,
+    yawDeg?: number,
+    distanceM?: number,
+    holdS?: number,
+    throughReplay?: boolean,
+  ): number | null {
+    const framedUid = this.enemyAssetPipeline?.debugFrameActor(
+      uid,
+      yawDeg,
+      distanceM,
+      holdS,
+      throughReplay,
+    ) ?? null;
+    if (framedUid !== null) this.isolateEnemyAuditActor(framedUid);
+    return framedUid;
+  }
+
+  /** Force one real actor between its imported LOD roots for browser visual QA. */
+  debugEnemyAssetForceLod(
+    level: number,
+    variantId?: string,
+    holdS?: number,
+  ): number | null {
+    if (level !== 0 && level !== 1 && level !== 2) return null;
+    if (variantId && !(ENEMY_VARIANT_IDS as readonly string[]).includes(variantId)) return null;
+    const uid = this.enemyAssetPipeline?.debugForceLod(
+      level,
+      variantId as EnemyVariantId | undefined,
+      holdS,
+    ) ?? null;
+    if (uid !== null) this.isolateEnemyAuditActor(uid);
+    return uid;
   }
 
   /** R54-F7 フォトモード: ステージ一辺(m)。自由飛行カメラのAABBクランプ基準。 */
@@ -9644,6 +9966,9 @@ export class Match {
     this.nPressTimestamps = [];
     this.nTripleArmed = false;
     this.viewModel.setKunaiLightningMode(false);
+    // scene.traverse/Bot.disposeより先に外部リグを切り離し、clone骨→共有sourceの順で解放する。
+    this.enemyAssetPipeline?.dispose();
+    this.enemyAssetPipeline = null;
     this.aaaAssetPipeline?.dispose();
     this.aaaAssetPipeline = null;
     this.cinematicSky?.dispose();

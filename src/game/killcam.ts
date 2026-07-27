@@ -24,9 +24,10 @@ const FK_P            = 9;
 // bot slot    : posX,posY,posZ, headY, yaw, alive  = 6 floats
 const FK_B            = 6;
 const FK_FRAME_STRIDE = FK_P + FK_MAX_BOTS * FK_B; // 225
-// shot slot   : from(3) + to(3) + color(1) + time(1) + playerShot(1) = 9 floats
+// shot slot   : from(3) + to(3) + color(1) + time(1) + playerShot(1) + botUid(1) = 10 floats
 // playerShot は一人称再生時に viewmodel の発砲・反動まで同時再現する識別ビット。
-const FK_S            = 9;
+// botUid はBlender兵士のFireクリップを録画トレーサーと同期させる(-1=プレイヤー/不明)。
+const FK_S            = 10;
 // R55 W-C2 ④: recordFrame が player slot の初回記録前(まず起こらないが保険)に使う既定FOV。
 // core/settings.ts DEFAULT_SETTINGS.fov(78)に合わせた仮値で、通常は最初のtickで即上書きされる。
 const FK_DEFAULT_FOV  = 78;
@@ -233,6 +234,8 @@ export interface KillcamDeps {
   updateViewmodelReplayPose?(adsRatio: number, dt: number): void;
   /** 録画済みのプレイヤー射撃を跨いだ瞬間、銃口発光・機関部・視覚反動を再生する。 */
   replayViewmodelShot?(): void;
+  /** 録画済みのBOT射撃を跨いだ瞬間、射手固有の外部リグへ通知する。 */
+  replayEnemyShot?(uid: number): void;
   /**
    * R55 W-C2/W-C3 ④: カメラが実際に一人称FPSビュー(通常プレイ/ADS)を描画中かどうか。
    * RC-XD操縦中や旧来の死亡三人称killcam中はカメラ(位置/向き/FOV)を別システムが所有し、
@@ -289,6 +292,7 @@ export class KillcamController {
   private fkWinKill           = 0;
   private fkWinEnd            = 0;
   private fkPrevCursor        = -Infinity;
+  private fkReplayDelta       = 0;
   // ── シネマティックキルカム専用フィールド ──
   private fkAvatarGroup: THREE.Group | null = null;
   private readonly _ckCamBase  = new THREE.Vector3();
@@ -330,6 +334,11 @@ export class KillcamController {
   /** R54-F7: 最終キルの水平距離(m)。0=未供給。 */
   get killDistM(): number {
     return this.fkKillDistM;
+  }
+
+  /** 直前advanceで進んだ録画上のゲーム秒。スロー/フリーズと骨アニメを同期する。 */
+  get replayDeltaS(): number {
+    return this.fkReplayDelta;
   }
 
   /** キル発生をマーキングする(旧: Match が fk フィールドへ直接代入していた2サイトの置換)。
@@ -391,6 +400,7 @@ export class KillcamController {
     // fkCursor(再生窓の開始カーソル、直前行で確定済み)を初期値にすることで、初回 replay 範囲は
     // 常に [fkCursor, cursor] に限定される(窓外の古いショットは対象外)。
     this.fkPrevCursor = this.fkCursor;
+    this.fkReplayDelta = 0;
     this.fkFlash      = 0;
     // ── シネマティックキルカム初期化 ──
     this._ckDollyDist = 0;
@@ -586,6 +596,7 @@ export class KillcamController {
     color: number,
     elapsed: number,
     playerShot = false,
+    botUid = -1,
   ): void {
     if (this.deps.isZombie()) return;
     const h   = this.fkShotHead;
@@ -599,6 +610,7 @@ export class KillcamController {
     this.fkShotBuf[off + 6] = color;
     this.fkShotBuf[off + 7] = elapsed;
     this.fkShotBuf[off + 8] = playerShot ? 1 : 0;
+    this.fkShotBuf[off + 9] = playerShot ? -1 : botUid;
     this.fkShotHead = (h + 1) % FK_MAX_SHOTS;
     if (this.fkShotFill < FK_MAX_SHOTS) this.fkShotFill++;
   }
@@ -607,15 +619,20 @@ export class KillcamController {
 
 
   advance(dt: number): boolean {
-    if (!this.fkPlaying) return true;
+    if (!this.fkPlaying) {
+      this.fkReplayDelta = 0;
+      return true;
+    }
     // シネマティックランプ速度: ckSpeedAt はモジュールレベル純粋関数
     const speed  = ckSpeedAt(this.fkCursor, this.fkWinKill);
     // R54-F7 マイクロフリーズ: キル瞬間を跨ぐフレームで killT へ正確に着地→0.12s 完全静止。
     // 省モーション時はフリーズなし(ckCursorStep 内で分岐、従来の連続前進と同一)
+    const previousCursor = this.fkCursor;
     const stepped = ckCursorStep(
       this.fkCursor, dt, speed, this.fkWinKill, this._ckFreezeLeft, this.deps.reduceMotion(),
     );
     this.fkCursor = stepped.cursor;
+    this.fkReplayDelta = Math.max(0, this.fkCursor - previousCursor);
     this._ckFreezeLeft = stepped.freezeLeft;
     // ドリー前進(スロー中も同じレートで動かして映画的なヌルっと感を出す)。
     // フリーズ中のみ freeze frame の意図どおり完全静止させる
@@ -898,6 +915,9 @@ export class KillcamController {
         );
         if (this.fkFirstPersonActive && this.fkShotBuf[off + 8]! > 0.5) {
           this.deps.replayViewmodelShot?.();
+        } else if (this.fkShotBuf[off + 8]! <= 0.5) {
+          const uid = Math.trunc(this.fkShotBuf[off + 9]!);
+          if (uid >= 0) this.deps.replayEnemyShot?.(uid);
         }
       }
     }

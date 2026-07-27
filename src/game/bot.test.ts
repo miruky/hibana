@@ -267,7 +267,7 @@ describe('zombieKccSkipFactor(★1/★5 stuckTimer実時間補正用)', () => {
   });
 });
 
-// ─── R54-W1(B1) 群衆分離KCC: hordeRank>=THIN_RANKの対ゾンビcollider除外 + 空間ハッシュ分離 ───
+// ─── R54-W1(B1) 群衆分離KCC: 最近接8体の外は対ゾンビcollider除外 + 空間ハッシュ分離 ───
 describe('Bot ゾンビ 群衆分離KCC(R54-W1 B1)', () => {
   function makeZombieWorld(): RAPIER.World {
     const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
@@ -290,7 +290,7 @@ describe('Bot ゾンビ 群衆分離KCC(R54-W1 B1)', () => {
     };
   }
 
-  it('先頭集団(hordeRank<THIN_RANK)は他ゾンビのbodyColliderに衝突してブロックされる(非回帰)', () => {
+  it('最近接8体(hordeRank<NEAR_FULL_RANK)は他ゾンビのbodyColliderに衝突してブロックされる(非回帰)', () => {
     const world = makeZombieWorld();
     const tuning = { ...DIFFICULTY.normal };
     const mover = new Bot(
@@ -309,14 +309,14 @@ describe('Bot ゾンビ 群衆分離KCC(R54-W1 B1)', () => {
     expect(mover.position.z).toBeGreaterThan(-1.3);
   });
 
-  it('先頭集団外(hordeRank>=THIN_RANK)は他ゾンビのbodyColliderをすり抜ける(密集KCC軽量化)', () => {
+  it('最近接8体の外(hordeRank>=NEAR_FULL_RANK)は他ゾンビのbodyColliderをすり抜ける(密集KCC軽量化)', () => {
     const world = makeZombieWorld();
     const tuning = { ...DIFFICULTY.normal };
     const mover = new Bot(
       world, '後方', new THREE.Vector3(0, 0, 0), 0x39d465, tuning, 2, 'normal', 'zombie',
     );
     new Bot(world, 'static', new THREE.Vector3(0, 0, -1.5), 0x39d465, tuning, 2, 'normal', 'zombie');
-    mover.hordeRank = ZOMBIE_HORDE_THIN_RANK; // 群衆後方=対ゾンビKCC除外の対象
+    mover.hordeRank = ZOMBIE_KCC_NEAR_FULL_RANK; // 群描画に移る先頭=対ゾンビKCC除外の対象
     world.step();
 
     const ctx = makeCtx(new THREE.Vector3(0, 1.5, -30), tuning);
@@ -328,31 +328,102 @@ describe('Bot ゾンビ 群衆分離KCC(R54-W1 B1)', () => {
     expect(mover.position.z).toBeLessThan(-1.5);
   });
 
+  it('最近接8体の外でもステージ壁はすり抜けない', () => {
+    const world = makeZombieWorld();
+    const tuning = { ...DIFFICULTY.normal };
+    const wallBody = world.createRigidBody(RAPIER.RigidBodyDesc.fixed());
+    world.createCollider(
+      RAPIER.ColliderDesc.cuboid(5, 3, 0.3).setTranslation(0, 3, -1.5),
+      wallBody,
+    );
+    const mover = new Bot(
+      world, '後方', new THREE.Vector3(0, 0, 0), 0x39d465, tuning, 2, 'normal', 'zombie',
+    );
+    mover.hordeRank = ZOMBIE_KCC_NEAR_FULL_RANK;
+    world.step();
+
+    const ctx = makeCtx(new THREE.Vector3(0, 1.5, -30), tuning);
+    for (let i = 0; i < 30; i += 1) {
+      mover.update(1 / 60, ctx);
+      world.step();
+    }
+    // 壁中心(-1.5m)を越えず、KCCのoffset/自動段差補正分のみで停止する。
+    expect(mover.position.z).toBeGreaterThan(-1.45);
+  });
+
+  it('最近接8体の外でもdefault groupのプレイヤーカプセルはすり抜けない', () => {
+    const world = makeZombieWorld();
+    const tuning = { ...DIFFICULTY.normal };
+    const playerBody = world.createRigidBody(
+      RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(0, 0.85, -1.5),
+    );
+    world.createCollider(RAPIER.ColliderDesc.capsule(0.4, 0.35), playerBody);
+    const mover = new Bot(
+      world, '後方', new THREE.Vector3(0, 0, 0), 0x39d465, tuning, 2, 'normal', 'zombie',
+    );
+    mover.hordeRank = ZOMBIE_KCC_NEAR_FULL_RANK;
+    world.step();
+
+    const ctx = makeCtx(new THREE.Vector3(0, 1.5, -30), tuning);
+    for (let i = 0; i < 30; i += 1) {
+      mover.update(1 / 60, ctx);
+      world.step();
+    }
+    expect(mover.position.z).toBeGreaterThan(-1.3);
+  });
+
   it('密集接触group/KCC除外後も通常レイの被弾ヘッドショット判定は非回帰', () => {
     const world = makeZombieWorld();
     const tuning = { ...DIFFICULTY.normal };
     const thinned = new Bot(
       world, '後方', new THREE.Vector3(0, 0, 0), 0x39d465, tuning, 2, 'normal', 'zombie',
     );
-    thinned.hordeRank = ZOMBIE_HORDE_THIN_RANK;
+    thinned.hordeRank = ZOMBIE_KCC_NEAR_FULL_RANK;
     world.step();
 
-    // Interaction groupはゾンビ同士の接触ペアだけを除外し、filterPredicateもKCC限定。
+    // Interaction groupはゾンビ同士の接触ペアだけを除外し、native filterGroupsもKCC限定。
     // filterGroups未指定の通常castRay(被弾判定と同じ経路)は従来どおり頭へ命中する。
     const headY = thinned.headPosition().y;
     const ray = new RAPIER.Ray({ x: 0, y: headY, z: -10 }, { x: 0, y: 0, z: 1 });
     const hit = world.castRay(ray, 100, true);
     expect(hit).not.toBeNull();
     expect(hit!.collider.handle).toBe(thinned.headCollider.handle);
+
+    const bodyRay = new RAPIER.Ray(
+      { x: 0, y: thinned.position.y, z: -10 },
+      { x: 0, y: 0, z: 1 },
+    );
+    const bodyHit = world.castRay(bodyRay, 100, true);
+    expect(bodyHit).not.toBeNull();
+    expect(bodyHit!.collider.handle).toBe(thinned.bodyCollider.handle);
   });
 
-  it('rebuild済みの空間ハッシュはhordeRank>=THIN_RANKの個体のwishへ反発を加算する(統合確認)', () => {
+  it('最近接8体の外でも死亡演出後のcorpseCleared契約を保つ', () => {
+    const world = makeZombieWorld();
+    const tuning = { ...DIFFICULTY.normal };
+    const zombie = new Bot(
+      world, '後方', new THREE.Vector3(0, 0, 0), 0x39d465, tuning, 2, 'normal', 'zombie',
+    );
+    zombie.hordeRank = ZOMBIE_KCC_NEAR_FULL_RANK;
+    world.step();
+
+    expect(zombie.takeDamage(999)).toBe(true);
+    expect(zombie.corpseCleared).toBe(false);
+    const ctx = makeCtx(null, tuning);
+    for (let i = 0; i < 40; i += 1) {
+      zombie.update(1 / 60, ctx);
+      world.step();
+    }
+    expect(zombie.corpseCleared).toBe(true);
+  });
+
+  it('rebuild済みの空間ハッシュはhordeRank>=NEAR_FULL_RANKの個体のwishへ反発を加算する(統合確認)', () => {
     const world = makeZombieWorld();
     const tuning = { ...DIFFICULTY.normal };
     const mover = new Bot(
       world, 'A', new THREE.Vector3(0, 0, 0), 0x39d465, tuning, 2, 'normal', 'zombie',
     );
-    mover.hordeRank = ZOMBIE_HORDE_THIN_RANK;
+    mover.hordeRank = ZOMBIE_KCC_NEAR_FULL_RANK;
     world.step();
 
     // 北側(+z)0.3mに「幽霊」隣接体(実colliderを持たない仮想エントリ)を登録する。

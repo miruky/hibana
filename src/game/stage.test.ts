@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildProp, generateStage, generateThemeObjects, MINI_SCENE_IDS } from './stage';
-import type { PropKind, PropPlacement, StageDef } from './stage';
+import type { BoxSpec, PropKind, PropPlacement, StageDef } from './stage';
 import { mulberry32 } from '../core/rng';
 import { STAGES } from './stages';
 
@@ -141,6 +141,15 @@ describe('generateStage', () => {
   it('全固定ステージの最大ランドマーク地区は原点へ実配置される', () => {
     for (const def of STAGES) {
       const layout = generateStage(def);
+      if (def.id === 'kairou') {
+        // Kairou's origin is the shared civic plaza between two paired hero
+        // landmarks.  A legacy origin building would hide one complete hero
+        // from every truthful first-person composition.
+        expect(layout.districtPlacements.some((placement) =>
+          Math.abs(placement.cx) < placement.width / 2
+          && Math.abs(placement.cz) < placement.depth / 2), 'kairou: origin plaza').toBe(false);
+        continue;
+      }
       const central = layout.districtPlacements[0];
       if (!central) continue;
       const first = central.kind;
@@ -274,6 +283,461 @@ describe('generateStage', () => {
       const aBreakable = a.boxes.map((x) => x.breakable);
       const bBreakable = b.boxes.map((x) => x.breakable);
       expect(JSON.stringify(aBreakable)).toBe(JSON.stringify(bBreakable));
+    }
+  });
+
+  it('Soukoの現行release経路は12屋根を識別するが、未承認monitor衝突は採用しない', () => {
+    const definition = STAGES.find((stage) => stage.id === 'souko')!;
+    const layout = generateStage(definition);
+    const supports = layout.boxes.filter((box) => box.roofMonitorSupport === true);
+    expect(supports).toHaveLength(12);
+    expect(supports.every((box) => box.structural === true)).toBe(true);
+    expect(supports.map((box) => box.district).sort()).toEqual([
+      'hangar', 'hangar', 'hangar',
+      'terminal', 'terminal', 'terminal',
+      'warehouse', 'warehouse', 'warehouse', 'warehouse', 'warehouse', 'warehouse',
+    ]);
+    expect(layout.boxes.filter((box) => box.roofMonitor !== undefined)).toHaveLength(0);
+    expect(layout.boxes.filter((box) => box.visualReplacement === 'souko-roof-monitor-v1'))
+      .toHaveLength(0);
+  });
+});
+
+describe('dense-world v5 representative district contract', () => {
+  const proofIds = ['kairou', 'chikurin', 'setsugen', 'kouwan', 'sakyuu', 'z04', 'takadai'];
+  const proofDefs = proofIds.map((id) => STAGES.find((stage) => stage.id === id)!);
+
+  const pointToPlacement = (
+    x: number,
+    z: number,
+    placement: { cx: number; cz: number; width: number; depth: number },
+  ): number => {
+    const dx = Math.max(0, Math.abs(x - placement.cx) - placement.width / 2);
+    const dz = Math.max(0, Math.abs(z - placement.cz) - placement.depth / 2);
+    return Math.hypot(dx, dz);
+  };
+
+  it('代表7面は配置列を含めてbyte-exactに決定論的', () => {
+    for (const def of proofDefs) {
+      const first = generateStage(def);
+      const second = generateStage(def);
+      expect(JSON.stringify(first.districtPlacements), `${def.id}: placements`)
+        .toBe(JSON.stringify(second.districtPlacements));
+      expect(JSON.stringify(first.boxes), `${def.id}: collider boxes`)
+        .toBe(JSON.stringify(second.boxes));
+    }
+  });
+
+  it('各面に境界内ランドマークが厳密に2件、全14 IDは重複しない', () => {
+    const catalogIds: string[] = [];
+    for (const def of proofDefs) {
+      const layout = generateStage(def);
+      expect(layout.landmarkPlacements, `${def.id}: exact two`).toHaveLength(2);
+      expect(new Set(layout.landmarkPlacements.map((item) => item.id)).size, `${def.id}: local ids`)
+        .toBe(2);
+      for (const landmark of layout.landmarkPlacements) {
+        catalogIds.push(landmark.id);
+        expect(landmark.id.startsWith(`${def.id}-`), `${def.id}: stage-exclusive id`).toBe(true);
+        expect(landmark.grounded, `${landmark.id}: grounded`).toBe(true);
+        expect(landmark.combatSpace, `${landmark.id}: combat space`).toBe(true);
+      }
+    }
+    expect(catalogIds).toHaveLength(14);
+    expect(new Set(catalogIds).size).toBe(14);
+  });
+
+  it('巨大建築のフットプリント・入口街路は全て境界内で他地区と交差しない', () => {
+    const overlap2d = (
+      a: { minX: number; maxX: number; minZ: number; maxZ: number },
+      b: { minX: number; maxX: number; minZ: number; maxZ: number },
+    ) => a.minX < b.maxX && a.maxX > b.minX && a.minZ < b.maxZ && a.maxZ > b.minZ;
+
+    for (const def of proofDefs) {
+      const half = def.size / 2;
+      const layout = generateStage(def);
+      for (const landmark of layout.landmarkPlacements) {
+        const footprint = {
+          minX: landmark.cx - landmark.width / 2,
+          maxX: landmark.cx + landmark.width / 2,
+          minZ: landmark.cz - landmark.depth / 2,
+          maxZ: landmark.cz + landmark.depth / 2,
+        };
+        expect(footprint.minX, `${landmark.id}: min x`).toBeGreaterThanOrEqual(-half + 4);
+        expect(footprint.maxX, `${landmark.id}: max x`).toBeLessThanOrEqual(half - 4);
+        expect(footprint.minZ, `${landmark.id}: min z`).toBeGreaterThanOrEqual(-half + 4);
+        expect(footprint.maxZ, `${landmark.id}: max z`).toBeLessThanOrEqual(half - 4);
+
+        const halfRoad = landmark.approach.width / 2;
+        const route = {
+          minX: Math.min(landmark.approach.start[0], landmark.approach.end[0]) - halfRoad,
+          maxX: Math.max(landmark.approach.start[0], landmark.approach.end[0]) + halfRoad,
+          minZ: Math.min(landmark.approach.start[1], landmark.approach.end[1]) - halfRoad,
+          maxZ: Math.max(landmark.approach.start[1], landmark.approach.end[1]) + halfRoad,
+        };
+        expect(route.minX, `${landmark.id}: route min x`).toBeGreaterThanOrEqual(-half);
+        expect(route.maxX, `${landmark.id}: route max x`).toBeLessThanOrEqual(half);
+        expect(route.minZ, `${landmark.id}: route min z`).toBeGreaterThanOrEqual(-half);
+        expect(route.maxZ, `${landmark.id}: route max z`).toBeLessThanOrEqual(half);
+        expect(
+          Math.hypot(
+            landmark.approach.start[0] - landmark.approach.end[0],
+            landmark.approach.start[1] - landmark.approach.end[1],
+          ),
+          `${landmark.id}: approach length`,
+        ).toBeGreaterThanOrEqual(20);
+
+        const entranceDx = Math.abs(landmark.entrance[0] - landmark.cx);
+        const entranceDz = Math.abs(landmark.entrance[1] - landmark.cz);
+        const onXFace = Math.abs(entranceDx - (landmark.width / 2 + 0.8)) < 1e-6
+          && entranceDz < 1e-6;
+        const onZFace = Math.abs(entranceDz - (landmark.depth / 2 + 0.8)) < 1e-6
+          && entranceDx < 1e-6;
+        expect(onXFace || onZFace, `${landmark.id}: entrance lies on one authored face`).toBe(true);
+
+        for (const district of layout.districtPlacements) {
+          if (
+            district.cx === landmark.cx && district.cz === landmark.cz
+            && district.width === landmark.width && district.depth === landmark.depth
+          ) continue;
+          const districtFootprint = {
+            minX: district.cx - district.width / 2,
+            maxX: district.cx + district.width / 2,
+            minZ: district.cz - district.depth / 2,
+            maxZ: district.cz + district.depth / 2,
+          };
+          expect(overlap2d(route, districtFootprint), `${landmark.id}: approach versus district`)
+            .toBe(false);
+        }
+      }
+    }
+  });
+
+  it('ランドマークはタグ付き実コライダー、開放入口、階段と上階戦闘路を持つ', () => {
+    for (const def of proofDefs) {
+      const half = def.size / 2;
+      const layout = generateStage(def);
+      for (const landmark of layout.landmarkPlacements) {
+        const colliders = layout.boxes.filter((box) => box.landmarkId === landmark.id);
+        expect(colliders.length, `${landmark.id}: collider count`).toBeGreaterThanOrEqual(35);
+        for (const requiredPart of ['floor', 'wall', 'stair', 'upper-walk'] as const) {
+          expect(colliders.some((box) => box.landmarkPart === requiredPart), `${landmark.id}: ${requiredPart}`)
+            .toBe(true);
+        }
+        expect(colliders.every((box) => box.structural && box.combatSpace), `${landmark.id}: tags`)
+          .toBe(true);
+        expect(Math.min(...colliders.map((box) => box.y - box.h / 2)), `${landmark.id}: seated`)
+          .toBeGreaterThanOrEqual(-0.3);
+        for (const box of colliders) {
+          expect(Math.abs(box.x) + box.w / 2, `${landmark.id}: collider x bounds`)
+            .toBeLessThanOrEqual(half);
+          expect(Math.abs(box.z) + box.d / 2, `${landmark.id}: collider z bounds`)
+            .toBeLessThanOrEqual(half);
+        }
+
+        const directionX = Math.sign(landmark.entrance[0] - landmark.cx);
+        const directionZ = Math.sign(landmark.entrance[1] - landmark.cz);
+        const gateX = landmark.cx + directionX * landmark.width / 2;
+        const gateZ = landmark.cz + directionZ * landmark.depth / 2;
+        const wallBlocksGate = colliders.some((box) =>
+          box.landmarkPart === 'wall'
+          && Math.abs(gateX - box.x) < box.w / 2
+          && Math.abs(gateZ - box.z) < box.d / 2
+          && box.y - box.h / 2 < 1.7
+          && box.y + box.h / 2 > 0.2);
+        expect(wallBlocksGate, `${landmark.id}: physical entrance opening`).toBe(false);
+      }
+    }
+  });
+
+  it('回廊の8本列柱は実コライダーで、3m通過余白と28m十字LOSを保つ', () => {
+    const def = proofDefs.find((candidate) => candidate.id === 'kairou')!;
+    const layout = generateStage(def);
+    const sanctuary = layout.landmarkPlacements.find((landmark) =>
+      landmark.id === 'kairou-meridian-hypostyle-sanctuary')!;
+    const shell = layout.boxes.filter((box) => box.landmarkId === sanctuary.id);
+    const columns = shell.filter((box) => box.landmarkPart === 'column');
+    expect(columns).toHaveLength(8);
+    expect(
+      columns.map((box) => [box.x - sanctuary.cx, box.z - sanctuary.cz]),
+    ).toEqual([
+      [-34, -32], [-28, -32], [-22, -32], [-16, -32],
+      [16, -32], [22, -32], [28, -32], [34, -32],
+    ]);
+
+    for (const column of columns) {
+      expect(column.structural).toBe(true);
+      expect(column.combatSpace).toBe(true);
+      expect([column.w, column.h, column.d]).toEqual([2.6, 18, 2.6]);
+      // Both inequalities must hold: each column stays out of the full union
+      // of the 28m north/south and east/west combat corridors.
+      expect(Math.abs(column.x - sanctuary.cx) - column.w / 2).toBeGreaterThanOrEqual(14);
+      expect(Math.abs(column.z - sanctuary.cz) - column.d / 2).toBeGreaterThanOrEqual(14);
+    }
+
+    const horizontalGap = (a: BoxSpec, b: BoxSpec): [number, number] => [
+      Math.max(0, Math.abs(a.x - b.x) - (a.w + b.w) / 2),
+      Math.max(0, Math.abs(a.z - b.z) - (a.d + b.d) / 2),
+    ];
+    for (let index = 0; index < columns.length; index += 1) {
+      for (let other = index + 1; other < columns.length; other += 1) {
+        const [gapX, gapZ] = horizontalGap(columns[index]!, columns[other]!);
+        expect(gapX >= 3 || gapZ >= 3, `column ${index}/${other}: ${gapX},${gapZ}`)
+          .toBe(true);
+      }
+    }
+
+    const groundObstacles = shell.filter((box) =>
+      box.landmarkPart !== 'column'
+      && box.landmarkPart !== 'floor'
+      && box.landmarkPart !== 'upper-walk'
+      && box.y - box.h / 2 < 3.2
+      && box.y + box.h / 2 > 0);
+    for (const [index, column] of columns.entries()) {
+      for (const obstacle of groundObstacles) {
+        const [gapX, gapZ] = horizontalGap(column, obstacle);
+        expect(
+          gapX >= 3 || gapZ >= 3,
+          `column ${index} versus ${obstacle.landmarkPart}: ${gapX},${gapZ}`,
+        ).toBe(true);
+      }
+    }
+
+    const gateColumns = shell.filter((box) => box.landmarkPart === 'gate-column');
+    expect(gateColumns).toHaveLength(4);
+    expect(gateColumns.map((box) => [
+      box.x - sanctuary.cx,
+      box.z - sanctuary.cz,
+      box.w,
+      box.h,
+      box.d,
+    ])).toEqual([
+      [-9, -37, 2, 12.2, 2], [9, -37, 2, 12.2, 2],
+      [-9, 37, 2, 12.2, 2], [9, 37, 2, 12.2, 2],
+    ]);
+    // The central inner faces remain exactly 16m apart.
+    for (const localZ of [-37, 37]) {
+      const pair = gateColumns
+        .filter((box) => Math.abs(box.z - sanctuary.cz - localZ) < 1e-6)
+        .sort((a, b) => a.x - b.x);
+      expect(pair[1]!.x - pair[1]!.w / 2 - (pair[0]!.x + pair[0]!.w / 2)).toBe(16);
+    }
+
+    // Capsule-expanded samples prove a continuous eye-height line from the
+    // authored approach, through the north gate and 28m interior cross, to
+    // the opposite opening. This catches columns drifting into the route even
+    // when their centres still look symmetric on a minimap.
+    const start = sanctuary.approach.start;
+    const dx = sanctuary.approach.end[0] - start[0];
+    const dz = sanctuary.approach.end[1] - start[1];
+    const length = Math.hypot(dx, dz);
+    const unitX = dx / length;
+    const unitZ = dz / length;
+    const crossLength = length + sanctuary.depth + 2;
+    const capsuleRadius = 0.35;
+    for (let travel = 0; travel <= crossLength; travel += 0.5) {
+      const x = start[0] + unitX * travel;
+      const z = start[1] + unitZ * travel;
+      const blockers = layout.boxes.filter((box) =>
+        !box.ghost
+        && box.h > 0.6
+        && box.y - box.h / 2 < 1.65
+        && box.y + box.h / 2 > 1.65
+        && Math.abs(x - box.x) < box.w / 2 + capsuleRadius
+        && Math.abs(z - box.z) < box.d / 2 + capsuleRadius);
+      expect(blockers, `LOS blocked at ${x.toFixed(1)},${z.toFixed(1)}`).toHaveLength(0);
+    }
+  });
+
+  it('回廊天文台の上部城塞は実コライダーで、地上4入口を塞がない', () => {
+    const def = proofDefs.find((candidate) => candidate.id === 'kairou')!;
+    const layout = generateStage(def);
+    const observatory = layout.landmarkPlacements.find((landmark) =>
+      landmark.id === 'kairou-windcrown-caravan-observatory')!;
+    const upperWalls = layout.boxes.filter((box) =>
+      box.landmarkId === observatory.id && box.landmarkPart === 'upper-wall');
+    expect(upperWalls).toHaveLength(5);
+    for (const wall of upperWalls) {
+      expect(wall.structural).toBe(true);
+      expect(wall.combatSpace).toBe(true);
+      const centralCore = wall.w > 10 && wall.d > 10;
+      expect(wall.h).toBe(centralCore ? 12 : 8);
+      expect(wall.y - wall.h / 2).toBeGreaterThan(11.5);
+      expect(Math.abs(wall.x) + wall.w / 2).toBeLessThanOrEqual(def.size / 2);
+      expect(Math.abs(wall.z) + wall.d / 2).toBeLessThanOrEqual(def.size / 2);
+    }
+    // Player/capsule eye height must see through every authored gate; the
+    // upper ring may block high projectiles but never ground traversal.
+    const eyeY = 1.65;
+    for (const [x, z] of [
+      [observatory.cx - observatory.width / 2, observatory.cz],
+      [observatory.cx + observatory.width / 2, observatory.cz],
+      [observatory.cx, observatory.cz - observatory.depth / 2],
+      [observatory.cx, observatory.cz + observatory.depth / 2],
+    ] as const) {
+      expect(upperWalls.some((wall) =>
+        Math.abs(x - wall.x) < wall.w / 2 + 0.35
+        && Math.abs(z - wall.z) < wall.d / 2 + 0.35
+        && wall.y - wall.h / 2 < eyeY
+        && wall.y + wall.h / 2 > eyeY), `${x},${z}: eye gate`).toBe(false);
+    }
+  });
+
+  it('実コライダー地区の占有率は24.5〜34%、通常面13〜14棟以上、修道城面9棟以上', () => {
+    for (const def of proofDefs) {
+      const layout = generateStage(def);
+      const coverage = layout.districtPlacements.reduce(
+        (sum, placement) => sum + placement.width * placement.depth,
+        0,
+      ) / (def.size * def.size);
+      const abbey = def.recipe?.buildings[0] === 'abbey';
+      expect(coverage, `${def.id}: ${(coverage * 100).toFixed(2)}%`).toBeGreaterThanOrEqual(0.245);
+      expect(coverage, `${def.id}: ${(coverage * 100).toFixed(2)}%`).toBeLessThanOrEqual(0.34);
+      expect(layout.districtPlacements.length, `${def.id}: district count`)
+        .toBeGreaterThanOrEqual(abbey ? 9 : def.id === 'kairou' || def.size < 300 ? 13 : 14);
+    }
+  });
+
+  it('全player spawnは地区外30m以上、全bot spawnは地区外8m以上', () => {
+    for (const def of proofDefs) {
+      const layout = generateStage(def);
+      for (const [sx, , sz] of layout.playerSpawns) {
+        for (const placement of layout.districtPlacements) {
+          expect(pointToPlacement(sx, sz, placement), `${def.id}: player ${sx},${sz}`)
+            .toBeGreaterThanOrEqual(30);
+        }
+      }
+      for (const [sx, , sz] of layout.botSpawns) {
+        for (const placement of layout.districtPlacements) {
+          expect(pointToPlacement(sx, sz, placement), `${def.id}: bot ${sx},${sz}`)
+            .toBeGreaterThanOrEqual(8);
+        }
+      }
+    }
+  });
+
+  it('地区間に6m以上の通行余白を保ち、重複・閉鎖ポケットを作らない', () => {
+    for (const def of proofDefs) {
+      const placements = generateStage(def).districtPlacements;
+      for (let index = 0; index < placements.length; index += 1) {
+        const a = placements[index]!;
+        for (let other = index + 1; other < placements.length; other += 1) {
+          const b = placements[other]!;
+          const gapX = Math.max(0, Math.abs(a.cx - b.cx) - (a.width + b.width) / 2);
+          const gapZ = Math.max(0, Math.abs(a.cz - b.cz) - (a.depth + b.depth) / 2);
+          expect(
+            gapX >= 6 || gapZ >= 6,
+            `${def.id}: district ${index}/${other} gaps ${gapX.toFixed(1)},${gapZ.toFixed(1)}`,
+          ).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('通常面は直交16m主街路+7m路地、修道城面は東西南北の城門軸が連結開放', () => {
+    const intersectsAxis = (
+      placement: { cx: number; cz: number; width: number; depth: number },
+      axis: 'x' | 'z',
+      center: number,
+      halfWidth: number,
+    ): boolean => {
+      const epsilon = 1e-6;
+      return axis === 'x'
+        ? placement.cx - placement.width / 2 < center + halfWidth - epsilon
+          && placement.cx + placement.width / 2 > center - halfWidth + epsilon
+        : placement.cz - placement.depth / 2 < center + halfWidth - epsilon
+          && placement.cz + placement.depth / 2 > center - halfWidth + epsilon;
+    };
+
+    for (const def of proofDefs) {
+      const layout = generateStage(def);
+      const placements = layout.districtPlacements;
+      if (def.recipe?.buildings[0] === 'abbey') {
+        for (const placement of placements.slice(1)) {
+          expect(intersectsAxis(placement, 'x', 0, 9), `${def.id}: east-west gate axis`).toBe(false);
+          expect(intersectsAxis(placement, 'z', 0, 9), `${def.id}: north-south gate axis`).toBe(false);
+        }
+        continue;
+      }
+      const [primaryLandmark, alleyLandmark] = layout.landmarkPlacements;
+      const corridors: ['x' | 'z', number, number][] = def.id === 'kairou'
+        ? [
+            ['x', 2, 8],
+            ['z', primaryLandmark!.cz, 8],
+            ['x', alleyLandmark!.cx, 3.5],
+            ['z', -30, 3.5],
+          ]
+        : [
+            ['x', primaryLandmark!.cx, 8],
+            ['z', primaryLandmark!.cz, 8],
+            ['x', alleyLandmark!.cx, 3.5],
+            ['z', alleyLandmark!.cz, 3.5],
+          ];
+      for (const [axis, center, halfWidth] of corridors) {
+        const blockers = placements.filter((placement) => {
+          if (!intersectsAxis(placement, axis, center, halfWidth)) return false;
+          const landmark = layout.landmarkPlacements.find((candidate) =>
+            candidate.cx === placement.cx && candidate.cz === placement.cz
+            && candidate.width === placement.width && candidate.depth === placement.depth);
+          if (!landmark) return true;
+          const offset = axis === 'x'
+            ? Math.abs(landmark.cx - center)
+            : Math.abs(landmark.cz - center);
+          // The physical wall and interior openings are both 28m wide.
+          return offset + halfWidth > 14;
+        });
+        expect(blockers, `${def.id}: ${axis}=${center} street blockers`).toHaveLength(0);
+      }
+    }
+  });
+
+  it('回廊の2英雄間は12mカプセル大通りを実際に通せる', () => {
+    const def = proofDefs.find((candidate) => candidate.id === 'kairou')!;
+    const layout = generateStage(def);
+    const [sanctuary, observatory] = layout.landmarkPlacements;
+    const westEdge = sanctuary!.cx + sanctuary!.width / 2;
+    const eastEdge = observatory!.cx - observatory!.width / 2;
+    expect(eastEdge - westEdge).toBeGreaterThanOrEqual(18);
+    const centerX = (westEdge + eastEdge) / 2;
+    const capsuleRadius = 6;
+    for (let z = -def.size / 2 + 4; z <= def.size / 2 - 4; z += 1) {
+      const blockers = layout.districtPlacements.filter((placement) =>
+        Math.abs(centerX - placement.cx) < placement.width / 2 + capsuleRadius
+        && Math.abs(z - placement.cz) < placement.depth / 2 + 0.35);
+      expect(blockers, `central boulevard blocked at z=${z}`).toHaveLength(0);
+    }
+  });
+
+  it('回廊の11通常街区は実屋根上に衝突付き上層商館を1棟ずつ持つ', () => {
+    const def = proofDefs.find((candidate) => candidate.id === 'kairou')!;
+    const layout = generateStage(def);
+    const volumes = layout.boxes.filter((box) => box.urbanVolume);
+    expect(volumes).toHaveLength(layout.districtPlacements.length - 2);
+    for (const volume of volumes) {
+      expect(volume.structural).toBe(true);
+      expect(volume.h).toBeGreaterThanOrEqual(5.8);
+      const bottom = volume.y - volume.h / 2;
+      const supports = layout.boxes.filter((box) =>
+        !box.urbanVolume
+        && box.district === volume.district
+        && Math.abs(box.y + box.h / 2 - bottom) < 1e-6
+        && volume.x - volume.w / 2 >= box.x - box.w / 2 - 1e-6
+        && volume.x + volume.w / 2 <= box.x + box.w / 2 + 1e-6
+        && volume.z - volume.d / 2 >= box.z - box.d / 2 - 1e-6
+        && volume.z + volume.d / 2 <= box.z + box.d / 2 + 1e-6);
+      expect(supports, `unsupported upper volume ${volume.x},${volume.z}`).not.toHaveLength(0);
+    }
+  });
+
+  it('31面すべてが例外なしで生成でき、配置中心・寸法が有限', () => {
+    expect(STAGES).toHaveLength(31);
+    for (const def of STAGES) {
+      const layout = generateStage(def);
+      expect(layout.boxes.length, `${def.id}: boxes`).toBeGreaterThan(0);
+      for (const placement of layout.districtPlacements) {
+        for (const value of [placement.cx, placement.cz, placement.width, placement.depth]) {
+          expect(Number.isFinite(value), `${def.id}: finite district field`).toBe(true);
+        }
+      }
     }
   });
 });

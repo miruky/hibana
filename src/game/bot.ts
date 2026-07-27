@@ -378,28 +378,25 @@ export function zombieKccSkipFactor(distToPlayerM: number, hordeRank = 0): numbe
 }
 
 // ── R54-W1(B1)/R100 密集ゾンビの物理ライト化 ────────────────────────────────
-// hordeRank>=ZOMBIE_HORDE_THIN_RANK(群衆後方)の個体は、updateZombieのcomputeColliderMovement
+// Object3D+実影を保つ最近接8体の外(hordeRank>=ZOMBIE_KCC_NEAR_FULL_RANK)は、
 // へnative filterGroupsを渡し「他ゾンビのbody/head collider」だけを衝突解決から除外する
 // (被弾レイ/爆風/近接判定・obstacleAhead等の他クエリは一切変更しない=非干渉)。
 //
 // R100ではさらにゾンビ同士だけが通常physics.stepで接触ペアを生成しないinteraction groupを
 // body/headへ設定する。これはKCCの明示shape queryとは独立で、前衛のKCC衝突は既存テストで
 // 維持される。他オブジェクトは既定ALL groupなので地形・プレイヤー・弾レイとの相互作用は
-// そのまま。後方だけをKCC queryから除外する役割はnative filterGroupsが担う。
+// そのまま。最近接群の外だけをKCC queryから除外する役割はnative filterGroupsが担う。
 // query自身はgroup 0x0001、filter 0xfffdなのでdefault groupの地形/プレイヤー等は通し、
 // membership 0x0002のゾンビだけをRapier(WASM)内で早期除外する。旧JS predicateは候補ごとに
 // WASM→JS境界を往復してR100の支配項になっていたため使用しない。
 const ZOMBIE_NO_SELF_COLLISION_GROUPS = (0x0002 << 16) | 0xfffd;
 const ZOMBIE_KCC_WORLD_FILTER_GROUPS = (0x0001 << 16) | 0xfffd;
 
-// ── R54-W1(B1) 群衆分離の空間ハッシュ(申し送り) ────────────────────────────
+// ── R54-W1(B1) 群衆分離の空間ハッシュ ─────────────────────────────────
 // 対ゾンビKCCを除外された個体は互いにすり抜けて重なり得るため、代わりにこの軽量グリッドで
-// 反発ベクトルを計算しwishへ加算する(spatial-hash.ts参照)。rebuild()は0.25s周期でhordeRank
-// を再計算する側(zombie-director.ts)から全ゾンビの{uid,x,z}を渡して呼ぶのが自然だが、
-// 本ラウンドはzombie-director.tsが並行編集中のため配線しない(申し送り事項。統合パスで
-// 「0.25s毎にrebuild([...zAlive].map(b=>({uid:b.uid,x:b.position.x,z:b.position.z})))」を
-// 追加すること)。rebuild()が一度も呼ばれない間は格子が空 → separation()は常に{x:0,z:0}を
-// 返すため、配線が完了するまでこのグリッドは完全に無害(非回帰)。
+// 反発ベクトルを計算しwishへ加算する(spatial-hash.ts参照)。zombie-director.tsが
+// hordeRank再計算と同じ0.25s周期で全生存ゾンビ位置をrebuildする。試合終了時はclearし、
+// 未構築/初期化中の空格子ではseparation()が常にゼロを返すfail-open契約を保つ。
 export const zombieSeparationGrid = new ZombieSeparationGrid();
 // updateZombie内でのみ使うアロケゼロ出力先(GIANT_POS_SCRATCH等と同じ流儀)
 const ZOMBIE_SEP_SCRATCH = { x: 0, z: 0 };
@@ -1140,6 +1137,22 @@ export interface HumanoidCrowdPose {
   visible: boolean;
 }
 
+// Blender兵士の表示層が、AI/物理を変更せずにアニメ状態だけを読む契約。
+// 連番カウンタにすることで、同一tickに複数イベントが起き得る実戦中も取りこぼさない。
+export interface EnemyVisualState {
+  alive: boolean;
+  visible: boolean;
+  aiState: 'patrol' | 'search' | 'combat';
+  speedMps: number;
+  shotSerial: number;
+  reloadSerial: number;
+  hitSerial: number;
+  hitFromBack: boolean;
+  dying01: number;
+  killcamReplay: boolean;
+  killcamDeath01: number;
+}
+
 let botUidSeq = 0;
 
 export class Bot {
@@ -1311,6 +1324,12 @@ export class Bot {
   private shotTimer = 0;
   private pauseTimer = 0;
   private dyingTimer = 0;
+  private enemyVisualShotSerial = 0;
+  private enemyVisualReloadSerial = 0;
+  private enemyVisualHitSerial = 0;
+  private enemyVisualHitFromBack = false;
+  private enemyKillcamReplay = false;
+  private enemyKillcamDeath01 = 0;
   // ★2 巨躯KCC距離LOD: フレームパリティと、非担当フレームで再利用する前回moved
   private kccFrame = 0;
   private readonly prevGiantMoved = { x: 0, y: 0, z: 0 };
@@ -1321,6 +1340,9 @@ export class Bot {
 
   // 歩行アニメ用。胴体ボブと四肢スイングを駆動する
   private readonly rig = new THREE.Group();
+  // Blender製兵士は表示のみを担い、group/剛体/コライダーは従来のまま。
+  // nullなら即座にプロシージャルrigへfail-openする。
+  private externalEnemyVisual: THREE.Object3D | null = null;
   private readonly legL = new THREE.Group();
   private readonly legR = new THREE.Group();
   private readonly kneeL = new THREE.Group();
@@ -1478,8 +1500,8 @@ export class Bot {
     }
     if (kind === 'zombie') {
       // R100密集物理: Rapierの通常physics.stepではゾンビ同士の接触ペアを生成しない。
-      // KCCの前衛24体はcomputeColliderMovementの形状クエリで従来どおり仲間を障害物として
-      // 扱い、後方群は既存の空間ハッシュ分離を使う。filterGroups未指定の被弾レイ/
+      // 最近接8体はcomputeColliderMovementの形状クエリで従来どおり仲間を障害物として
+      // 扱い、その外は空間ハッシュ分離を使う。filterGroups未指定の被弾レイ/
       // 爆風/頭判定には影響せず、密集時だけ増えるN²接触候補を除去できる。
       this.bodyCollider.setCollisionGroups(ZOMBIE_NO_SELF_COLLISION_GROUPS);
       this.headCollider.setCollisionGroups(ZOMBIE_NO_SELF_COLLISION_GROUPS);
@@ -2185,6 +2207,10 @@ export class Bot {
   }
 
   update(dt: number, ctx: BotContext): void {
+    // 通常tickが再開したらキルカメラ専用の視覚オーバーライドを解除する。
+    // finalkillcam中はBot.update自体が呼ばれないため、録画姿勢はそのまま保持される。
+    this.enemyKillcamReplay = false;
+    this.enemyKillcamDeath01 = 0;
     if (!this.alive) {
       this._horizSpeed = 0;
       this.respawnIn -= dt;
@@ -2785,11 +2811,11 @@ export class Bot {
       }
     }
 
-    // ── R54-W1(B1) 群衆分離: 対ゾンビKCCを除外される個体(hordeRank>=THIN_RANK。下の
+    // ── R54-W1(B1) 群衆分離: 対ゾンビKCCを除外される個体(hordeRank>=NEAR_FULL_RANK。下の
     // KCCブロック参照)は互いにすり抜けて重なり得るため、空間ハッシュの反発ベクトルを
-    // wishへ加算して見た目の重なりを緩和する。rebuild()の配線が完了するまでは格子が空
-    // (=separation()は常に{x:0,z:0})なので、この加算は現時点で完全に無効(非回帰)。
-    if (this.hordeRank >= ZOMBIE_HORDE_THIN_RANK) {
+    // wishへ加算して見た目の重なりを緩和する。directorが0.25sごとにrebuildし、
+    // 未構築/試合終了後の空格子ではゼロとなるためfail-open。
+    if (this.hordeRank >= ZOMBIE_KCC_NEAR_FULL_RANK) {
       zombieSeparationGrid.separation(this.uid, pos.x, pos.z, ZOMBIE_SEP_SCRATCH);
       wishX += ZOMBIE_SEP_SCRATCH.x;
       wishZ += ZOMBIE_SEP_SCRATCH.z;
@@ -2833,12 +2859,12 @@ export class Bot {
     let blocked = false; // LODフレームではblocked評価をスキップ(遠距離の登坂点火を抑制)
 
     if (kccFull) {
-      // R54-W1(B1): hordeRank>=THIN_RANK(群衆後方)は他ゾンビのbodyColliderをこの
+      // R100: hordeRank>=NEAR_FULL_RANK(最近接8体の外)は他ゾンビのbodyColliderをこの
       // 呼び出しに限り衝突解決の対象から除外する(native filterGroups。collider自体の状態は
       // 不変=被弾レイ/爆風/近接判定/obstacleAhead等の他クエリに一切影響しない)。
       // forcedFull(climbing/melee)経由でここに来た場合も同じ条件で適用してよい
       // (kccFullの「毎フレーム計算するか」というLODカデンスとは独立した判断のため)。
-      if (this.hordeRank >= ZOMBIE_HORDE_THIN_RANK) {
+      if (this.hordeRank >= ZOMBIE_KCC_NEAR_FULL_RANK) {
         this.controller.computeColliderMovement(
           this.bodyCollider,
           movement,
@@ -3119,6 +3145,8 @@ export class Bot {
       this.pauseTimer =
         ctx.tuning.burstPauseMin +
         ctx.rand() * (ctx.tuning.burstPauseMax - ctx.tuning.burstPauseMin);
+      // 実リロード機構の無いAI銃では、バースト間の装填ポーズを正規イベントとする。
+      this.enemyVisualReloadSerial += 1;
     }
 
     const dir = fireDir.clone();
@@ -3134,6 +3162,7 @@ export class Bot {
       .addScaledVector(right, Math.tan(Math.cos(theta) * r))
       .addScaledVector(up, Math.tan(Math.sin(theta) * r))
       .normalize();
+    this.enemyVisualShotSerial += 1;
     ctx.onShoot(origin, dir);
   }
 
@@ -3158,6 +3187,15 @@ export class Bot {
   // 機械はdissolveU(崩落ディゾルブ)を進め、humanoidは膝崩れ→前傾横倒しの2段。
   private updateDying(dt: number): void {
     this.dyingTimer -= dt;
+    if (
+      this.externalEnemyVisual &&
+      (this.kind === 'humanoid' || this.kind === 'master')
+    ) {
+      // Blender側のDeathクリップとgroup全体の手続き倒れを重ねると、
+      // 二重回転で地面へ潜る。外部表示の間はタイマー/非表示だけを従来系が所有する。
+      if (this.dyingTimer <= 0) this.group.visible = false;
+      return;
+    }
     const t = 1 - Math.max(0, this.dyingTimer) / KIND_DEATH_S[this.kind];
     if (this.kind === 'drone') {
       // 横スピンしながら落下→着地後にディゾルブ(kinematicは放置では落ちない)
@@ -3298,15 +3336,69 @@ export class Bot {
   // ZombieCrowdRenderer(src/render/zombie-crowd.ts)のInstancedMeshが担う。
   // ロジック(group.position/コライダー/AI)は完全に従来どおり。slot=-1で即座に
   // 従来描画へ戻る(キルスイッチ/最近接高忠実度/variant化のフォールバック)。
+  private refreshEnemyVisualVisibility(): void {
+    const individual = this.crowdSlot < 0;
+    const external = this.externalEnemyVisual;
+    this.rig.visible = individual && external === null;
+    if (external) external.visible = individual;
+  }
+
+  /**
+   * GLBは靴底Y=0、Bot.groupはカプセル中心Y。groupスケール後にも実足元へ
+   * 一致するローカルY(通常-0.8、masterは-0.8/1.15)を表示層へ渡す。
+   */
+  get enemyVisualFloorOffsetY(): number {
+    return -this.feetOffset / Math.max(1e-4, this.group.scale.y);
+  }
+
+  setExternalEnemyVisual(root: THREE.Object3D | null): void {
+    if (root === this.externalEnemyVisual) return;
+    if (this.externalEnemyVisual) this.group.remove(this.externalEnemyVisual);
+    this.externalEnemyVisual = root;
+    if (root) this.group.add(root);
+    this.refreshEnemyVisualVisibility();
+  }
+
+  /** Read-only visibility truth for the query-gated real-browser enemy audit. */
+  getEnemyVisualVisibilityAudit(): {
+    proceduralRigVisible: boolean;
+    externalVisualPresent: boolean;
+    externalVisualVisible: boolean;
+    crowdSlot: number;
+  } {
+    return {
+      proceduralRigVisible: this.rig.visible,
+      externalVisualPresent: this.externalEnemyVisual !== null,
+      externalVisualVisible: Boolean(
+        this.externalEnemyVisual?.visible && this.group.visible,
+      ),
+      crowdSlot: this.crowdSlot,
+    };
+  }
+
+  getEnemyVisualState(out: EnemyVisualState): void {
+    out.alive = this.alive;
+    out.visible = this.group.visible;
+    out.aiState = this.aiState;
+    out.speedMps = this._horizSpeed;
+    out.shotSerial = this.enemyVisualShotSerial;
+    out.reloadSerial = this.enemyVisualReloadSerial;
+    out.hitSerial = this.enemyVisualHitSerial;
+    out.hitFromBack = this.enemyVisualHitFromBack;
+    out.dying01 = this.alive
+      ? 0
+      : 1 - Math.max(0, this.dyingTimer) / KIND_DEATH_S[this.kind];
+    out.killcamReplay = this.enemyKillcamReplay;
+    out.killcamDeath01 = this.enemyKillcamDeath01;
+  }
+
   setCrowdSlot(slot: number): void {
     this.crowdSlot = slot;
     if (slot < 0) {
       // 群経路中はsyncMeshを止めているため、Object3Dへ戻す瞬間に最新剛体姿勢を反映する。
       this.syncMesh();
-      this.rig.visible = true;
-    } else {
-      this.rig.visible = false;
     }
+    this.refreshEnemyVisualVisibility();
   }
 
   // 群レンダラへの姿勢書き出し(アロケゼロ。syncMesh/updateDyingの式の「入力」を
@@ -3373,6 +3465,8 @@ export class Bot {
     this.group.position.set(x, y, z);
     this.group.rotation.y = rotY;
     this.group.visible = true;
+    this.enemyKillcamReplay = true;
+    this.enemyKillcamDeath01 = 0;
     this.fkResetPose();
   }
 
@@ -3409,6 +3503,11 @@ export class Bot {
    */
   fkApplyDeathPose(t01: number): void {
     const t = THREE.MathUtils.clamp(t01, 0, 1);
+    this.enemyKillcamReplay = true;
+    this.enemyKillcamDeath01 = t;
+    // 外部兵士は録画カーソルに同期したDeathクリップが倒れを担う。
+    // group側の手続き回転を重ねない(読込失敗時は従来式へそのままfail-open)。
+    if (this.externalEnemyVisual) return;
     if (this.kind === 'drone') {
       // 墜落スピンの簡易再現(物理Y降下は再現せず回転のみ)
       this.group.rotation.x = t * (Math.PI / 2) * 0.8;
@@ -3445,6 +3544,15 @@ export class Bot {
   // 見ず従来どおり全周(R8ボスが背面射撃へ反撃できる根拠=非回帰)。無指定は全周フォールバック。
   takeDamage(amount: number, fromDir?: THREE.Vector3): boolean {
     if (!this.alive) return false;
+    this.enemyVisualHitSerial += 1;
+    if (fromDir && fromDir.lengthSq() > 1e-8) {
+      // fromDirはBot→射手。正面方向と逆の半球なら背面被弾クリップを選ぶ。
+      const facingDot =
+        -Math.sin(this.heading) * fromDir.x - Math.cos(this.heading) * fromDir.z;
+      this.enemyVisualHitFromBack = facingDot < 0;
+    } else {
+      this.enemyVisualHitFromBack = false;
+    }
     this.hp -= amount;
     this.alert = 5;
     // 撃たれた本人は短時間だけ扇形/全周検知(撃たれて振り向くのは自然な反応)
@@ -3501,6 +3609,8 @@ export class Bot {
   respawnAt(spawn: THREE.Vector3): void {
     this.hp = this.maxHp;
     this.alive = true;
+    this.enemyKillcamReplay = false;
+    this.enemyKillcamDeath01 = 0;
     this.velY = 0;
     this.alert = 0;
     this.alertPos = null;
@@ -3643,6 +3753,12 @@ export class Bot {
     this.shadowCasting = on; // R54-W1(F4): humanoid群の対象判定(feedHumanoidCrowd)が読む
     this.rig.traverse((obj) => {
       if (obj instanceof THREE.Mesh) obj.castShadow = on && obj.userData.noShadow !== true;
+    });
+    this.externalEnemyVisual?.traverse((obj) => {
+      if (obj instanceof THREE.Mesh) {
+        // LOD1/2はシルエット用なので影はLOD0のみ。従来の最近接8体上限も維持する。
+        obj.castShadow = on && obj.userData.enemyAssetLod === 0;
+      }
     });
   }
 

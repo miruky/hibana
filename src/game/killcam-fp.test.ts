@@ -492,4 +492,36 @@ describe('KillcamController: begin()直後の初回advance()は再生窓開始�
     for (let i = 0; i < 60 && replayedShots === 0; i += 1) controller.advance(1 / 60);
     expect(replayedShots).toBe(1);
   });
+
+  it('bot射撃は録画したuidの外部兵士Fireフックへ1回だけ通知する', () => {
+    const { deps, camera, player } = makeMockDeps();
+    const replayedEnemyUids: number[] = [];
+    const controller = new KillcamController({
+      ...deps,
+      replayEnemyShot: (uid) => { replayedEnemyUids.push(uid); },
+    });
+    for (let e = 0; e <= 10; e += 0.25) {
+      player.eyePosition.set(0, 1.6, 0);
+      player.yaw = 0;
+      player.pitch = 0;
+      camera.fov = 50;
+      controller.recordFrame(e);
+    }
+    controller.recordShot(
+      new THREE.Vector3(),
+      new THREE.Vector3(1, 0, 0),
+      0xff3300,
+      7.52,
+      false,
+      42,
+    );
+    controller.noteKill(false, 0, -1, 10, 'BotGun', 5);
+    expect(controller.canStart(10)).toBe(true);
+    controller.begin();
+    for (let i = 0; i < 60 && replayedEnemyUids.length === 0; i += 1) {
+      controller.advance(1 / 60);
+    }
+    expect(replayedEnemyUids).toEqual([42]);
+    expect(controller.replayDeltaS).toBeGreaterThanOrEqual(0);
+  });
 });

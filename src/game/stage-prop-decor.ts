@@ -26,7 +26,13 @@ export function buildStagePropDecor(
   scene: THREE.Scene,
   boxes: StageLayout['boxes'],
   palette: StageDef['palette'],
-): void {
+): THREE.Group {
+  // Keep every fallback-only detail below one switchable root. A compiled
+  // Blender stage contains its own facade relief, trims and contact treatment;
+  // drawing both versions creates coplanar shimmer and apparent clipping.
+  const root = new THREE.Group();
+  root.name = 'stage:procedural-shell-decor';
+  scene.add(root);
   const clampN = (x: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, x));
   const derive = (hex: string, dL: number, dS = 0): THREE.Color => {
     const c = new THREE.Color(hex);
@@ -434,7 +440,7 @@ export function buildStagePropDecor(
     const mesh = new THREE.Mesh(merged, material);
     mesh.castShadow = false;
     mesh.receiveShadow = false;
-    scene.add(mesh);
+    root.add(mesh);
   };
 
   addMerged(reliefParts, new THREE.MeshStandardMaterial({ roughness: 0.85, vertexColors: true }));
@@ -464,7 +470,7 @@ export function buildStagePropDecor(
     const inst = new THREE.InstancedMesh(castGeo, castMat, castingMatrices.length);
     for (let i = 0; i < castingMatrices.length; i += 1) inst.setMatrixAt(i, castingMatrices[i]!);
     inst.instanceMatrix.needsUpdate = true;
-    scene.add(inst);
+    root.add(inst);
   }
 
   // 床コンタクトシャドウ(全箱を1メッシュへ)
@@ -481,7 +487,7 @@ export function buildStagePropDecor(
       shadowMat.polygonOffset = true;
       shadowMat.polygonOffsetFactor = -1;
       shadowMat.polygonOffsetUnits = -1;
-      scene.add(new THREE.Mesh(mergedShadow, shadowMat));
+      root.add(new THREE.Mesh(mergedShadow, shadowMat));
     }
   }
 
@@ -490,4 +496,5 @@ export function buildStagePropDecor(
   slabTpl.dispose();
   capsuleTpl.dispose();
   planeTpl.dispose();
+  return root;
 }

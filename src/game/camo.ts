@@ -460,10 +460,11 @@ export function equippedCamoFor(
 }
 
 // ── R57-⑤ カモ性能ボーナス(ゴールド/ダイヤ/ダークマター) ─────────────────
-// ゴールド/ダイヤ/ダークマターの高位カモは「見た目報酬」だけでなく武器性能を控えめに
-// 向上させる。バランスを壊さないためダメージ/RPM/射程/弾数は一切変更せず、ハンドリング系
-// (リロード/ADS/持ち替え速度・移動時精度・反動)だけを段階的に強化する。純関数で、元の
-// WeaponDef は決して変更しない(通常カモ/未知IDは同一参照をそのまま返す=ゼロコスト)。
+// ゴールド/ダイヤ/ダークマターの高位カモは「見た目報酬」だけでなく武器性能も段階的に
+// 向上させる。Gold/Diamond はハンドリング系(リロード/ADS/持ち替え速度・移動時精度・反動)
+// のみを変更し、最終報酬の Dark Matter だけはそれらに加えて基礎ダメージを1.5倍へ高める。
+// RPM/射程/弾数は変更しない。純関数で、元の WeaponDef は決して変更しない
+// (通常カモ/未知IDは同一参照をそのまま返す=ゼロコスト)。
 //
 // 適用ポイント(配線はオーケストレータが match.ts / weapon-preview.ts 側で実施):
 //   const camoId = equippedCamoFor(weaponId, profile);   // 解決済みの装備カモ
@@ -514,7 +515,8 @@ const CAMO_STAT_BONUS: Partial<Record<CamoId, CamoStatBonus>> = {
 /**
  * カモの性能ボーナスを WeaponDef へ適用したコピーを返す(純関数・元defは非破壊)。
  * gold/diamond/dark-matter 以外(通常カモ・未知ID)は素通しで同一参照を返す。
- * ダメージ/RPM/射程/弾数など火力・射程に関わる数値は一切変更しない(バランス維持)。
+ * Gold/Diamond は火力を変更しない。Dark Matter だけはダメージを1.5倍へ高め、黒い弾道を付与する。
+ * RPM/射程/弾数は全迷彩で変更しない。
  */
 export function applyCamoStats(def: WeaponDef, camoId: string): WeaponDef {
   const b = CAMO_STAT_BONUS[camoId as CamoId];

@@ -1,4 +1,9 @@
 import { mulberry32, type Rand } from '../core/rng';
+import {
+  GENERATED_STAGE_PLACEMENT_PROVENANCE,
+  resolveGeneratedStagePlacement,
+} from './stage-placement-runtime';
+import type { RuntimeStagePlacement } from './stage-placement-runtime-core';
 
 // ── 映画的アトモスフィア(R11): THREE非依存の純型。render/atmosphere.ts と共有する ──
 export type MoodId = 'day' | 'dusk' | 'night' | 'overcast' | 'snow';
@@ -158,6 +163,22 @@ export interface BoxSpec {
   district?: BuildingKind;
   /** 衝突付きの窓／ガラス手すり。Blenderとfail-open描画の双方で半透明材を使う。 */
   glazing?: boolean;
+  /** V5: このコライダーが属する、戦闘可能な巨大ランドマークの一意ID。 */
+  landmarkId?: string;
+  /** V5: Blender/validatorが接地・入口・上階路を区別するための部位。 */
+  landmarkPart?: 'floor' | 'wall' | 'interior' | 'upper-wall' | 'upper-walk' | 'stair' | 'tower' | 'column' | 'gate-column';
+  /** V5: 単なる遠景ではなく、内部へ入って戦える衝突空間。 */
+  combatSpace?: true;
+  /** Kairou: 既存の実屋根/実塔上に収まる、衝突付き上層商館。 */
+  urbanVolume?: true;
+  /** Souko: Blenderの物流モニターを載せる、実際の建物屋根スラブ。 */
+  roofMonitorSupport?: true;
+  /** Souko: モニターの閉じた衝突包絡。視覚メッシュと独立して決定的に生成する。 */
+  roofMonitor?:
+    | { supportIndex: number; variant: 0 | 1 | 2; part: 'curb' }
+    | { supportIndex: number; variant: 0 | 1 | 2; part: 'body' | 'roof-proxy'; segmentIndex: number };
+  /** 衝突箱の箱描画を、同じIDのBlender視覚へ置換する契約。 */
+  visualReplacement?: 'souko-roof-monitor-v1';
 }
 
 export type SpawnPoint = [number, number, number];
@@ -202,7 +223,43 @@ export interface DistrictPlacement {
   depth: number;
 }
 
+export type LandmarkCollisionTemplate = 'abbey' | 'courtyard' | 'hall' | 'bridge' | 'vertical';
+
+export interface LandmarkApproach {
+  /** 建物外側から入口へ向かう、衝突物を置かない実ゲーム路。 */
+  start: [number, number];
+  end: [number, number];
+  width: number;
+}
+
+/**
+ * Blenderとゲーム衝突が共有する、境界内巨大ランドマークの唯一の配置真実。
+ * `width/depth` は当たり判定を含む実フットプリント、`height` はBlenderが
+ * その接地フットプリント上へ組む主シルエットの上限である。
+ */
+export interface LandmarkPlacement {
+  id: string;
+  districtKind: BuildingKind;
+  collisionTemplate: LandmarkCollisionTemplate;
+  cx: number;
+  cz: number;
+  rot: number;
+  width: number;
+  depth: number;
+  height: number;
+  entrance: [number, number];
+  approach: LandmarkApproach;
+  grounded: true;
+  combatSpace: true;
+}
+
 export interface StageLayout {
+  /** Runtime visual assets must match the exact layout family and generator inputs. */
+  placementProvenance: {
+    placementSource: 'runtime-release' | 'canonical-solver-v2-authoring';
+    placementSolverSha256: string;
+    stageWorldCatalogSha256: string;
+  };
   boxes: BoxSpec[];
   playerSpawns: SpawnPoint[];
   botSpawns: SpawnPoint[];
@@ -213,6 +270,8 @@ export interface StageLayout {
   propPlacements: PropPlacement[];
   /** 実際に配置に成功した、戦闘可能な建築地区。 */
   districtPlacements: DistrictPlacement[];
+  /** V5: 遠景画像/境界外シルエットを数えない、衝突付きの境界内巨大建築。 */
+  landmarkPlacements: LandmarkPlacement[];
 }
 
 export interface Aabb {
@@ -314,6 +373,649 @@ function getBuildingFootprint(kind: BuildingKind, rot: number): [number, number]
   return rot & 1 ? [ld, lw] : [lw, ld];
 }
 
+// V5 dense-world proof is intentionally limited to the representative audit
+// set until its real-browser collision/LOS/performance gate passes.  The
+// remaining fixed stages continue through the proven v4 planner; expanding
+// this set is therefore an explicit production decision rather than an
+// accidental all-catalog gameplay migration.
+const DENSE_WORLD_V5_PROOF_STAGES = new Set([
+  'kairou', 'chikurin', 'setsugen', 'kouwan', 'sakyuu', 'z04', 'takadai',
+]);
+const DENSE_WORLD_V5_TARGET_COVERAGE = 0.245;
+const DENSE_WORLD_V5_MAX_COVERAGE = 0.34;
+const DENSE_WORLD_V5_PRIMARY_STREET_HALF = 8; // 16m combat street
+const DENSE_WORLD_V5_ALLEY_HALF = 3.5; // 7m connected service alley
+const DENSE_WORLD_V5_BUILDING_GAP = 6; // 6m walkable gap inside one block
+const DENSE_WORLD_V5_PLAYER_CLEAR = 30;
+const DENSE_WORLD_V5_BOT_CLEAR = 8;
+
+interface LandmarkPrototype {
+  id: string;
+  districtKind: BuildingKind;
+  collisionTemplate: LandmarkCollisionTemplate;
+  width: number;
+  depth: number;
+  height: number;
+}
+
+/** Representative slice of the profile-authored 62-ID catalog.
+ *
+ * These values are copied into gameplay code deliberately: browser physics
+ * must not read a Blender-only JSON file at runtime.  The production follow-up
+ * will generate both TS and Blender catalogs from one checked source before
+ * this proof set can expand to all 31 stages.
+ */
+const DENSE_WORLD_V5_LANDMARKS: Record<string, readonly [LandmarkPrototype, LandmarkPrototype]> = {
+  kairou: [
+    { id: 'kairou-meridian-hypostyle-sanctuary', districtKind: 'cathedral', collisionTemplate: 'courtyard', width: 114, depth: 74, height: 38 },
+    { id: 'kairou-windcrown-caravan-observatory', districtKind: 'fortress', collisionTemplate: 'vertical', width: 88, depth: 80, height: 54 },
+  ],
+  chikurin: [
+    { id: 'chikurin-nine-canopy-temple', districtKind: 'pagoda', collisionTemplate: 'vertical', width: 94, depth: 78, height: 60 },
+    { id: 'chikurin-bamboo-scholar-citadel', districtKind: 'villa', collisionTemplate: 'courtyard', width: 110, depth: 70, height: 44 },
+  ],
+  setsugen: [
+    { id: 'setsugen-borealis-tripod-arcology', districtKind: 'tower', collisionTemplate: 'bridge', width: 90, depth: 80, height: 58 },
+    { id: 'setsugen-aurora-data-cathedral', districtKind: 'terminal', collisionTemplate: 'hall', width: 108, depth: 60, height: 44 },
+  ],
+  kouwan: [
+    { id: 'kouwan-breakwater-ship-lift-basilica', districtKind: 'terminal', collisionTemplate: 'bridge', width: 134, depth: 66, height: 60 },
+    { id: 'kouwan-umiho-exchange-tower', districtKind: 'tower', collisionTemplate: 'vertical', width: 98, depth: 84, height: 72 },
+  ],
+  sakyuu: [
+    { id: 'sakyuu-sunken-crawler-vault', districtKind: 'refinery', collisionTemplate: 'hall', width: 138, depth: 76, height: 40 },
+    { id: 'sakyuu-helios-drill-crown', districtKind: 'tower', collisionTemplate: 'vertical', width: 86, depth: 72, height: 78 },
+  ],
+  z04: [
+    { id: 'z04-severed-rose-abbey', districtKind: 'abbey', collisionTemplate: 'abbey', width: 124, depth: 100, height: 72 },
+    { id: 'z04-ossuary-bell-keep', districtKind: 'cathedral', collisionTemplate: 'vertical', width: 94, depth: 84, height: 80 },
+  ],
+  takadai: [
+    { id: 'takadai-celestine-tidal-abbey', districtKind: 'abbey', collisionTemplate: 'abbey', width: 124, depth: 100, height: 70 },
+    { id: 'takadai-dawnkeep-crown-citadel', districtKind: 'fortress', collisionTemplate: 'courtyard', width: 96, depth: 86, height: 76 },
+  ],
+};
+
+interface DenseWorldBlock {
+  ix: number;
+  iz: number;
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+  cx: number;
+  cz: number;
+}
+
+/** Distance from a point to the outside of a footprint (zero when inside). */
+function pointAabbDistance(x: number, z: number, box: Aabb): number {
+  const dx = Math.max(0, box.minX - x, x - box.maxX);
+  const dz = Math.max(0, box.minZ - z, z - box.maxZ);
+  return Math.hypot(dx, dz);
+}
+
+function approachAabb(approach: LandmarkApproach): Aabb {
+  const halfWidth = approach.width / 2;
+  return {
+    minX: Math.min(approach.start[0], approach.end[0]) - halfWidth,
+    maxX: Math.max(approach.start[0], approach.end[0]) + halfWidth,
+    minZ: Math.min(approach.start[1], approach.end[1]) - halfWidth,
+    maxZ: Math.max(approach.start[1], approach.end[1]) + halfWidth,
+  };
+}
+
+/** Place the exact two profile identities fully inside the combat bounds. */
+function buildDenseWorldV5Landmarks(
+  def: StageDef,
+  playerSpawns: SpawnPoint[],
+  botSpawns: SpawnPoint[],
+): LandmarkPlacement[] {
+  const prototypes = DENSE_WORLD_V5_LANDMARKS[def.id];
+  if (!prototypes) return [];
+  const half = def.size / 2;
+  const abbeyStage = prototypes[0].collisionTemplate === 'abbey';
+  const result: LandmarkPlacement[] = [];
+  // Kairou's two reference heroes deliberately share one monumental northern
+  // plaza.  Reserving the legacy origin fortress forced them into opposite
+  // corners and made the reference composition physically impossible: from
+  // every truthful first-person route one hero was hidden behind an ordinary
+  // district.  The open origin is therefore part of Kairou's authored street
+  // graph, while every other proof map retains the compatibility reservation.
+  const centralReservation = !abbeyStage && def.id !== 'kairou' && def.recipe?.buildings.length
+    ? (() => {
+        const centralKind = [...def.recipe.buildings].sort((a, b) => {
+          const [aw, ad] = getBuildingFootprint(a, 0);
+          const [bw, bd] = getBuildingFootprint(b, 0);
+          return bw * bd - aw * ad;
+        })[0]!;
+        const [width, depth] = getBuildingFootprint(centralKind, def.seed & 3);
+        return { footprint: aabbOf(0, 0, width, depth), depth };
+      })()
+    : null;
+  const footprints: Aabb[] = centralReservation ? [centralReservation.footprint] : [];
+  const approaches: Aabb[] = [];
+
+  for (const [index, prototype] of prototypes.entries()) {
+    const desired: [number, number] = def.id === 'kairou'
+      // Both castle-scale silhouettes face the same southern civic plaza.
+      // Their collision footprints remain twenty-one metres apart, fully in bounds,
+      // and the two 32/28m combat halls stay independent and enterable.
+      ? index === 0
+        ? [-66, 45]
+        : [56, 45]
+      : abbeyStage
+      ? index === 0
+        ? [0, 0]
+        : [-half + 4 + prototype.width / 2, -half + 4 + prototype.depth / 2]
+      : index === 0
+        // Keep the legacy origin hero, then seat landmark one directly beyond
+        // its north firebreak.  The landmark centre becomes the actual road
+        // axis, so the street runs through its open combat hall.
+        ? [
+            -half * 0.28,
+            (centralReservation?.depth ?? 0) / 2
+              + DENSE_WORLD_V5_BUILDING_GAP + prototype.depth / 2 + 2,
+          ]
+        // Landmark two mirrors that clearance south of the origin and owns a
+        // different service-road junction.
+        : [
+            half * 0.38,
+            -((centralReservation?.depth ?? 0) / 2
+              + DENSE_WORLD_V5_BUILDING_GAP + prototype.depth / 2 + 2),
+          ];
+    // The primary door faces a guaranteed open street rather than another
+    // landmark.  Abbey 0 retains its established east-gate approach.
+    const entranceDirection: [number, number] = def.id === 'kairou'
+      ? [0, -1]
+      : abbeyStage && index === 0
+      ? [1, 0]
+      : index === 0
+        ? [0, 1]
+        : [1, 0];
+    let placed: LandmarkPlacement | null = null;
+
+    // Deterministic square-ring search around the art-directed anchor.  Most
+    // anchors succeed at radius zero; the search protects future spawn-count
+    // changes without introducing random placement.
+    for (let radius = 0; radius <= 56 && !placed; radius += GRID) {
+      const offsets: [number, number][] = [];
+      if (radius === 0) {
+        offsets.push([0, 0]);
+      } else {
+        for (let delta = -radius; delta <= radius; delta += GRID) {
+          offsets.push([delta, -radius], [radius, delta], [-delta, radius], [-radius, -delta]);
+        }
+      }
+      for (const [offsetX, offsetZ] of offsets) {
+        const cx = Math.round((desired[0] + offsetX) / GRID) * GRID;
+        const cz = Math.round((desired[1] + offsetZ) / GRID) * GRID;
+        const footprint = aabbOf(cx, cz, prototype.width, prototype.depth);
+        if (
+          footprint.minX < -half + 4 || footprint.maxX > half - 4
+          || footprint.minZ < -half + 4 || footprint.maxZ > half - 4
+        ) continue;
+        if (footprints.some((other) => overlaps(other, footprint, DENSE_WORLD_V5_BUILDING_GAP))) {
+          continue;
+        }
+        if (playerSpawns.some(([sx, , sz]) =>
+          pointAabbDistance(sx, sz, footprint) < DENSE_WORLD_V5_PLAYER_CLEAR)) {
+          continue;
+        }
+        if (botSpawns.some(([sx, , sz]) =>
+          pointAabbDistance(sx, sz, footprint) < DENSE_WORLD_V5_BOT_CLEAR)) {
+          continue;
+        }
+        const faceDistance = entranceDirection[0] !== 0
+          ? prototype.width / 2 + 0.8
+          : prototype.depth / 2 + 0.8;
+        const entrance: [number, number] = [
+          cx + entranceDirection[0] * faceDistance,
+          cz + entranceDirection[1] * faceDistance,
+        ];
+        const approach: LandmarkApproach = {
+          start: [
+            entrance[0] + entranceDirection[0] * 22,
+            entrance[1] + entranceDirection[1] * 22,
+          ],
+          end: entrance,
+          width: 12,
+        };
+        const routeBounds = approachAabb(approach);
+        if (
+          routeBounds.minX < -half || routeBounds.maxX > half
+          || routeBounds.minZ < -half || routeBounds.maxZ > half
+        ) continue;
+        if (approaches.some((other) => overlaps(other, footprint, 0))) continue;
+        if (footprints.some((other) => overlaps(other, routeBounds, 0))) continue;
+        placed = {
+          ...prototype,
+          cx,
+          cz,
+          rot: 0,
+          entrance,
+          approach,
+          grounded: true,
+          combatSpace: true,
+        };
+        footprints.push(footprint);
+        approaches.push(routeBounds);
+        break;
+      }
+    }
+    if (!placed) throw new Error(`${def.id}: unable to place in-bounds landmark ${prototype.id}`);
+    result.push(placed);
+  }
+
+  if (result.length !== 2 || new Set(result.map((item) => item.id)).size !== 2) {
+    throw new Error(`${def.id}: v5 requires exactly two distinct landmark identities`);
+  }
+  return result;
+}
+
+interface DenseWorldStreetAxes {
+  primaryX: number;
+  primaryZ: number;
+  alleyX: number;
+  alleyZ: number;
+}
+
+/** The road graph is derived from the two collision-authoritative buildings. */
+function denseWorldStreetAxes(
+  def: StageDef,
+  landmarks: LandmarkPlacement[],
+): DenseWorldStreetAxes {
+  const half = def.size / 2;
+  if (def.id === 'kairou' && landmarks.length === 2) {
+    const westEdge = landmarks[0]!.cx + landmarks[0]!.width / 2;
+    const eastEdge = landmarks[1]!.cx - landmarks[1]!.width / 2;
+    return {
+      // The measured 21m gap between both heroes is the principal north/south
+      // boulevard; the shared centreline still gives a complete east/west
+      // route through both open combat halls.
+      primaryX: Math.round(((westEdge + eastEdge) / 2) / GRID) * GRID,
+      primaryZ: landmarks[0]!.cz,
+      alleyX: landmarks[1]!.cx,
+      alleyZ: -30,
+    };
+  }
+  return {
+    primaryX: landmarks[0]?.cx ?? -half * 0.28,
+    primaryZ: landmarks[0]?.cz ?? half * 0.28,
+    alleyX: landmarks[1]?.cx ?? half * 0.38,
+    alleyZ: landmarks[1]?.cz ?? -half * 0.38,
+  };
+}
+
+/** Select four real player starts on the open street graph before lot packing. */
+function buildDenseWorldV5PlayerSpawns(
+  def: StageDef,
+  landmarks: LandmarkPlacement[],
+): SpawnPoint[] {
+  const half = def.size / 2;
+  const abbeyStage = def.recipe?.buildings[0] === 'abbey';
+  const axes = denseWorldStreetAxes(def, landmarks);
+  const candidateLines: Array<['x' | 'z', number]> = abbeyStage
+    ? [['x', 0], ['z', 0], ['x', -half * 0.72], ['z', half * 0.72]]
+    : [
+        ['x', axes.primaryX],
+        ['z', axes.primaryZ],
+        ['x', axes.alleyX],
+        ['z', axes.alleyZ],
+      ];
+  const candidates: [number, number][] = [];
+  for (const [axis, fixed] of candidateLines) {
+    for (const travel of [-half + 12, half - 12]) {
+      candidates.push(axis === 'x' ? [fixed, travel] : [travel, fixed]);
+    }
+  }
+  for (const [axis, fixed] of candidateLines) {
+    for (let travel = -half + 24; travel <= half - 24; travel += 12) {
+      candidates.push(axis === 'x' ? [fixed, travel] : [travel, fixed]);
+    }
+  }
+
+  const result: SpawnPoint[] = [];
+  for (const [rawX, rawZ] of candidates) {
+    if (result.length >= 4) break;
+    const x = Math.round(rawX / GRID) * GRID;
+    const z = Math.round(rawZ / GRID) * GRID;
+    if (result.some(([px, , pz]) => Math.hypot(x - px, z - pz) < 40)) continue;
+    if (landmarks.some((landmark) =>
+      pointAabbDistance(x, z, aabbOf(landmark.cx, landmark.cz, landmark.width, landmark.depth))
+        < DENSE_WORLD_V5_PLAYER_CLEAR)) continue;
+    result.push([x, 0, z]);
+  }
+  if (result.length !== 4) {
+    throw new Error(`${def.id}: dense street graph produced ${result.length}/4 player spawns`);
+  }
+  return result;
+}
+
+/**
+ * Produce an aligned, collision-authoritative town plan for the v5 proof.
+ *
+ * Normal maps use one 16m north/south street, one 16m east/west street and
+ * two connected 7m service alleys.  They divide the stage into nine real city
+ * blocks.  Buildings are packed from street corners on the existing 2m grid
+ * with a measured 6m gap; this is deterministic block planning, not random
+ * scattering.  The central authored hero building stays first and at origin.
+ *
+ * Abbey maps retain the four gate axes and pack a castle town only into the
+ * four exterior corner wards.  Every returned footprint is a real BoxSpec
+ * building generated by the normal collider path, so Blender never advertises
+ * collisionless doors or cover.
+ */
+function buildDenseWorldV5Plan(
+  def: StageDef,
+  playerSpawns: SpawnPoint[],
+  botSpawns: SpawnPoint[],
+  landmarks: LandmarkPlacement[],
+): DistrictPlacement[] {
+  const authored = def.recipe?.buildings ?? [];
+  if (authored.length === 0) return [];
+  const half = def.size / 2;
+  const abbeyStage = authored[0] === 'abbey';
+  const vocabulary: BuildingKind[] = abbeyStage
+    ? def.id === 'z04'
+      ? ['cathedral', 'fortress', 'villa']
+      : ['villa', 'cathedral', 'fortress']
+    : [...authored];
+  const centralKind: BuildingKind = abbeyStage
+    ? 'abbey'
+    : [...authored].sort((a, b) => {
+        const [aw, ad] = getBuildingFootprint(a, 0);
+        const [bw, bd] = getBuildingFootprint(b, 0);
+        return bw * bd - aw * ad;
+      })[0]!;
+
+  const placements: DistrictPlacement[] = [];
+  const occupied: Aabb[] = landmarks.map((landmark) =>
+    aabbOf(landmark.cx, landmark.cz, landmark.width, landmark.depth));
+  const reservedApproaches = landmarks.map((landmark) => approachAabb(landmark.approach));
+  const stageArea = def.size * def.size;
+  // Two castle-scale footprints replace many ordinary lots.  Fourteen total
+  // districts keeps even the 288m/300m proof maps legibly urban while the
+  // mandatory six-metre firebreaks and both entrance streets remain open.
+  // Kairou's paired 114x74 / 88x80 heroes cover the same measured area as
+  // several normal lots; thirteen total districts retain the 24.5% density
+  // contract without squeezing a fake building into their civic plaza.
+  const minimumTotalDistricts = abbeyStage
+    ? 9
+    : def.id === 'kairou' || def.size < 300
+      ? 13
+      : 14;
+  const minimumPlanDistricts = Math.max(0, minimumTotalDistricts - landmarks.length);
+  let occupiedArea = landmarks.reduce(
+    (sum, landmark) => sum + landmark.width * landmark.depth,
+    0,
+  );
+
+  const tryPlacement = (
+    kind: BuildingKind,
+    cx: number,
+    cz: number,
+    rot: number,
+  ): boolean => {
+    const [width, depth] = getBuildingFootprint(kind, rot);
+    if ((occupiedArea + width * depth) / stageArea > DENSE_WORLD_V5_MAX_COVERAGE) {
+      return false;
+    }
+    if (Math.abs(cx) + width / 2 > half - 4 || Math.abs(cz) + depth / 2 > half - 4) {
+      return false;
+    }
+    const footprint = aabbOf(cx, cz, width, depth);
+    if (occupied.some((other) => overlaps(other, footprint, DENSE_WORLD_V5_BUILDING_GAP))) {
+      return false;
+    }
+    if (reservedApproaches.some((route) => overlaps(route, footprint, 2))) return false;
+    if (playerSpawns.some(([sx, , sz]) =>
+      pointAabbDistance(sx, sz, footprint) < DENSE_WORLD_V5_PLAYER_CLEAR)) {
+      return false;
+    }
+    if (botSpawns.some(([sx, , sz]) =>
+      pointAabbDistance(sx, sz, footprint) < DENSE_WORLD_V5_BOT_CLEAR)) {
+      return false;
+    }
+    placements.push({ kind, cx, cz, rot, width, depth });
+    occupied.push(footprint);
+    occupiedArea += width * depth;
+    return true;
+  };
+
+  // All existing central placements already pass the spawn contract.  Keep
+  // this first for minimap/Blender consumers and for the origin landmark test.
+  if (!abbeyStage && def.id !== 'kairou' && !tryPlacement(centralKind, 0, 0, def.seed & 3)) {
+    throw new Error(`${def.id}: v5 central district could not be placed around landmarks`);
+  }
+
+  const edgeInset = 4;
+  let xBands: [number, number][];
+  let zBands: [number, number][];
+  if (abbeyStage) {
+    // The abbey footprint is 124x100m.  A 9m shoulder outside each wall keeps
+    // the east/west and north/south gate approaches visibly and physically
+    // open while leaving four substantial town wards.
+    xBands = [
+      [-half + edgeInset, -62 - 9],
+      [62 + 9, half - edgeInset],
+    ];
+    zBands = [
+      [-half + edgeInset, -50 - 9],
+      [50 + 9, half - edgeInset],
+    ];
+  } else {
+    // Offset the primary cross so the origin hero building does not block it.
+    // The secondary axes are narrower alleys and connect all nine blocks.
+    const { primaryX, primaryZ, alleyX, alleyZ } = denseWorldStreetAxes(def, landmarks);
+    const low = -half + edgeInset;
+    const high = half - edgeInset;
+    xBands = [
+      [low, primaryX - DENSE_WORLD_V5_PRIMARY_STREET_HALF],
+      [primaryX + DENSE_WORLD_V5_PRIMARY_STREET_HALF, alleyX - DENSE_WORLD_V5_ALLEY_HALF],
+      [alleyX + DENSE_WORLD_V5_ALLEY_HALF, high],
+    ];
+    zBands = [
+      [low, alleyZ - DENSE_WORLD_V5_ALLEY_HALF],
+      [alleyZ + DENSE_WORLD_V5_ALLEY_HALF, primaryZ - DENSE_WORLD_V5_PRIMARY_STREET_HALF],
+      [primaryZ + DENSE_WORLD_V5_PRIMARY_STREET_HALF, high],
+    ];
+  }
+
+  const blocks: DenseWorldBlock[] = [];
+  for (const [ix, [minX, maxX]] of xBands.entries()) {
+    for (const [iz, [minZ, maxZ]] of zBands.entries()) {
+      if (maxX - minX < 22 || maxZ - minZ < 22) continue;
+      blocks.push({
+        ix,
+        iz,
+        minX,
+        maxX,
+        minZ,
+        maxZ,
+        cx: (minX + maxX) / 2,
+        cz: (minZ + maxZ) / 2,
+      });
+    }
+  }
+  // Fill the first-spawn vista before rear wards.  Ties are stable by band,
+  // giving exact JSON determinism across engines.
+  const [firstSpawnX, , firstSpawnZ] = playerSpawns[0]!;
+  blocks.sort((a, b) =>
+    Math.hypot(a.cx - firstSpawnX, a.cz - firstSpawnZ)
+      - Math.hypot(b.cx - firstSpawnX, b.cz - firstSpawnZ)
+    || a.ix - b.ix
+    || a.iz - b.iz);
+
+  const targetArea = stageArea * DENSE_WORLD_V5_TARGET_COVERAGE;
+  const compactVocabulary = [...vocabulary].sort((a, b) => {
+    const [aw, ad] = getBuildingFootprint(a, 0);
+    const [bw, bd] = getBuildingFootprint(b, 0);
+    return aw * ad - bw * bd;
+  });
+  let serial = 0;
+  // One placement per block per pass keeps density distributed.  Inside a
+  // block, the row-major corner pack creates 6m walkable alleys and avoids the
+  // inaccessible pockets produced by arbitrary centre scattering.
+  for (
+    let pass = 0;
+    pass < 20 && (occupiedArea < targetArea || placements.length < minimumPlanDistricts);
+    pass += 1
+  ) {
+    for (const block of blocks) {
+      if (occupiedArea >= targetArea && placements.length >= minimumPlanDistricts) break;
+      let placedInBlock = false;
+      const activeVocabulary = placements.length < minimumPlanDistricts
+        ? compactVocabulary
+        : vocabulary;
+      for (let choice = 0; choice < activeVocabulary.length * 4 && !placedInBlock; choice += 1) {
+        const kind = activeVocabulary[(serial + choice) % activeVocabulary.length]!;
+        const rot = (def.seed + serial + choice) & 3;
+        const [width, depth] = getBuildingFootprint(kind, rot);
+        const minX = Math.ceil((block.minX + width / 2) / GRID) * GRID;
+        const maxX = Math.floor((block.maxX - width / 2) / GRID) * GRID;
+        const minZ = Math.ceil((block.minZ + depth / 2) / GRID) * GRID;
+        const maxZ = Math.floor((block.maxZ - depth / 2) / GRID) * GRID;
+        if (minX > maxX || minZ > maxZ) continue;
+        const xValues: number[] = [];
+        const zValues: number[] = [];
+        for (let x = minX; x <= maxX; x += GRID) xValues.push(x);
+        for (let z = minZ; z <= maxZ; z += GRID) zValues.push(z);
+        if ((block.ix + pass) & 1) xValues.reverse();
+        if ((block.iz + pass) & 1) zValues.reverse();
+        for (const z of zValues) {
+          for (const x of xValues) {
+            if (tryPlacement(kind, x, z, rot)) {
+              placedInBlock = true;
+              break;
+            }
+          }
+          if (placedInBlock) break;
+        }
+      }
+      serial += 1;
+    }
+  }
+
+  const coverage = occupiedArea / (def.size * def.size);
+  if (placements.length < minimumPlanDistricts) {
+    throw new Error(
+      `${def.id}: v5 placed ${placements.length}/${minimumPlanDistricts} ordinary districts`,
+    );
+  }
+  if (coverage < DENSE_WORLD_V5_TARGET_COVERAGE || coverage > DENSE_WORLD_V5_MAX_COVERAGE) {
+    throw new Error(
+      `${def.id}: v5 district coverage ${(coverage * 100).toFixed(2)}% outside `
+      + `${(DENSE_WORLD_V5_TARGET_COVERAGE * 100).toFixed(1)}-`
+      + `${(DENSE_WORLD_V5_MAX_COVERAGE * 100).toFixed(1)}%`,
+    );
+  }
+  return placements;
+}
+
+/** Place bots on the measured street graph after the dense colliders exist. */
+function buildDenseWorldV5BotSpawns(
+  def: StageDef,
+  playerSpawns: SpawnPoint[],
+  districts: DistrictPlacement[],
+  landmarks: LandmarkPlacement[],
+): SpawnPoint[] {
+  const half = def.size / 2;
+  const abbeyStage = def.recipe?.buildings[0] === 'abbey';
+  const candidates: [number, number][] = [];
+  const appendLine = (axis: 'x' | 'z', fixed: number) => {
+    for (let travel = -half + 12; travel <= half - 12; travel += 10) {
+      candidates.push(axis === 'x' ? [fixed, travel] : [travel, fixed]);
+    }
+  };
+  if (abbeyStage) {
+    appendLine('x', 0);
+    appendLine('z', 0);
+    appendLine('x', -half * 0.72);
+    appendLine('x', half * 0.72);
+    appendLine('z', -half * 0.72);
+    appendLine('z', half * 0.72);
+  } else {
+    const { primaryX, primaryZ, alleyX, alleyZ } = denseWorldStreetAxes(def, landmarks);
+    appendLine('x', primaryX);
+    appendLine('z', primaryZ);
+    appendLine('x', alleyX);
+    appendLine('z', alleyZ);
+  }
+
+  const result: SpawnPoint[] = [];
+  for (const [x, z] of candidates) {
+    if (result.length >= def.botCount) break;
+    if (playerSpawns.some(([px, , pz]) => Math.hypot(x - px, z - pz) < 16)) continue;
+    if (result.some(([bx, , bz]) => Math.hypot(x - bx, z - bz) < 5)) continue;
+    const blocked = districts.some((district) =>
+      pointAabbDistance(
+        x,
+        z,
+        aabbOf(district.cx, district.cz, district.width, district.depth),
+      ) < DENSE_WORLD_V5_BOT_CLEAR);
+    if (blocked) continue;
+    result.push([Math.round(x / GRID) * GRID, 0, Math.round(z / GRID) * GRID]);
+  }
+  if (result.length !== def.botCount) {
+    throw new Error(`${def.id}: dense street graph produced ${result.length}/${def.botCount} bot spawns`);
+  }
+  return result;
+}
+
+/**
+ * Split one coarse Kairou district footprint into a base plus one real upper
+ * merchant volume.  The support is selected from the existing highest solid
+ * roof/tower box and the new collider is fully contained by that support in
+ * X/Z, so the Blender skyline never advertises a projectile-through building.
+ */
+function buildKairouUrbanVolume(
+  district: DistrictPlacement,
+  districtIndex: number,
+  baseBoxes: BoxSpec[],
+  palette: StagePalette,
+): BoxSpec {
+  const roofTop = Math.max(...baseBoxes.map((box) => box.y + box.h / 2));
+  const supports = baseBoxes
+    .filter((box) =>
+      Math.abs(box.y + box.h / 2 - roofTop) < 1e-6
+      && box.w >= 4
+      && box.d >= 4)
+    .sort((a, b) => b.w * b.d - a.w * a.d || a.x - b.x || a.z - b.z);
+  const support = supports[districtIndex % Math.max(1, supports.length)];
+  if (!support) {
+    throw new Error(`kairou: ${district.kind} at ${district.cx},${district.cz} has no upper support`);
+  }
+  const narrowSupport = Math.min(support.w, support.d) <= 6;
+  const width = Math.min(
+    support.w - 0.6,
+    Math.max(3.8, support.w * (narrowSupport ? 0.82 : 0.52)),
+  );
+  const depth = Math.min(
+    support.d - 0.6,
+    Math.max(3.8, support.d * (narrowSupport ? 0.82 : 0.52)),
+  );
+  const height = narrowSupport
+    ? 7.2 + (districtIndex % 3) * 0.8
+    : 5.8 + (districtIndex % 3) * 0.9;
+  const offsetRoomX = Math.max(0, (support.w - width) / 2 - 0.3);
+  const offsetRoomZ = Math.max(0, (support.d - depth) / 2 - 0.3);
+  const offsetX = (districtIndex & 1 ? -1 : 1) * offsetRoomX * 0.42;
+  const offsetZ = (districtIndex & 2 ? -1 : 1) * offsetRoomZ * 0.34;
+  return {
+    x: support.x + offsetX,
+    y: roofTop + height / 2,
+    z: support.z + offsetZ,
+    w: width,
+    h: height,
+    d: depth,
+    color: palette.obstacle,
+    emissive: false,
+    structural: true,
+    district: district.kind,
+    urbanVolume: true,
+  };
+}
+
 // ── 建造物アーキタイプ実装 ─────────────────────────────────────────────
 
 /**
@@ -402,7 +1104,7 @@ function buildHangar(cx: number, cz: number, rot: number, p: StagePalette): BoxS
     pb(cx, cz, rot, +20, 0, 0, 1, 10, 22, c), // バック壁
     pb(cx, cz, rot, 0, -11, 0, 40, 10, 1, c), // N壁
     pb(cx, cz, rot, 0, +11, 0, 40, 10, 1, c), // S壁
-    pb(cx, cz, rot, 0, 0, 10, 40, 0.5, 22, c), // 屋根
+    { ...pb(cx, cz, rot, 0, 0, 10, 40, 0.5, 22, c), structural: true, roofMonitorSupport: true }, // 屋根
     // コンテナ群
     pb(cx, cz, rot, +10, -4, 0, 5, 4, 5, c),
     pb(cx, cz, rot, +10, -4, 4, 5, 4, 5, c),
@@ -457,12 +1159,12 @@ function buildWarehouse(cx: number, cz: number, rot: number, p: StagePalette): B
     pb(cx, cz, rot, -14, -6, 0, 24, 7, 1, c),
     pb(cx, cz, rot, -14, +6, 0, 24, 7, 1, c),
     pb(cx, cz, rot, -26, 0, 0, 1, 7, 12, c), // A 奥端壁
-    pb(cx, cz, rot, -14, 0, 7, 24, 0.5, 12, c), // A 屋根
+    { ...pb(cx, cz, rot, -14, 0, 7, 24, 0.5, 12, c), structural: true, roofMonitorSupport: true }, // A 屋根
     // 倉庫 B (lx=+14 中心)
     pb(cx, cz, rot, +14, -6, 0, 24, 7, 1, c),
     pb(cx, cz, rot, +14, +6, 0, 24, 7, 1, c),
     pb(cx, cz, rot, +26, 0, 0, 1, 7, 12, c),
-    pb(cx, cz, rot, +14, 0, 7, 24, 0.5, 12, c),
+    { ...pb(cx, cz, rot, +14, 0, 7, 24, 0.5, 12, c), structural: true, roofMonitorSupport: true },
     // 貫通通路 (A-B 間, 4m幅)
     pb(cx, cz, rot, 0, -2.5, 0, 6, 3, 1, c),
     pb(cx, cz, rot, 0, +2.5, 0, 6, 3, 1, c),
@@ -546,7 +1248,7 @@ function buildTerminal(cx: number, cz: number, rot: number, p: StagePalette): Bo
     pb(cx, cz, rot, 0, 0, -0.2, 58, 0.4, 24, c),
     pb(cx, cz, rot, 0, -11.5, 0, 58, 8, 1, c),
     pb(cx, cz, rot, 0, 11.5, 0, 58, 2.1, 1, c),
-    pb(cx, cz, rot, 0, 0, 8, 58, 0.5, 24, c),
+    { ...pb(cx, cz, rot, 0, 0, 8, 58, 0.5, 24, c), roofMonitorSupport: true },
     // 両端は中央入口を残したサービス棟。
     pb(cx, cz, rot, -28.5, -8, 0, 1, 8, 7, c),
     pb(cx, cz, rot, -28.5, 8, 0, 1, 8, 7, c),
@@ -895,6 +1597,424 @@ function generateBuilding(
     case 'abbey':
       return buildAbbey(cx, cz, rot, p);
   }
+}
+
+interface SoukoRoofMonitorSegment {
+  tangent: number;
+  length: number;
+  width: number;
+  bodyHeight: number;
+  roofRise: number;
+}
+
+/**
+ * Mirror the A9 Souko roof-monitor envelope with deterministic closed AABBs.
+ *
+ * The source slabs are selected by volume descending and then by their
+ * original BoxSpec order.  Keeping the tie-break explicit is important for
+ * the paired warehouse roofs, whose volumes are intentionally identical.
+ * This path is used only by canonical generated placements; the live release
+ * allow-list remains the independent adoption gate.
+ */
+function buildSoukoRoofMonitorColliders(
+  districtBoxes: readonly BoxSpec[],
+  palette: StagePalette,
+): BoxSpec[] {
+  const supportCount = 12;
+  const supports = districtBoxes
+    .map((box, originalIndex) => ({ box, originalIndex }))
+    .filter((candidate): candidate is { box: BoxSpec & { district: BuildingKind }; originalIndex: number } => (
+      candidate.box.roofMonitorSupport === true && candidate.box.district !== undefined
+    ))
+    .sort((a, b) => {
+      const volumeDelta = b.box.w * b.box.h * b.box.d - a.box.w * a.box.h * a.box.d;
+      return volumeDelta || a.originalIndex - b.originalIndex;
+    });
+  if (supports.length < supportCount) {
+    throw new Error(`souko roof-monitor support drift: expected at least ${supportCount}, got ${supports.length}`);
+  }
+
+  const colliders: BoxSpec[] = [];
+  for (const [supportIndex, { box }] of supports.slice(0, supportCount).entries()) {
+    const variant = (supportIndex % 3) as 0 | 1 | 2;
+    const longX = box.w >= box.d;
+    const longSpan = longX ? box.w : box.d;
+    const shortSpan = longX ? box.d : box.w;
+    let segments: SoukoRoofMonitorSegment[];
+    if (variant === 0) {
+      segments = [{
+        tangent: 0,
+        length: longSpan * 0.56,
+        width: Math.min(6.4, shortSpan * 0.30),
+        bodyHeight: 0.82,
+        roofRise: 0.42,
+      }];
+    } else if (variant === 1) {
+      const direction = Math.floor(supportIndex / 3) % 2 === 1 ? -1 : 1;
+      segments = [{
+        tangent: Math.min(1.8, longSpan * 0.06) * direction,
+        length: longSpan * 0.48,
+        width: Math.min(5.6, shortSpan * 0.27),
+        bodyHeight: 1.05,
+        roofRise: 0.46,
+      }];
+    } else {
+      const length = longSpan * 0.20;
+      const width = Math.min(4.8, shortSpan * 0.24);
+      const gap = Math.max(1.6, longSpan * 0.06);
+      const offset = (length + gap) / 2;
+      segments = [
+        { tangent: -offset, length, width, bodyHeight: 0.72, roofRise: 0.34 },
+        { tangent: offset, length, width, bodyHeight: 0.72, roofRise: 0.34 },
+      ];
+    }
+
+    const makeBox = (
+      tangent: number,
+      y: number,
+      tangentSpan: number,
+      height: number,
+      normalSpan: number,
+      color: string,
+      roofMonitor: NonNullable<BoxSpec['roofMonitor']>,
+    ): BoxSpec => ({
+      x: box.x + (longX ? tangent : 0),
+      y,
+      z: box.z + (longX ? 0 : tangent),
+      w: longX ? tangentSpan : normalSpan,
+      h: height,
+      d: longX ? normalSpan : tangentSpan,
+      color,
+      emissive: false,
+      structural: true,
+      district: box.district,
+      roofMonitor,
+      visualReplacement: 'souko-roof-monitor-v1',
+    });
+
+    // A9 has one cap per support.  Variant 2 owns two separated monitor rooms,
+    // so its single conservative curb proxy also spans the protected gap.
+    const curbMin = Math.min(...segments.map((segment) => segment.tangent - segment.length / 2));
+    const curbMax = Math.max(...segments.map((segment) => segment.tangent + segment.length / 2));
+    const roofSlabTop = box.y + box.h / 2;
+    const capTop = roofSlabTop + 0.20;
+    const visualCurbBottom = capTop - 0.04;
+    const visualCurbHeight = 0.30;
+    // One authoritative curb AABB unions the cap contact beneath the monitor
+    // with its four visual curb walls.  Its bottom overlaps the real slab by
+    // 4cm and its top overlaps the body by 5cm, so no unsupported island is
+    // introduced while the public BoxSpec count stays exactly 12 curbs.
+    const curbBottom = roofSlabTop - 0.04;
+    const curbHeight = visualCurbBottom + visualCurbHeight - curbBottom;
+    colliders.push(makeBox(
+      (curbMin + curbMax) / 2,
+      curbBottom + curbHeight / 2,
+      curbMax - curbMin,
+      curbHeight,
+      Math.max(...segments.map((segment) => segment.width)),
+      palette.obstacle,
+      { supportIndex, variant, part: 'curb' },
+    ));
+
+    const bodyBottom = visualCurbBottom + visualCurbHeight - 0.05;
+    for (const [segmentIndex, segment] of segments.entries()) {
+      const bodyTop = bodyBottom + segment.bodyHeight;
+      // The +0.28m normal envelope includes the A9 louvers that project
+      // 0.14m beyond each nominal side.  This remains one closed AABB even
+      // though the Blender side wall is an open sill/header/post assembly.
+      colliders.push(makeBox(
+        segment.tangent,
+        bodyBottom + segment.bodyHeight / 2,
+        segment.length,
+        segment.bodyHeight,
+        segment.width + 0.28,
+        palette.wall,
+        { supportIndex, variant, part: 'body', segmentIndex },
+      ));
+
+      const roofBase = bodyTop - 0.06;
+      colliders.push(makeBox(
+        segment.tangent,
+        roofBase + segment.roofRise / 2,
+        segment.length + 0.50,
+        segment.roofRise,
+        segment.width + 0.60,
+        palette.obstacle,
+        { supportIndex, variant, part: 'roof-proxy', segmentIndex },
+      ));
+    }
+  }
+
+  return colliders;
+}
+
+/**
+ * Build the authoritative collision/interior shell under one Blender hero.
+ * Four centred doorways, a cross-shaped interior circulation spine, an upper
+ * perimeter route and a physical 0.3m-step stair make every prototype
+ * enterable and combat-usable; no visual doorway exists without a matching
+ * collider opening.
+ */
+function buildLandmarkCombatShell(
+  placement: LandmarkPlacement,
+  palette: StagePalette,
+): BoxSpec[] {
+  const mark = (
+    box: BoxSpec,
+    part: NonNullable<BoxSpec['landmarkPart']>,
+  ): BoxSpec => ({
+    ...box,
+    structural: true,
+    district: placement.districtKind,
+    landmarkId: placement.id,
+    landmarkPart: part,
+    combatSpace: true,
+  });
+  if (placement.collisionTemplate === 'abbey') {
+    return generateBuilding('abbey', placement.cx, placement.cz, placement.rot, palette)
+      .map((box) => mark(
+        box,
+        Math.abs(box.h - 0.3) < 1e-6
+          ? 'stair'
+          : box.h <= 0.6
+            ? box.y > 3 ? 'upper-walk' : 'floor'
+            : box.h >= 14 && box.w <= 16 && box.d <= 16
+              ? 'tower'
+              : 'wall',
+      ));
+  }
+
+  const { cx, cz, rot, width, depth } = placement;
+  const wall = palette.obstacle;
+  const accent = palette.accent;
+  const wallHeight = Math.max(9, Math.min(13, placement.height * 0.21));
+  const wallThickness = 1.4;
+  // A 28m grand opening carries either the complete 16m primary road or a
+  // service alley offset by ten metres through the hero footprint.
+  // Kairou's sanctuary uses a 32m outer opening.  Two 2m real gate columns
+  // subdivide its north/south faces into a 16m central road and two ~6m side
+  // arches; every other landmark keeps the shared 28m opening contract.
+  const door = placement.id === 'kairou-meridian-hypostyle-sanctuary'
+    ? 32
+    : Math.max(28, placement.approach.width);
+  const boxes: BoxSpec[] = [];
+  const add = (box: BoxSpec, part: NonNullable<BoxSpec['landmarkPart']>) => {
+    boxes.push(mark(box, part));
+  };
+
+  add(pb(cx, cz, rot, 0, 0, -0.25, width, 0.5, depth, wall), 'floor');
+
+  // East/west walls: each is two seated segments with a real central opening.
+  const sideSegmentDepth = (depth - door) / 2;
+  const sideOffsetZ = door / 2 + sideSegmentDepth / 2;
+  for (const localX of [-width / 2, width / 2]) {
+    for (const localZ of [-sideOffsetZ, sideOffsetZ]) {
+      add(pb(cx, cz, rot, localX, localZ, 0, wallThickness, wallHeight, sideSegmentDepth, wall), 'wall');
+    }
+  }
+  // North/south walls have the same physical doorway contract.
+  const endSegmentWidth = (width - door) / 2;
+  const endOffsetX = door / 2 + endSegmentWidth / 2;
+  for (const localZ of [-depth / 2, depth / 2]) {
+    for (const localX of [-endOffsetX, endOffsetX]) {
+      // Kairou's authored north entrance is an open hypostyle portico, not a
+      // blind eight-metre wall.  A 1.4m collision plinth keeps believable
+      // cover/stair scale while the eight real columns behind it carry the
+      // sanctuary silhouette.  The opposite elevation remains a full wall.
+      const endWallHeight = placement.id === 'kairou-meridian-hypostyle-sanctuary'
+        && localZ < 0
+        ? 1.4
+        : wallHeight;
+      add(pb(cx, cz, rot, localX, localZ, 0, endSegmentWidth, endWallHeight, wallThickness, wall), 'wall');
+    }
+  }
+
+  // Eight quadrant walls form four combat rooms without occupying the central
+  // 28m cross.  Both authored streets therefore pass continuously from one
+  // exterior doorway to the opposite doorway.
+  const interiorGap = 28;
+  const interiorXSpan = (width * 0.68 - interiorGap) / 2;
+  const interiorZSpan = (depth * 0.62 - interiorGap) / 2;
+  for (const xSide of [-1, 1]) {
+    for (const zSide of [-1, 1]) {
+      add(pb(
+        cx,
+        cz,
+        rot,
+        xSide * (interiorGap / 2 + interiorXSpan / 2),
+        zSide * (interiorGap / 2 + 0.45),
+        0,
+        interiorXSpan,
+        wallHeight * 0.58,
+        0.9,
+        wall,
+      ), 'interior');
+      add(pb(
+        cx,
+        cz,
+        rot,
+        xSide * (interiorGap / 2 + 0.45),
+        zSide * (interiorGap / 2 + interiorZSpan / 2),
+        0,
+        0.9,
+        wallHeight * 0.58,
+        interiorZSpan,
+        wall,
+      ), 'interior');
+    }
+  }
+
+  if (placement.id === 'kairou-meridian-hypostyle-sanctuary') {
+    // Eight collision-authoritative hero columns turn the sanctuary
+    // into a real hypostyle combat space instead of a facade illusion.  Their
+    // local centres are deliberately outside both arms of the open 28 m cross:
+    // X = ±16/±22/±28/±34m, Z = -32m.  The broad single front row sits
+    // directly behind the low entrance plinth, so the hypostyle reads before
+    // entry; a 2.6m square proxy
+    // contains the matching
+    // Blender cylinder and still leaves >=3m to the nearest tower collider.
+    // The 16m collision height matches the monumental visual shaft, so bullets
+    // cannot pass through the upper half of a column that the player can see.
+    // No column touches the entrance approach, stair or upper-walk connection.
+    for (const localX of [-34, -28, -22, -16, 16, 22, 28, 34]) {
+      add(pb(
+        cx,
+        cz,
+        rot,
+        localX,
+        -32,
+        0,
+        2.6,
+        18,
+        2.6,
+        wall,
+      ), 'column');
+    }
+
+    // Four collision-authoritative gate columns support the north/south upper
+    // walks and the three-bay arch treatment.  Inner faces at X=±8m leave the
+    // complete 16m primary boulevard open; outer 32m gate edges leave ~6m
+    // side passages.  These are never decorative collider-free posts.
+    for (const localZ of [-depth / 2, depth / 2]) {
+      for (const localX of [-9, 9]) {
+        add(pb(
+          cx,
+          cz,
+          rot,
+          localX,
+          localZ,
+          0,
+          2,
+          12.2,
+          2,
+          wall,
+        ), 'gate-column');
+      }
+    }
+  }
+
+  if (placement.id === 'kairou-windcrown-caravan-observatory') {
+    // A physical upper citadel ring turns the four tower colliders into one
+    // readable observatory.  Its bottom sits above the 11.34m perimeter walls,
+    // so all four 28m gates and the complete ground-level combat cross remain
+    // open.  Keeping this layer in TypeScript prevents projectiles from passing
+    // through the substantial upper architecture rendered by Blender.
+    const upperBottom = wallHeight + 0.3;
+    const upperHeight = 8;
+    const upperThickness = 3.2;
+    add(pb(cx, cz, rot, -width / 2, 0, upperBottom, upperThickness, upperHeight, depth, wall), 'upper-wall');
+    add(pb(cx, cz, rot, width / 2, 0, upperBottom, upperThickness, upperHeight, depth, wall), 'upper-wall');
+    add(pb(cx, cz, rot, 0, -depth / 2, upperBottom, width, upperHeight, upperThickness, wall), 'upper-wall');
+    add(pb(cx, cz, rot, 0, depth / 2, upperBottom, width, upperHeight, upperThickness, wall), 'upper-wall');
+    // A high central proxy contains the tapered observatory drum rendered by
+    // Blender.  Its 27.8m bottom preserves all player/AI routes, while bullets
+    // can no longer pass through the castle-scale stone mass above them.
+    add(pb(cx, cz, rot, 0, 0, 27.8, 30, 12, 30, wall), 'upper-wall');
+  }
+
+  // Continuous upper perimeter firing route.  The open centre preserves sky
+  // visibility and avoids a collisionless opaque roof over the combat floor.
+  const walkY = 5.6;
+  const walkWidth = 3.4;
+  add(pb(cx, cz, rot, 0, -depth / 2 + walkWidth / 2 + wallThickness, walkY - 0.2, width - 2, 0.4, walkWidth, accent), 'upper-walk');
+  add(pb(cx, cz, rot, 0, depth / 2 - walkWidth / 2 - wallThickness, walkY - 0.2, width - 2, 0.4, walkWidth, accent), 'upper-walk');
+  add(pb(cx, cz, rot, -width / 2 + walkWidth / 2 + wallThickness, 0, walkY - 0.2, walkWidth, 0.4, depth - 2, accent), 'upper-walk');
+  add(pb(cx, cz, rot, width / 2 - walkWidth / 2 - wallThickness, 0, walkY - 0.2, walkWidth, 0.4, depth - 2, accent), 'upper-walk');
+
+  // One fully physical stair terminates exactly at the south upper walk.
+  const stairSteps = 18;
+  const stairStartZ = -depth / 2 + 18;
+  for (let step = 0; step < stairSteps; step += 1) {
+    add(pb(
+      cx,
+      cz,
+      rot,
+      width * 0.20,
+      stairStartZ - step * 0.8,
+      step * 0.3,
+      2.4,
+      0.3,
+      0.86,
+      wall,
+    ), 'stair');
+  }
+
+  // Template-specific grounded supports expose the same macro grammar that
+  // Blender uses for the silhouette, without filling the traversable centre.
+  if (placement.collisionTemplate === 'bridge') {
+    for (const localX of [-width * 0.30, width * 0.30]) {
+      add(pb(
+        cx,
+        cz,
+        rot,
+        localX,
+        0,
+        0,
+        7,
+        Math.max(wallHeight + 4, placement.height * 0.72),
+        7,
+        wall,
+      ), 'tower');
+    }
+    add(pb(cx, cz, rot, 0, 0, wallHeight * 0.72, width * 0.64, 0.6, 4.2, accent), 'upper-walk');
+  } else if (placement.collisionTemplate === 'vertical') {
+    for (const [localX, localZ] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
+      add(pb(
+        cx,
+        cz,
+        rot,
+        localX * width * 0.34,
+        localZ * depth * 0.32,
+        0,
+        6.5,
+        placement.height * (localX === localZ ? 0.72 : 0.62),
+        6.5,
+        wall,
+      ), 'tower');
+    }
+  } else if (placement.collisionTemplate === 'hall') {
+    add(pb(cx, cz, rot, 0, -depth * 0.23, wallHeight * 0.62, width * 0.62, 0.5, 4.0, accent), 'upper-walk');
+    add(pb(cx, cz, rot, 0, depth * 0.23, wallHeight * 0.62, width * 0.62, 0.5, 4.0, accent), 'upper-walk');
+    for (const localX of [-width * 0.34, width * 0.34]) {
+      add(pb(cx, cz, rot, localX, depth * 0.28, 0, 7, placement.height * 0.66, 7, wall), 'tower');
+    }
+  } else if (placement.collisionTemplate === 'courtyard') {
+    for (const [localX, localZ] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
+      add(pb(
+        cx,
+        cz,
+        rot,
+        localX * width * 0.37,
+        localZ * depth * 0.34,
+        0,
+        7,
+        placement.height * (localX === localZ ? 0.64 : 0.56),
+        7,
+        wall,
+      ), 'tower');
+    }
+  }
+  return boxes;
 }
 
 // ── 遠景シルエット(プレイアブル境界外の装飾) ────────────────────────────
@@ -1482,6 +2602,7 @@ export function generateThemeObjects(
   buildingPlaced: Aabb[],
   rand: () => number,
   placementsOut?: PropPlacement[],
+  spawnOverride?: SpawnPoint[],
 ): BoxSpec[] {
   const objects = def.recipe?.objects;
   if (!objects?.length) return [];
@@ -1496,19 +2617,23 @@ export function generateThemeObjects(
   // 境界壁の4m手前は、開始直後から不可視壁へ触れやすく「箱の内側」感を強めていた。
   // 22%内側へ入れ、背景世界を見渡せる余白と初動ルートを確保する。物理境界自体は従来位置。
   const edge = Math.round((half * 0.78) / GRID) * GRID;
-  const allSpawns: [number, number][] = [
-    [edge, edge], [-edge, edge], [edge, -edge], [-edge, -edge],
-    [0, edge], [0, -edge], [edge, 0], [-edge, 0],
-    [edge / 2, -edge / 2], [-edge / 2, edge / 2],
-  ];
-  const extraCount = Math.max(0, def.botCount - 6);
-  for (let i = 0; i < extraCount; i++) {
-    const ang = (i / Math.max(1, extraCount)) * Math.PI * 2 + 0.3;
-    const r = edge * 0.6;
-    allSpawns.push([
-      Math.round((Math.cos(ang) * r) / GRID) * GRID,
-      Math.round((Math.sin(ang) * r) / GRID) * GRID,
-    ]);
+  const allSpawns: [number, number][] = spawnOverride
+    ? spawnOverride.map(([x, , z]) => [x, z])
+    : [
+        [edge, edge], [-edge, edge], [edge, -edge], [-edge, -edge],
+        [0, edge], [0, -edge], [edge, 0], [-edge, 0],
+        [edge / 2, -edge / 2], [-edge / 2, edge / 2],
+      ];
+  if (!spawnOverride) {
+    const extraCount = Math.max(0, def.botCount - 6);
+    for (let i = 0; i < extraCount; i++) {
+      const ang = (i / Math.max(1, extraCount)) * Math.PI * 2 + 0.3;
+      const r = edge * 0.6;
+      allSpawns.push([
+        Math.round((Math.cos(ang) * r) / GRID) * GRID,
+        Math.round((Math.sin(ang) * r) / GRID) * GRID,
+      ]);
+    }
   }
 
   for (const entry of objects) {
@@ -1607,7 +2732,206 @@ export function generateThemeObjects(
 
 // シードから決定論的にレイアウトを生成する。障害物は原点対称に複製し、
 // 対戦時にどのスポーンからも地形条件が同じになるようにする。
+
+/**
+ * Build a canonical placement from clean collections.  Branch selection
+ * happens before this function, so a generated stage can never retain a
+ * procedural district, prop, spawn, or cover from the legacy path.
+ * @internal Exported only so this path can be audited without enabling a live stage.
+ */
+export function generateStageFromGeneratedPlacement(
+  def: StageDef,
+  placement: RuntimeStagePlacement,
+): StageLayout {
+  const rand = mulberry32(def.seed);
+  const half = placement.mapSize / 2;
+  const boxes: BoxSpec[] = [];
+  const placed: Aabb[] = [];
+  let numPlaced = 0;
+
+  // Collision-authoritative ghost boundary at the canonical map size.
+  for (const [x, z, w, d] of [
+    [0, -(half + 0.5), placement.mapSize + 2, 1],
+    [0, half + 0.5, placement.mapSize + 2, 1],
+    [-(half + 0.5), 0, 1, placement.mapSize + 2],
+    [half + 0.5, 0, 1, placement.mapSize + 2],
+  ] as [number, number, number, number][]) {
+    boxes.push({
+      x,
+      y: GHOST_WALL_H / 2,
+      z,
+      w,
+      h: GHOST_WALL_H,
+      d,
+      color: def.palette.wall,
+      emissive: false,
+      ghost: true,
+    });
+  }
+
+  // 1) Exactly two validated, playable landmark shells.
+  const landmarkPlacements: LandmarkPlacement[] = placement.landmarks.map((landmark) => ({
+    ...landmark,
+    entrance: [...landmark.entrance],
+    approach: {
+      start: [...landmark.approach.start],
+      end: [...landmark.approach.end],
+      width: landmark.approach.width,
+    },
+  }));
+  const districtPlacements: DistrictPlacement[] = landmarkPlacements.map((landmark) => ({
+    kind: landmark.districtKind,
+    cx: landmark.cx,
+    cz: landmark.cz,
+    rot: landmark.rot,
+    width: landmark.width,
+    depth: landmark.depth,
+  }));
+  for (const landmark of landmarkPlacements) {
+    boxes.push(...buildLandmarkCombatShell(landmark, def.palette));
+    placed.push(aabbOf(landmark.cx, landmark.cz, landmark.width, landmark.depth));
+  }
+
+  // 2) Reserve road capsules and authored entrance approaches before districts.
+  for (const road of placement.roads) placed.push({ ...road.bounds });
+  for (const landmark of landmarkPlacements) placed.push(approachAabb(landmark.approach));
+
+  // 3) Rebuild ordinary districts exclusively from the canonical placement.
+  const ordinaryDistrictBoxes: BoxSpec[] = [];
+  for (const [districtIndex, district] of placement.ordinaryDistricts.entries()) {
+    const runtimeDistrict: DistrictPlacement = { ...district };
+    const baseBoxes = generateBuilding(
+      runtimeDistrict.kind,
+      runtimeDistrict.cx,
+      runtimeDistrict.cz,
+      runtimeDistrict.rot,
+      def.palette,
+    );
+    const districtBoxes: BoxSpec[] = baseBoxes.map((box) => ({
+      ...box,
+      district: runtimeDistrict.kind,
+    }));
+    if (def.id === 'kairou') {
+      districtBoxes.push(buildKairouUrbanVolume(
+        runtimeDistrict,
+        districtIndex,
+        baseBoxes,
+        def.palette,
+      ));
+    }
+    boxes.push(...districtBoxes);
+    ordinaryDistrictBoxes.push(...districtBoxes);
+    districtPlacements.push(runtimeDistrict);
+    placed.push(aabbOf(
+      runtimeDistrict.cx,
+      runtimeDistrict.cz,
+      runtimeDistrict.width,
+      runtimeDistrict.depth,
+    ));
+  }
+  if (def.id === 'souko') {
+    boxes.push(...buildSoukoRoofMonitorColliders(ordinaryDistrictBoxes, def.palette));
+  }
+
+  // 4) Canonical spawns are adopted only after every structural lot exists.
+  const playerSpawns: SpawnPoint[] = placement.playerSpawns.map((spawn) => [...spawn]);
+  const botSpawns: SpawnPoint[] = placement.botSpawns.map((spawn) => [...spawn]);
+  const spawnGuards = [...playerSpawns, ...botSpawns];
+
+  // 5) Props and cover are freshly regenerated against all reservations.
+  const propRand = mulberry32(def.seed ^ 0x7e57ab1e);
+  const propPlacements: PropPlacement[] = [];
+  boxes.push(...generateThemeObjects(def, placed, propRand, propPlacements, spawnGuards));
+  boxes.push(...generateExtendedTerrain(def, half));
+  boxes.push(...generateSilhouette(def, half, rand));
+
+  let attempts = 0;
+  while (numPlaced < def.obstacleCount && attempts < def.obstacleCount * 30) {
+    attempts += 1;
+    const x = Math.round(((rand() * 2 - 1) * (half - 5)) / GRID) * GRID;
+    const z = Math.round(((rand() * 2 - 1) * (half - 5)) / GRID) * GRID;
+    const w = Math.round(2 + rand() * 6);
+    const d = Math.round(2 + rand() * 6);
+    const heightRoll = rand();
+    const h = heightRoll < 0.58
+      ? 1 + rand() * 0.35
+      : heightRoll < 0.92
+        ? 1.8 + rand() * Math.max(0.2, Math.min(3.2, def.maxHeight) - 1.8)
+        : 3.5 + rand() * Math.max(0.2, Math.min(6.5, def.maxHeight) - 3.5);
+    if (spawnGuards.some(([sx, , sz]) => Math.hypot(x - sx, z - sz) < SPAWN_CLEARANCE)) continue;
+    const cover = aabbOf(x, z, w, d);
+    if (placed.some((reserved) => overlaps(reserved, cover, 1))) continue;
+    const accent = rand() < 0.18;
+    const color = accent ? def.palette.accent : def.palette.obstacle;
+    boxes.push({
+      x,
+      y: h / 2,
+      z,
+      w,
+      h,
+      d,
+      color,
+      emissive: accent && def.palette.emissiveAccent,
+    });
+    placed.push(cover);
+    numPlaced += 1;
+
+    const mirror = aabbOf(-x, -z, w, d);
+    const mirrorNearSpawn = spawnGuards.some(
+      ([sx, , sz]) => Math.hypot(-x - sx, -z - sz) < SPAWN_CLEARANCE,
+    );
+    if (
+      (x !== 0 || z !== 0)
+      && !mirrorNearSpawn
+      && !placed.some((reserved) => overlaps(reserved, mirror, 1))
+    ) {
+      boxes.push({
+        x: -x,
+        y: h / 2,
+        z: -z,
+        w,
+        h,
+        d,
+        color,
+        emissive: accent && def.palette.emissiveAccent,
+      });
+      placed.push(mirror);
+      numPlaced += 1;
+    }
+  }
+
+  const breakRng = mulberry32(def.seed ^ 0x1a2b3c4d);
+  for (const box of boxes) {
+    if (box.ghost || box.decor || box.structural) continue;
+    const maxXZ = Math.max(box.w, box.d);
+    const minXZ = Math.min(box.w, box.d);
+    if (maxXZ > 8 || box.h < 0.8 || box.h > 10) continue;
+    if (minXZ > 0 && maxXZ / minXZ > 5) continue;
+    if (breakRng() > 0.35) continue;
+    const volume = box.w * box.h * box.d;
+    box.breakable = {
+      hp: Math.max(120, Math.min(260, Math.round(120 + Math.sqrt(volume) * 10))),
+    };
+  }
+
+  return {
+    placementProvenance: {
+      placementSource: 'canonical-solver-v2-authoring',
+      placementSolverSha256: GENERATED_STAGE_PLACEMENT_PROVENANCE.solverSha256,
+      stageWorldCatalogSha256: GENERATED_STAGE_PLACEMENT_PROVENANCE.catalogSha256,
+    },
+    boxes,
+    playerSpawns,
+    botSpawns,
+    propPlacements,
+    districtPlacements,
+    landmarkPlacements,
+  };
+}
+
 export function generateStage(def: StageDef): StageLayout {
+  const generated = resolveGeneratedStagePlacement(def);
+  if (generated.placement) return generateStageFromGeneratedPlacement(def, generated.placement);
   const rand = mulberry32(def.seed);
   const half = def.size / 2;
   const boxes: BoxSpec[] = [];
@@ -1638,7 +2962,11 @@ export function generateStage(def: StageDef): StageLayout {
   // generateThemeObjectsと完全に同じ式にし、建物/プロップのスポーン離隔契約を一致させる。
   const edge = Math.round((half * 0.78) / GRID) * GRID;
   const abbeyStage = def.recipe?.buildings[0] === 'abbey';
-  const abbeyApproach = Math.round((half * 0.56) / GRID) * GRID;
+  // Keep at least 30m between the approach spawn and the abbey's 62m east/
+  // west wall extent.  Z04's slightly smaller map previously produced 86m
+  // (24m clearance); 92m preserves the same gate-axis composition while
+  // satisfying the dense-world release clearance gate.
+  const abbeyApproach = Math.round(Math.max(half * 0.56, 92) / GRID) * GRID;
   const corners: SpawnPoint[] = abbeyStage
     ? [
         // 修道城の回転はシードで固定され、東西軸に幅広の城門がある。
@@ -1677,7 +3005,15 @@ export function generateStage(def: StageDef): StageLayout {
       Math.round((Math.sin(ang) * r) / GRID) * GRID,
     ]);
   }
-  const spawnGuards: SpawnPoint[] = [...corners, ...botSpawns];
+  let spawnGuards: SpawnPoint[] = [...corners, ...botSpawns];
+  const landmarkPlacements = DENSE_WORLD_V5_PROOF_STAGES.has(def.id)
+    ? buildDenseWorldV5Landmarks(def, [], [])
+    : [];
+  if (DENSE_WORLD_V5_PROOF_STAGES.has(def.id)) {
+    const streetPlayers = buildDenseWorldV5PlayerSpawns(def, landmarkPlacements);
+    corners.splice(0, corners.length, ...streetPlayers);
+    spawnGuards = [...corners, ...botSpawns];
+  }
 
   // ③ 建造物の配置 (recipe 指定時)
   // 建造物 AABB は placed にも追加し、後続の障害物が重ならないようにする。
@@ -1685,7 +3021,58 @@ export function generateStage(def: StageDef): StageLayout {
   const districtPlacements: DistrictPlacement[] = [];
   let numPlaced = 0; // 障害物の配置数カウント(建造物は含まない)
 
-  if (def.recipe) {
+  if (def.recipe && DENSE_WORLD_V5_PROOF_STAGES.has(def.id)) {
+    const plan = buildDenseWorldV5Plan(def, corners, [], landmarkPlacements);
+    const landmarkDistricts: DistrictPlacement[] = landmarkPlacements.map((landmark) => ({
+      kind: landmark.districtKind,
+      cx: landmark.cx,
+      cz: landmark.cz,
+      rot: landmark.rot,
+      width: landmark.width,
+      depth: landmark.depth,
+    }));
+    // Preserve the established origin-first district contract where possible;
+    // abbey landmark 0 itself owns the origin.
+    if (landmarkPlacements[0]?.collisionTemplate === 'abbey') {
+      districtPlacements.push(...landmarkDistricts, ...plan);
+    } else {
+      districtPlacements.push(...plan.slice(0, 1), ...landmarkDistricts, ...plan.slice(1));
+    }
+    for (const landmark of landmarkPlacements) {
+      boxes.push(...buildLandmarkCombatShell(landmark, def.palette));
+      placed.push(aabbOf(landmark.cx, landmark.cz, landmark.width, landmark.depth));
+      // Entrance approaches are authored gameplay streets, not spare lots.
+      // Reserve them from both themed props and generic symmetric cover.
+      placed.push(approachAabb(landmark.approach));
+    }
+    for (const [districtIndex, district] of plan.entries()) {
+      const baseBoxes = generateBuilding(
+        district.kind,
+        district.cx,
+        district.cz,
+        district.rot,
+        def.palette,
+      );
+      // Keep the mutable collection at the public BoxSpec contract.  The
+      // mapped base boxes all have a district, while the supported upper
+      // volume is returned as a BoxSpec whose district is intentionally
+      // optional at the interface boundary.
+      const buildBoxes: BoxSpec[] = baseBoxes.map((box) => ({
+        ...box,
+        district: district.kind,
+      }));
+      if (def.id === 'kairou') {
+        buildBoxes.push(buildKairouUrbanVolume(
+          district,
+          districtIndex,
+          baseBoxes,
+          def.palette,
+        ));
+      }
+      boxes.push(...buildBoxes);
+      placed.push(aabbOf(district.cx, district.cz, district.width, district.depth));
+    }
+  } else if (def.recipe) {
     // 300m級マップへ2〜4棟だけを散らしていた旧構成は、ランドマークの周囲だけが豪華で
     // 残りが空き地に見える主因だった。固有の建築語彙はそのまま循環再利用し、通常面を
     // 10〜12地区へ拡張する。配置は既存のAABB重複／スポーンクリアランス判定を全て通るため、
@@ -1756,10 +3143,31 @@ export function generateStage(def: StageDef): StageLayout {
     }
   }
 
+  // The legacy spawn ring predates collision-authoritative dense districts and
+  // can land inside their footprints.  Once all v5 colliders exist, replace it
+  // with deterministic points on the preserved street graph, then reuse that
+  // same truth for prop and random-cover clearance checks.
+  if (DENSE_WORLD_V5_PROOF_STAGES.has(def.id)) {
+    const streetBots = buildDenseWorldV5BotSpawns(
+      def,
+      corners,
+      districtPlacements,
+      landmarkPlacements,
+    );
+    botSpawns.splice(0, botSpawns.length, ...streetBots);
+    spawnGuards = [...corners, ...botSpawns];
+  }
+
   // ③.5 テーマ環境オブジェクト(別シード・既存レイアウトRNG非汚染)
   const propRand = mulberry32(def.seed ^ 0x7e57ab1e);
   const propPlacements: PropPlacement[] = [];
-  boxes.push(...generateThemeObjects(def, placed, propRand, propPlacements));
+  boxes.push(...generateThemeObjects(
+    def,
+    placed,
+    propRand,
+    propPlacements,
+    DENSE_WORLD_V5_PROOF_STAGES.has(def.id) ? spawnGuards : undefined,
+  ));
 
   // ④ 拡張視覚地形 + 遠景シルエット(decor = 境界外装飾)
   boxes.push(...generateExtendedTerrain(def, half));
@@ -1833,5 +3241,17 @@ export function generateStage(def: StageDef): StageLayout {
     box.breakable = { hp: Math.max(120, Math.min(260, Math.round(120 + Math.sqrt(vol) * 10))) };
   }
 
-  return { boxes, playerSpawns: corners, botSpawns, propPlacements, districtPlacements };
+  return {
+    placementProvenance: {
+      placementSource: 'runtime-release',
+      placementSolverSha256: GENERATED_STAGE_PLACEMENT_PROVENANCE.solverSha256,
+      stageWorldCatalogSha256: GENERATED_STAGE_PLACEMENT_PROVENANCE.catalogSha256,
+    },
+    boxes,
+    playerSpawns: corners,
+    botSpawns,
+    propPlacements,
+    districtPlacements,
+    landmarkPlacements,
+  };
 }
