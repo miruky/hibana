@@ -1,0 +1,78 @@
+{
+  "candidate": "kouwan-r10-private-harbor-ship-gate",
+  "layout": {
+    "path": "tools/blender/generated/stage-layouts.json",
+    "sha256": "b0e1b9c0b7377dc4978ba2d74a01703677d38fda24d83aef38d59a73b1b9d482"
+  },
+  "externalInputs": [
+    {
+      "path": "kouwan-current-v5-r9-5.blend",
+      "sha256": "b89c2c094be3c696b0c71a3534ab8f4152c9dc09ae32722baef199c20604a6f0",
+      "reason": "R10 is a delta authored on the untracked R9.5 scene"
+    },
+    {
+      "path": "optimize_export_r7_2.py",
+      "sha256": "481db1333712572da80baf74fb1e8ec1f190a4a8a46952a5ee9073114cdeb40e",
+      "reason": "R10 optimizer dynamically rewrites and executes this inherited implementation"
+    },
+    {
+      "path": "optimized-r7-2/audit_release_r7_2.py",
+      "sha256": "aa9e50c3370302dfb552921f4f798748154d8e2b6a534f5357abd59710d54201",
+      "reason": "R10 release gate dynamically rewrites and executes this inherited implementation"
+    },
+    {
+      "path": "textures-r5/kouwan_v5r5_atlas_manifest.json",
+      "sha256": "1b619d01e64f28fa6a3530a9481d4b7d49543525f4b599611202e84009c6816d",
+      "reason": "the inherited optimizer reads atlas tile metadata"
+    },
+    {
+      "path": "textures-r5/kouwan_v5r5_basecolor.png",
+      "sha256": "dac6851dcee026a28b2160a7ba08cd8304b3e1ab73d476c2ff1423c8e845b5fe",
+      "reason": "project-authored PBR source texture"
+    },
+    {
+      "path": "textures-r5/kouwan_v5r5_normal_gl.png",
+      "sha256": "a9280cd8a457a738c034272b58ddb701cd4b17e006e48dea397cec566dd08333",
+      "reason": "project-authored PBR source texture"
+    },
+    {
+      "path": "textures-r5/kouwan_v5r5_orm.png",
+      "sha256": "33095f3e005a15474b4f0c5af7a23e5b9d1f65862a7bf017cd519f4e58f0f10b",
+      "reason": "project-authored PBR source texture"
+    },
+    {
+      "path": "textures-r5/kouwan_v5r5_emissive.png",
+      "sha256": "0f3844f740e5e86e64dda7fa8a1a0a91226f66b26f71a70a113088f789b6330f",
+      "reason": "project-authored PBR source texture"
+    }
+  ],
+  "knownPrivateOutputs": [
+    {
+      "path": "optimized-r10/stages/kouwan-r10-lod0.glb",
+      "sha256": "7587e5f7b3509bb30d3760857cfe54eb28bb509b6916c444adcc821f7bf3fcc5"
+    },
+    {
+      "path": "optimized-r10/stages/kouwan-r10-lod1.glb",
+      "sha256": "9b9f6d211a966185f79ce7ccd3415123f0cfd756197f79373bc06ce2dced1c73"
+    },
+    {
+      "path": "optimized-r10/stages/kouwan-r10-lod2.glb",
+      "sha256": "9cf84358ab82890e717c6b21ce2808b6c1fd97094d47c5500e15c0f607b5e13b"
+    }
+  ],
+  "pathDependentOutputs": [
+    {
+      "path": "kouwan-current-v5-r10.blend",
+      "knownPrivateSha256": "cc6c5cca4ac7c08dbc6903cf277ce3653dd552c23092f1b7c234b15ef3aeab21",
+      "reason": "the Blender file embeds relocated paths and is not byte-stable across artifact roots"
+    }
+  ],
+  "semanticBlockers": [
+    "the R9.5 baseline has no tracked deterministic build chain",
+    "the optimizer and release audit still execute inherited untracked source files",
+    "finalize_r10.py hardcodes the five human visual scores instead of consuming an independently reviewed scorecard",
+    "finalize_r10.py does not require the five-view render diagnostic to pass; the known aerial is flagged",
+    "all three GLBs fail the shared Hibana validator because current generator-version and generator-sha provenance are absent",
+    "no R10 browser integration, collision-route migration, or real performance audit is recorded"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "stage": "kairou",
+  "revision": "v10.1-collision-aligned-surface-pass",
+  "license": "Hibana project-original generated asset; no third-party reference mesh or texture is embedded",
+  "source": {
+    "kairou-v10.1-upper-lod0.raw.glb": "f915b2f1aabacc1170db6b223e85ec0d6e2fa4f74ac319438d09c3354fcc59c6",
+    "kairou-v10.1-upper-lod1.raw.glb": "28c1416ff0956d50b1a398c21d89e40fce0341dfd1a320586b93de3fc79ec320",
+    "kairou-v10.1-upper-lod2.raw.glb": "52c75ce11239fb650b006f8b61ac2e4a6c499249e13bba1ca860fd247d984a30"
+  },
+  "textures": {
+    "T_Kairou_V4_Dielectric_BaseColor.png": "12e8fa8546a135a862b0b5e88ffa59374ab44633d2dc9166e35855c8222b40de",
+    "T_Kairou_V4_Dielectric_NormalGL.png": "652b8a8c8953f4025c8f2b8b8e5a500c82a3c90de921d44151176074cbf1be6d",
+    "T_Kairou_V4_Dielectric_ORM.png": "2e0e5ec14e0fe3064c1f3e7ac1d102a17ed1f904c6ee9622f88519f646c700ce",
+    "T_Kairou_V4_Metal_BaseColor.png": "f5b79972d4f7a002c3f7a6ad6a2baffa94ad4f5bd5e976688a526413c918fdaa",
+    "T_Kairou_V4_Metal_NormalGL.png": "529fc3c180736b86b4c13420949d3a89d610582ae833d74a077935cebee9da8b",
+    "T_Kairou_V4_Metal_ORM.png": "05b26770565931286ca0413973344a8086a190942c81adf43fe7d98af04eb6cf"
+  },
+  "releaseGates": {
+    "supportedAreaRatio": 1.0,
+    "unsupportedPlayerHeightSamples": 0,
+    "protectedRouteIntersections": 0,
+    "blackFacadeCards": 0,
+    "minimumVisualScore": 8.0,
+    "maximumLod0Triangles": 260000,
+    "maximumMaterials": 24,
+    "maximumLod1Ratio": 0.45,
+    "maximumLod2Ratio": 0.12
+  }
+}
