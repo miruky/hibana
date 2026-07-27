@@ -1,5 +1,10 @@
 {
   "version": 1,
+  "generatorVersion": "dense-world-v4",
+  "generatorSha": "81cc7a1dc2c67776bb32f25a4d095497cdb555fe0808c1de10e206fdba406fb5",
+  "placementSource": "runtime-release",
+  "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+  "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
   "assets": [
     {
       "id": "stage-kunren",
@@ -21,6 +26,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "7c1998f6c219d8e73d7e7e272f73f8a51a2d93be3e1890589308207a3b7ec92a"
+      },
       "lods": [
         {
           "url": "stages/kunren-lod1.glb",
@@ -52,6 +64,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "62d310deb199788e0314c02c447a3e5f482fba8eeb8b931c5ce6fc8107e472e5"
+      },
       "lods": [
         {
           "url": "stages/souko-lod1.glb",
@@ -83,6 +102,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "d0d4f1ed99b11f57d802f389647fb6b9aa9ce850f088cf956b4b26ea9ff50ba6"
+      },
       "lods": [
         {
           "url": "stages/nakaniwa-lod1.glb",
@@ -114,6 +140,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "3f6262212e9b86d22c04d8704d509d5bc3a15f542529151eda2c9e97022f236f"
+      },
       "lods": [
         {
           "url": "stages/kairou-lod1.glb",
@@ -145,6 +178,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "86693d3baadf04ba065650ba9f918363206ac86c1020035e7d779f661decb0ce"
+      },
       "lods": [
         {
           "url": "stages/kouwan-lod1.glb",
@@ -176,6 +216,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "9ff982bb91e93cdc4a76856b9d01120ddd1a4fd121fc3cb4a3ab0ce42ae7bfa9"
+      },
       "lods": [
         {
           "url": "stages/takadai-lod1.glb",
@@ -207,6 +254,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "21cb6b56ec362c693c14974ed77aca815a59f02e19bb6543fe318ff3e280bb33"
+      },
       "lods": [
         {
           "url": "stages/sakyuu-lod1.glb",
@@ -238,6 +292,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "d9af8b559f2c78847931efd673bf986c80291924d1f4083b0e6f678d73b1c6c3"
+      },
       "lods": [
         {
           "url": "stages/setsugen-lod1.glb",
@@ -269,6 +330,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "34fd8d00e9ed886ecc87c6339893b9b3a4c1609bfb7e3a8498e349fd1faa36a8"
+      },
       "lods": [
         {
           "url": "stages/koushou-lod1.glb",
@@ -300,6 +368,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "25c56a63cd0cbf57fee3f6b061863072484bb1628bc7269ffae9364c56bd370d"
+      },
       "lods": [
         {
           "url": "stages/yoichi-lod1.glb",
@@ -331,6 +406,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "f2c8adfbcaaea30695887d4f31ff654bafb170b49e9066440d7bf70ffbd9289e"
+      },
       "lods": [
         {
           "url": "stages/okujou-lod1.glb",
@@ -362,6 +444,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "3d84e6dff017002a0fa1f1c957aa16c674b94b187f35c3110e7db65a70b2e73d"
+      },
       "lods": [
         {
           "url": "stages/saisekiba-lod1.glb",
@@ -393,6 +482,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "4ecc58c929b3ed424c1c305b97e0d34d662c81539fa94a53707b311d08697a1e"
+      },
       "lods": [
         {
           "url": "stages/chikurin-lod1.glb",
@@ -424,6 +520,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "9d0edd02b1b208dd7ca92a457ee119329324ce730a849b8e234da72b9cd915d8"
+      },
       "lods": [
         {
           "url": "stages/tanada-lod1.glb",
@@ -455,6 +558,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "069371c86199431a2b1702d9844c4ae8bd06112f5bed43db0f8f2f19385c81e3"
+      },
       "lods": [
         {
           "url": "stages/misaki-lod1.glb",
@@ -486,6 +596,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "b03a102c78012c28b1a3858fe547faa88ca498ba4c89c76c17594dba0248ca29"
+      },
       "lods": [
         {
           "url": "stages/haieki-lod1.glb",
@@ -517,6 +634,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "d181ec2407012bdadd8118dc0c7a95b669a35ae504f3647358ec00b892b3127e"
+      },
       "lods": [
         {
           "url": "stages/kyokoku-lod1.glb",
@@ -548,6 +672,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "391df3dc1d0c6cefd7a3ac9e84b8fd32a03cb92f6e1766d72206cca6f1297d88"
+      },
       "lods": [
         {
           "url": "stages/kohan-lod1.glb",
@@ -579,6 +710,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "018b7326f708c56c0a62bb2f59568ebcf413ced19ef00ee14d2914e7f58cfc2d"
+      },
       "lods": [
         {
           "url": "stages/kuko-lod1.glb",
@@ -610,6 +748,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "83d94eb90653d36427c39b58b6e2c6f81d85ec0ce3500d444416482f67b44509"
+      },
       "lods": [
         {
           "url": "stages/onsengai-lod1.glb",
@@ -641,6 +786,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "1c316f00c052aa3cdd1fd2d123cb128f8e8ce41bfe84996fd4228ad6a814aa36"
+      },
       "lods": [
         {
           "url": "stages/z01-lod1.glb",
@@ -672,6 +824,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "3500148f627868f0b7d6ea023f732aad94eeeb97e4c06ca4ca91ede82ca63246"
+      },
       "lods": [
         {
           "url": "stages/z02-lod1.glb",
@@ -703,6 +862,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "51bf6ef10e9ce5d400ebb881fc3c74b30e5a49ecf7e6bef24e9d2837b32735f1"
+      },
       "lods": [
         {
           "url": "stages/z03-lod1.glb",
@@ -734,6 +900,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "822cd6e59e624ad340ff423b93f35f82a1b1e9d2be91c0181bba94f212ebdb54"
+      },
       "lods": [
         {
           "url": "stages/z04-lod1.glb",
@@ -765,6 +938,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "afd99313de7ebc031aa0b2481a1f58d086eea186278630d355aecfc0f2cb80e4"
+      },
       "lods": [
         {
           "url": "stages/z05-lod1.glb",
@@ -796,6 +976,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "a0bd6fdb59319b1affbdba67f50389c3b2e4a3052a426d2aa64f866b1756e79c"
+      },
       "lods": [
         {
           "url": "stages/z06-lod1.glb",
@@ -827,6 +1014,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "fe03a5072bac658ac81d1ac41da0be7aa18672b256875cca3dc4c90c8021ec26"
+      },
       "lods": [
         {
           "url": "stages/z07-lod1.glb",
@@ -858,6 +1052,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "3c47f4daa766eb86bac79a3030fc90d4f8e1927489ae8c3f0647630a455bfc91"
+      },
       "lods": [
         {
           "url": "stages/z08-lod1.glb",
@@ -889,6 +1090,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "2eb456ab294b174bbea91af54cb719f2109fb7721a40134082410c429b1ef0a4"
+      },
       "lods": [
         {
           "url": "stages/z09-lod1.glb",
@@ -920,6 +1128,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "9a40a2f13908206b746bd15b5be0c249398e25d034460f3bef1ba9f8d6bdf700"
+      },
       "lods": [
         {
           "url": "stages/z10-lod1.glb",
@@ -951,6 +1166,13 @@
       "receiveShadow": true,
       "replacesDistantMatte": true,
       "replacesProceduralProps": true,
+      "replacesProceduralStageShell": true,
+      "stageProvenance": {
+        "placementSource": "runtime-release",
+        "placementSolverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+        "stageWorldCatalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+        "stageLayoutSha256": "d11c5e5f27a082782dde69cd7a94bbbb750833b43cdf684626d0fa45d3690172"
+      },
       "lods": [
         {
           "url": "stages/renshujo-lod1.glb",
