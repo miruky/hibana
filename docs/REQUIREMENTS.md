@@ -1,8 +1,9 @@
 # hibana 要件定義書
 
 制定日: 2026-06-11
+最終更新: 2026-07-19
 
-hibanaはブラウザで動作する3D FPSである。本書は発注時の全要求機能を漏れなく記録し、Web環境への適合方針と実装フェーズを定める。機能の取捨選択を行う場合は本書を更新してから行う。
+hibanaはブラウザで動作する3D FPSである。本書は発注時の要求カタログ、Web環境への適合方針、リリースゲートを定める。下の「機能要件」は完成済み一覧ではなく、未実装や計画中の項目も含む。現行の実装状況は README とテストを正とする。機能の取捨選択を行う場合は本書を更新してから行う。
 
 ## 技術選定
 
@@ -12,10 +13,15 @@ hibanaはブラウザで動作する3D FPSである。本書は発注時の全�
 - 配信: GitHub Pages(静的サイトとして完全無料)。代替としてNetlifyにも同一成果物を配置できる。
 - マルチプレイヤー: WebRTC DataChannelによるP2P+ホスト権威方式を採用予定。GitHub Pagesはサーバープロセスを持てないため、専用サーバー方式は採らない。シグナリングは無料枠で動く軽量サービスを別リポジトリとして用意する。
 - サウンド: Web Audio APIによる全面プロシージャル生成。音声アセットを持たない。
+- 3D制作: Blender 5.2 LTSで環境・人型キャラクター・LODを制作し、glTF 2.0で配信する。読込失敗時もTypeScript側の衝突とゲーム進行を維持する。
 
 ## ステージ要件
 
-10ステージを実装する。シード付き決定論的ジェネレータでレイアウトを生成し、ステージごとに固有のパレット(空・霧・床・壁・障害物・アクセント色)、広さ、障害物密度、高低差を与える。点対称配置により対戦時の公平性を担保する。
+31ステージを実装する。シード付き決定論的ジェネレータを衝突・スポーン・主要動線の正とし、ステージごとに固有のパレット(空・霧・床・壁・障害物・アクセント色)、広さ、障害物密度、高低差を与える。各面の Blender 外装は高層建築を主体とする固有の密集市街、意図的な道路・広場・射線、固有の城級大型ランドマーク 2 基（全 62 基）を持つ。ランドマークはステージ識別と遠近感を担う可視外装であり、それ自体が全て進入可能な戦闘建築であることは要件としない。プロファイルの `combatFlow` はデザイン意図であり、TypeScript の既存衝突・開口・経路で支えられた範囲だけを遊戯動線とする。
+
+遠景用の平面画像・円筒画像壁は配信 GLB の読込成功後に表示せず、実 3D の地形、建物、インフラ、植生、水面と 3 段階 LOD の制作パックで奥行きを作る。巨大なステージ GLB は high で LOD0、medium で LOD1 の必要な 1 ファイルだけを非同期読込し、その構造検査とシェーダーコンパイルが完了した後だけ、重複する旧外装を原子的に隠す。LOD2 は sector / HLOD 配信へ移行できる制作・検証成果として保持する。low 画質、対象 LOD の欠損、GLB 欠損、不正 manifest、読込失敗時は決定論的な TypeScript 外装とゲーム進行へフェイルオープンする。破壊可能物と物理コリジョンは TypeScript / Rapier 側に残す。
+
+対戦面は点対称配置を基本に公平性を担保しつつ、視認性・スポーン安全・決定論的衝突を外装密度より優先する。
 
 ## 機能要件(全項目)
 
@@ -173,6 +179,52 @@ hibanaはブラウザで動作する3D FPSである。本書は発注時の全�
 - 不具合通報・ペナルティシステム(AFK検出、トロール対策、チームキル処理)
 - 年齢レーティング対応(ゴア表現のON/OFF等)
 
+## Blender 配信アセットの実装境界
+
+### 環境
+
+- `tools/blender/stage-profiles.json` version 2 は 31 ステージと、各 2 基ずつの固有ランドマーク計 62 基の machine-readable contract である。ID、日本語名、シルエット、屋根、外壁の重複を拒否し、城級寸法、配置、4 種以上の材質キュー、3 層の flow brief を必須とする。
+- 各面は `LOD0` / `LOD1` / `LOD2` の 3 GLB を持つ。`LOD2` は材質単位に統合した HLOD 相当の遠景シルエットで、別のゲームプレイ衝突は生成しない。
+- 各 LOD は実在する 2 つのランドマークメッシュグループと、ID / index / style / bounds / target dimensions / placement の glTF `extras` を持つ。プロファイルの文字列だけで実体の無いランドマークは不可とする。
+- ジェネレータ版と SHA-256 を manifest と GLB の両方に記録し、スクリプト更新後の古い GLB をリリース検査で拒否する。
+- 1 GLB あたり 5,500,000 bytes 以下、LOD0 は 260,000 triangles 以下、LOD1 は LOD0 の 45% 以下、LOD2 は 12% 以下、24 materials 以下をリリース上限とする。上限内であることは実機 FPS を保証しないため、実ブラウザ監査とベンチマークも必須とする。
+
+### 敵兵
+
+- 外部参考 GLB / PNG は観察のみに使い、再配布ライセンスが確認できないメッシュ、テクスチャ、マテリアル、バイナリを import / embed / ship しない。配信パックは `tools/blender/build_enemy_soldiers.py` で決定論的に生成したオリジナル幾何とする。
+- rifleman / breacher / scout / marksman / support / medic の 6 表示バリエーションは、同じ名前の 22 ボーン階層と 14 戦闘クリップを LOD0 / LOD1 / LOD2 で共有する。
+- 人型の AI、Rapier 衝突、ヒットボックス、ゲームプレイ状態は TypeScript 側を正とし、Blender パックは表示とアニメーションだけを差し替える。現行の差替対象は medium / high 画質の非ゾンビ、非訓練モードの敵人型である。
+- 全 3 LOD の読込、variant / clip 構造検査、シェーダー事前コンパイルが成功するまで従来表示を隠さない。失敗した個体またはパック全体は従来表示にフェイルオープンする。
+- 配信上限は LOD0 / 1 / 2 の順に 90,000 / 42,000 / 18,000 triangles、5,500,000 / 3,500,000 / 2,500,000 bytes、8 materials、32 bones とする。
+
+### 一人称の腕と指
+
+- 茶系の布袖とフルフィンガー軍用グローブを区別し、左手の掌は武器の支持面へ向ける。指は手掌、ナックル、指節から連続させ、爪状の突起、掌貫通、武器の中への埋没、二重腕をリリース不可とする。
+- 全武器、通常 / 黒帝 / 雷帝 / 黒雷帝のクナイ 4 形態、杖、弓、扇を idle / fire / ADS / sprint で検査する。クナイ以外は複数時刻の tactical / empty reload も無音 headless 実ブラウザで検査する。
+- キャプチャは `tools/blender/screenshots/` または `/tmp` 下へ保存し、GitHub には追加しない。
+
+## リリース検査コマンド
+
+```bash
+node tools/blender/validate-stage-profiles.mjs
+python3 tools/blender/validate_dense_stage_assets.py
+python3 tools/blender/validate-glb.py public/assets/aaa/stages/*-lod0.glb \
+  --manifest public/assets/aaa/manifest.json --expect-count 31
+python3 tools/blender/validate_enemy_glb.py \
+  public/assets/aaa/enemies/soldier-pack-lod0.glb \
+  public/assets/aaa/enemies/soldier-pack-lod1.glb \
+  public/assets/aaa/enemies/soldier-pack-lod2.glb \
+  --release --manifest public/assets/aaa/enemies/manifest.json
+
+npx vitest run src/render/first-person-arms.test.ts src/render/viewmodel.test.ts \
+  src/render/enemy-asset-pipeline.test.ts src/game/enemy-visual-bot.test.ts
+npm run audit:stages -- --quality=high
+npm run audit:weapons -- --quality=high --reload-kind=tactical
+npm run audit:weapons -- --quality=high --reload-kind=empty
+```
+
+`audit:stages` と `audit:weapons` は Chromium を headless / muted / background-only で動かす。アセット上限検査、実ブラウザ監査、対象端末での性能計測は別物であり、いずれか 1 つの成功で他を省略しない。
+
 ## Web環境への適合方針
 
 完全無料・ブラウザ動作という制約に対し、原義どおりの実装が不可能な項目は以下のとおり読み替える。読み替えはここに列挙したものに限る。
@@ -185,7 +237,7 @@ hibanaはブラウザで動作する3D FPSである。本書は発注時の全�
 
 ## 実装フェーズ
 
-- P0 コア戦闘ループ: 移動・射撃・BOT戦・ステージ10種・HUD・メイン/ポーズメニュー・設定・プロシージャルサウンド
+- P0 コア戦闘ループ: 移動・射撃・BOT戦・ステージ31種・HUD・メイン/ポーズメニュー・設定・プロシージャルサウンド
 - P1 戦闘拡張: 投擲物、近接、武器追加、アタッチメント、スライディング、マントリング、リーン、部位ダメージ詳細、壁貫通
 - P2 モード拡張: TDM/FFA/ドミネーション等のルール実装、リスポーンロジック、リザルト、観戦
 - P3 ネットワーク: WebRTC P2P対戦、ラグ補償、ロビー、チャット、VC
