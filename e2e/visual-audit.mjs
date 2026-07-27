@@ -22,7 +22,10 @@ const val = (key, fallback) =>
   (args.find((arg) => arg.startsWith(`${key}=`)) ?? '').split('=').slice(1).join('=') || fallback;
 
 const weaponId = val('--weapon', 'kaede-ar');
-const camoId = val('--camo', weaponId === 'kaede-ar' ? 'diamond' : '');
+const requestedCamoId = val('--camo', weaponId === 'kaede-ar' ? 'diamond' : '');
+// `val` intentionally falls back for an empty `--camo=` argument.  Use the explicit
+// sentinel instead so visual QA can isolate hand geometry from a bright weapon camo.
+const camoId = requestedCamoId === 'none' ? '' : requestedCamoId;
 const quality = val('--quality', 'high');
 const stageId = val('--stage', 'kunren');
 const mode = val('--mode', 'training');
@@ -32,10 +35,15 @@ const settleMs = Number(val('--settle-ms', '2500'));
 const perfOnly = val('--perf-only', '0') === '1';
 const reloadFrameCount = Number(val('--reload-frames', '0'));
 const reloadFrameMs = Number(val('--reload-frame-ms', '120'));
+const reloadKind = val('--reload-kind', 'tactical');
 const safeZombie = val('--safe-zombie', '0') === '1';
 const softwareRenderer = val('--software', '0') === '1';
 const viewportName = val('--viewport', '1920x1080');
 const kunaiState = val('--kunai-state', 'normal');
+const leftHandDeltaArg = val('--left-hand-delta', '');
+const leftHandDelta = leftHandDeltaArg
+  ? leftHandDeltaArg.split(',').map(Number)
+  : null;
 const [width, height] = viewportName.split('x').map(Number);
 const port = Number(val('--port', '5229'));
 const baseArg = val('--base', '');
@@ -68,8 +76,12 @@ if (!Number.isInteger(reloadFrameCount) || reloadFrameCount < 0 || reloadFrameCo
 if (!Number.isFinite(reloadFrameMs) || reloadFrameMs < 40 || reloadFrameMs > 1000) {
   throw new Error(`bad reload frame interval: ${reloadFrameMs}`);
 }
+if (!['tactical', 'empty'].includes(reloadKind)) throw new Error(`bad reload kind: ${reloadKind}`);
 if (!Number.isFinite(settleMs) || settleMs < 0 || settleMs > 60_000) {
   throw new Error(`bad settle time: ${settleMs}`);
+}
+if (leftHandDelta && (leftHandDelta.length !== 6 || leftHandDelta.some((value) => !Number.isFinite(value)))) {
+  throw new Error(`bad left hand delta: ${leftHandDeltaArg}`);
 }
 
 mkdirSync(shotDir, { recursive: true });
@@ -223,7 +235,7 @@ try {
   });
   page.on('pageerror', (error) => errors.push(`pageerror: ${String(error)}`));
 
-  await page.goto(`${url}/?ui2&perfhud=1`, {
+  await page.goto(`${url}/?ui2&perfhud=1&armaudit=1`, {
     waitUntil: 'domcontentloaded',
     timeout: 30_000,
   });
@@ -232,9 +244,22 @@ try {
   await visible(page, '[data-id="hub-root"]');
   await page.locator('[data-id="hub-nav-deploy"]').click();
   await visible(page, '[data-id="scr-deploy"]');
-  await page.locator('[data-id="start"]').evaluate((element) => element.click());
+  // A hidden legacy menu start control shares this data-id. Scope the click
+  // to UI2 so headless visual audits always launch the selected deployment.
+  await page
+    .locator('[data-id="scr-deploy"] [data-id="start"]')
+    .evaluate((element) => element.click());
   await visible(page, '#hud:not([hidden])', 50_000);
   await page.waitForTimeout(settleMs);
+  if (leftHandDelta) {
+    await page.evaluate((delta) => {
+      const hook = globalThis.__hibanaArmAudit;
+      if (!hook?.setLeftHandDelta) throw new Error('arm-audit left-hand hook unavailable');
+      hook.setLeftHandDelta(delta);
+    }, leftHandDelta);
+    await page.evaluate(() => new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  }
 
   // クナイは通常／黒帝／雷帝／黒雷帝を同じ実試合経路で監査する。訓練場は毎フレーム
   // ゲージ満タンになるため、製品入力(M/N)だけで再現でき、内部状態の直書きは不要。
@@ -279,6 +304,11 @@ try {
 
   let activeFrames = [];
   let reloadObserved = null;
+  let reloadStartAmmo = null;
+  const reloadTargetRatios = reloadFrameCount > 0
+    ? Array.from({ length: reloadFrameCount }, (_, index) => (index + 1) / (reloadFrameCount + 1))
+    : [];
+  const reloadCapturedRatios = [];
   if (!perfOnly) {
     await page.mouse.down({ button: 'left' });
     await page.waitForTimeout(55);
@@ -295,16 +325,60 @@ try {
     await page.waitForTimeout(250);
 
     if (weaponId !== 'fists') {
-      await page.keyboard.press('KeyR');
+      const ammoNode = page.locator('[data-id="ammo"]');
+      const readAmmo = async () => {
+        const raw = (await ammoNode.textContent()) ?? '';
+        const parsed = Number(raw.replace(/[^0-9]/g, ''));
+        return Number.isFinite(parsed) ? parsed : null;
+      };
+      if (reloadKind === 'empty') {
+        // 公開入力だけで弾倉を空にする。内部Weapon/Magazineを書き換えず、実ゲームの
+        // 空撃ち→empty reload-start経路、最終弾後の腕位置、長い空リロード時間を監査する。
+        const deadline = Date.now() + 45_000;
+        while (Date.now() < deadline) {
+          const ammo = await readAmmo();
+          if (ammo === 0) break;
+          await page.mouse.down({ button: 'left' });
+          await page.waitForTimeout(55);
+          await page.mouse.up({ button: 'left' });
+          await page.waitForTimeout(20);
+        }
+        reloadStartAmmo = await readAmmo();
+        if (reloadStartAmmo !== 0) {
+          throw new Error(`failed to drain magazine for empty reload (ammo=${String(reloadStartAmmo)})`);
+        }
+      } else {
+        reloadStartAmmo = await readAmmo();
+      }
+      // 最終弾で自動空リロードへ入った場合はその実経路を維持し、未開始時だけRを送る。
+      if (!(await page.locator('[data-id="reload"]').isVisible())) {
+        await page.keyboard.press('KeyR');
+      }
       // 訓練モードの無限弾薬などで入力が受理されない場合を、
       // PNGがあるだけで「モーション検査済み」と誤判定しないよう記録する。
       await page.waitForTimeout(20);
       reloadObserved = await page.locator('[data-id="reload"]').isVisible();
       if (reloadFrameCount > 0) {
-        for (let frame = 1; frame <= reloadFrameCount; frame += 1) {
-          await page.waitForTimeout(reloadFrameMs);
-          await shot(`reload-seq-${String(frame).padStart(2, '0')}-${frame * reloadFrameMs}ms`);
+        // 固定msでは、PNG保存中に600ms級リロードが終了し、2秒級は前半しか撮れない。
+        // 実R入力が成立したことを上で確認した後、query-gated描画フックでViewModelだけを
+        // 等間隔の意味進捗へ保持する。弾数・Weapon・ゲーム進行は書き換えない。
+        for (const [index, targetRatio] of reloadTargetRatios.entries()) {
+          const capturedRatio = await page.evaluate((ratio) => {
+            const hook = globalThis.__hibanaArmAudit;
+            return hook?.setReloadRatio(ratio) ?? null;
+          }, targetRatio);
+          if (typeof capturedRatio !== 'number' || Math.abs(capturedRatio - targetRatio) > 1e-6) {
+            throw new Error(`arm audit hook rejected reload ratio ${targetRatio.toFixed(4)}`);
+          }
+          // 固定更新と描画を2回通し、前フレームの姿勢がPNGへ混ざらないようにする。
+          await page.evaluate(() => new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve)),
+          ));
+          reloadCapturedRatios.push(capturedRatio);
+          const ratioTag = String(Math.round(targetRatio * 1000)).padStart(4, '0');
+          await shot(`reload-ratio-${String(index + 1).padStart(2, '0')}-${ratioTag}`);
         }
+        await page.evaluate(() => globalThis.__hibanaArmAudit?.setReloadRatio(null));
       } else {
         for (const [delay, name] of [
           [220, 'reload-220ms'],
@@ -376,6 +450,7 @@ try {
     weaponId,
     kunaiState,
     camoId,
+    leftHandDelta,
     quality,
     stageId,
     mode,
@@ -384,7 +459,11 @@ try {
     perfOnly,
     reloadFrameCount,
     reloadFrameMs,
+    reloadKind,
     reloadObserved,
+    reloadStartAmmo,
+    reloadTargetRatios,
+    reloadCapturedRatios,
     safeZombie,
     softwareRenderer,
     viewport: viewportName,
