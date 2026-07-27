@@ -14,7 +14,16 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tools/blender/requirements-qa.txt
       - run: npm ci
+      - name: Install Blender QA Python dependencies
+        run: python -m pip install --disable-pip-version-check -r tools/blender/requirements-qa.txt
+      - name: Validate Blender release assets
+        run: npm run blender:validate
       - run: npm run lint
       - run: npm test
       - run: npm run build

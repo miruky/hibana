@@ -16,9 +16,12 @@
     "test:e2e": "node scripts/ui2-smoke.mjs",
     "audit:stages": "node e2e/stage-world-audit.mjs",
     "audit:weapons": "node e2e/weapon-arm-audit.mjs",
+    "audit:enemies": "node e2e/enemy-browser-audit.mjs",
     "blender:layouts": "tsx tools/blender/export-stage-layouts.ts",
     "blender:optimize": "node tools/blender/optimize-glbs.mjs public/assets/aaa/stages/*.glb",
-    "blender:validate": "python3 tools/blender/validate-glb.py public/assets/aaa/stages/*-lod0.glb --manifest public/assets/aaa/manifest.json --expect-count 31",
+    "blender:validate:contracts": "node --test tools/blender/tests/*.test.mjs && node tools/blender/validate-stage-profiles.mjs && node tools/blender/codegen-stage-world.mjs --check && node tools/blender/compare-stage-world-proof7.mjs && node tools/blender/stage-placement-solver.mjs --check && tsx tools/blender/audit-stage-placement-modes.ts && python3 -m unittest tools.blender.test_validate_dense_stage_assets tools.blender.test_audit_stage_reference_match tools.blender.test_audit_blender_render_set tools.blender.test_validate_texture_signal",
+    "blender:validate:assets": "python3 tools/blender/validate_dense_stage_assets.py && python3 tools/blender/validate-glb.py public/assets/aaa/stages/*-lod0.glb --manifest public/assets/aaa/manifest.json --expect-count 31 && node tools/blender/validate-black-window-release-gate.mjs --assets-dir public/assets/aaa/stages --manifest public/assets/aaa/manifest.json --generator tools/blender/build_all_stages.py && python3 tools/blender/validate_enemy_glb.py public/assets/aaa/enemies/soldier-pack-lod0.glb public/assets/aaa/enemies/soldier-pack-lod1.glb public/assets/aaa/enemies/soldier-pack-lod2.glb --release --manifest public/assets/aaa/enemies/manifest.json",
+    "blender:validate": "npm run blender:validate:contracts && npm run blender:validate:assets",
     "lint": "eslint .",
     "fmt": "prettier --write ."
   },
