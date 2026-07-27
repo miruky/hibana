@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "2.0.0-solver-prototype",
+  "solverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+  "catalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+  "stageCount": 31,
+  "landmarkRecordCount": 62,
+  "validatedLandmarkCount": 62,
+  "noShipStageIds": [],
+  "heuristicTagCount": 0,
+  "proof7BreakingDifferenceCount": 0,
+  "allModePassStageCount": 31,
+  "allModeViolationCount": 0
+}

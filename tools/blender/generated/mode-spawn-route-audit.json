@@ -1,0 +1,1035 @@
+{
+  "schemaVersion": "2.0.0",
+  "summary": {
+    "stageCount": 31,
+    "passStageIds": [
+      "kunren",
+      "souko",
+      "nakaniwa",
+      "kairou",
+      "kouwan",
+      "takadai",
+      "sakyuu",
+      "setsugen",
+      "koushou",
+      "yoichi",
+      "okujou",
+      "saisekiba",
+      "chikurin",
+      "tanada",
+      "misaki",
+      "haieki",
+      "kyokoku",
+      "kohan",
+      "kuko",
+      "onsengai",
+      "z01",
+      "z02",
+      "z03",
+      "z04",
+      "z05",
+      "z06",
+      "z07",
+      "z08",
+      "z09",
+      "z10",
+      "renshujo"
+    ],
+    "noShipStageIds": [],
+    "failureCounts": {}
+  },
+  "stages": [
+    {
+      "stageId": "kunren",
+      "mapSize": 310,
+      "sourceStageDefSize": 310,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 28,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 12,
+      "minimumPlayerStructureClearanceM": 30,
+      "minimumBotStructureClearanceM": 16,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 28,
+      "minimumTeamAnchorGapM": 32.016,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 13.828,
+        "minimumOpponentGapM": 61.704,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.964
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4158,
+        "walkable": 4158
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "souko",
+      "mapSize": 336,
+      "sourceStageDefSize": 336,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 32,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 12,
+      "minimumPlayerStructureClearanceM": 30.017,
+      "minimumBotStructureClearanceM": 9,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 32,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 14.6,
+        "minimumOpponentGapM": 104,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.992
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 5122,
+        "walkable": 5122
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "nakaniwa",
+      "mapSize": 320,
+      "sourceStageDefSize": 320,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 32,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 31.906,
+      "minimumBotStructureClearanceM": 9,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 32,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 11.6,
+        "minimumOpponentGapM": 108,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 1
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4726,
+        "walkable": 4726
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "kairou",
+      "mapSize": 300,
+      "sourceStageDefSize": 300,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 28,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 11,
+      "minimumPlayerStructureClearanceM": 30,
+      "minimumBotStructureClearanceM": 10,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 28,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 7.722,
+        "minimumOpponentGapM": 104.941,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.978
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3465,
+        "walkable": 3465
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "kouwan",
+      "mapSize": 360,
+      "sourceStageDefSize": 360,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 36,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 12,
+      "minimumPlayerStructureClearanceM": 31,
+      "minimumBotStructureClearanceM": 8,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 36,
+      "minimumTeamAnchorGapM": 32,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 8.605,
+        "minimumOpponentGapM": 42.263,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.981
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 5704,
+        "walkable": 5704
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "takadai",
+      "mapSize": 326,
+      "sourceStageDefSize": 326,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 32,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 7,
+      "minimumPlayerStructureClearanceM": 32.202,
+      "minimumBotStructureClearanceM": 9,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 32,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 6.722,
+        "minimumOpponentGapM": 108,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 1
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4360,
+        "walkable": 4360
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "sakyuu",
+      "mapSize": 350,
+      "sourceStageDefSize": 350,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 36,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 12,
+      "minimumPlayerStructureClearanceM": 31.2,
+      "minimumBotStructureClearanceM": 8,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 36,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 2.169,
+        "minimumOpponentGapM": 108,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.989
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 5083,
+        "walkable": 5083
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "setsugen",
+      "mapSize": 336,
+      "sourceStageDefSize": 336,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 32,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 14,
+      "minimumPlayerStructureClearanceM": 30.017,
+      "minimumBotStructureClearanceM": 12,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 32,
+      "minimumTeamAnchorGapM": 32.249,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 2.72,
+        "minimumOpponentGapM": 39.651,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.989
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4955,
+        "walkable": 4955
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "koushou",
+      "mapSize": 314,
+      "sourceStageDefSize": 314,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 28,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 33.015,
+      "minimumBotStructureClearanceM": 11,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 28,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 11.195,
+        "minimumOpponentGapM": 110.407,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 1
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3974,
+        "walkable": 3974
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "yoichi",
+      "mapSize": 302,
+      "sourceStageDefSize": 302,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 28,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 31,
+      "minimumBotStructureClearanceM": 10,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 28,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 4.988,
+        "minimumOpponentGapM": 110.407,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.981
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3813,
+        "walkable": 3813
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "okujou",
+      "mapSize": 300,
+      "sourceStageDefSize": 300,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 28,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 31.145,
+      "minimumBotStructureClearanceM": 9,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 28,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 6.906,
+        "minimumOpponentGapM": 105.309,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.994
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3850,
+        "walkable": 3850
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "saisekiba",
+      "mapSize": 320,
+      "sourceStageDefSize": 320,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 32,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 31.305,
+      "minimumBotStructureClearanceM": 8,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 32,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 13.6,
+        "minimumOpponentGapM": 104,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.994
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4228,
+        "walkable": 4228
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "chikurin",
+      "mapSize": 288,
+      "sourceStageDefSize": 288,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 24,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 11,
+      "minimumPlayerStructureClearanceM": 30.232,
+      "minimumBotStructureClearanceM": 9,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 24,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 6.78,
+        "minimumOpponentGapM": 100.699,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.989
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3353,
+        "walkable": 3353
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "tanada",
+      "mapSize": 310,
+      "sourceStageDefSize": 310,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 28,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 33.956,
+      "minimumBotStructureClearanceM": 9.434,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 28,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 14.6,
+        "minimumOpponentGapM": 110.407,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 1
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3791,
+        "walkable": 3791
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "misaki",
+      "mapSize": 302,
+      "sourceStageDefSize": 302,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 28,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 32.757,
+      "minimumBotStructureClearanceM": 8,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 28,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 5.742,
+        "minimumOpponentGapM": 110.407,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 1
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3608,
+        "walkable": 3608
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "haieki",
+      "mapSize": 314,
+      "sourceStageDefSize": 314,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 28,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 30.529,
+      "minimumBotStructureClearanceM": 9.22,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 28,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 4.491,
+        "minimumOpponentGapM": 110.407,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.994
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4034,
+        "walkable": 4034
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "kyokoku",
+      "mapSize": 326,
+      "sourceStageDefSize": 326,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 32,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 9,
+      "minimumPlayerStructureClearanceM": 30.48,
+      "minimumBotStructureClearanceM": 11.045,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 32,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 17.6,
+        "minimumOpponentGapM": 108,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.994
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4437,
+        "walkable": 4437
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "kohan",
+      "mapSize": 292,
+      "sourceStageDefSize": 292,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 24,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 9,
+      "minimumPlayerStructureClearanceM": 30.829,
+      "minimumBotStructureClearanceM": 8,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 24,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 5.729,
+        "minimumOpponentGapM": 112.8,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.983
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3416,
+        "walkable": 3416
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "kuko",
+      "mapSize": 336,
+      "sourceStageDefSize": 336,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 32,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 30.017,
+      "minimumBotStructureClearanceM": 8,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 32,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 1.691,
+        "minimumOpponentGapM": 104,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.992
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4862,
+        "walkable": 4862
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "onsengai",
+      "mapSize": 280,
+      "sourceStageDefSize": 280,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 24,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 9,
+      "minimumPlayerStructureClearanceM": 31,
+      "minimumBotStructureClearanceM": 9,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 24,
+      "minimumTeamAnchorGapM": 32,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 6.836,
+        "minimumOpponentGapM": 72.8,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.986
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 2986,
+        "walkable": 2986
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z01",
+      "mapSize": 302,
+      "sourceStageDefSize": 302,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 30.12,
+      "minimumBotStructureClearanceM": 14,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 62.008,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 11.6,
+        "minimumOpponentGapM": 115.6,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.981
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3616,
+        "walkable": 3616
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z02",
+      "mapSize": 300,
+      "sourceStageDefSize": 300,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 30,
+      "minimumBotStructureClearanceM": 8,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 32.311,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 9.686,
+        "minimumOpponentGapM": 42.484,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.961
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3006,
+        "walkable": 3006
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z03",
+      "mapSize": 320,
+      "sourceStageDefSize": 320,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 30.676,
+      "minimumBotStructureClearanceM": 26,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 42.19,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 23.6,
+        "minimumOpponentGapM": 81.71,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.994
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4326,
+        "walkable": 4326
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z04",
+      "mapSize": 310,
+      "sourceStageDefSize": 310,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 7,
+      "minimumPlayerStructureClearanceM": 31.145,
+      "minimumBotStructureClearanceM": 43,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 32.016,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 27.511,
+        "minimumOpponentGapM": 38.697,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.994
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3808,
+        "walkable": 3808
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z05",
+      "mapSize": 314,
+      "sourceStageDefSize": 314,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 32.016,
+      "minimumBotStructureClearanceM": 12,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 38,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 9.659,
+        "minimumOpponentGapM": 90.208,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.994
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4082,
+        "walkable": 4082
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z06",
+      "mapSize": 288,
+      "sourceStageDefSize": 288,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 31.305,
+      "minimumBotStructureClearanceM": 14,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 11.6,
+        "minimumOpponentGapM": 104.225,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.994
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3108,
+        "walkable": 3108
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z07",
+      "mapSize": 326,
+      "sourceStageDefSize": 326,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 30.067,
+      "minimumBotStructureClearanceM": 12,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 9.653,
+        "minimumOpponentGapM": 117.6,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.983
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 4429,
+        "walkable": 4429
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z08",
+      "mapSize": 292,
+      "sourceStageDefSize": 292,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 30,
+      "minimumBotStructureClearanceM": 8,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 32.558,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 5.656,
+        "minimumOpponentGapM": 96.597,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.95
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 2854,
+        "walkable": 2854
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z09",
+      "mapSize": 314,
+      "sourceStageDefSize": 314,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 31,
+      "minimumBotStructureClearanceM": 15.652,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 60,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 12.852,
+        "minimumOpponentGapM": 117.6,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.981
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3628,
+        "walkable": 3628
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "z10",
+      "mapSize": 310,
+      "sourceStageDefSize": 310,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 8,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 30.173,
+      "minimumBotStructureClearanceM": 23,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 8,
+      "minimumTeamAnchorGapM": 32.016,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": 21.25,
+        "minimumOpponentGapM": 38.697,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.983
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 3416,
+        "walkable": 3416
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    },
+    {
+      "stageId": "renshujo",
+      "mapSize": 236,
+      "sourceStageDefSize": 200,
+      "playerSpawnCount": 4,
+      "botSpawnCount": 6,
+      "landmarkCount": 2,
+      "ordinaryDistrictCount": 10,
+      "minimumPlayerStructureClearanceM": 30.173,
+      "minimumBotStructureClearanceM": 16,
+      "structureGapViolations": 0,
+      "primaryRoadViolations": 0,
+      "ffaNearSpawnCount": 6,
+      "minimumTeamAnchorGapM": 32,
+      "snd": {
+        "pass": true,
+        "minimumClearanceM": null,
+        "minimumOpponentGapM": null,
+        "outOfBounds": 0
+      },
+      "zombie": {
+        "pass": true,
+        "minimumFreeRatio": 0.967
+      },
+      "bfs": {
+        "reachable": true,
+        "visited": 2082,
+        "walkable": 2082
+      },
+      "releaseGate": "PASS",
+      "failures": []
+    }
+  ]
+}

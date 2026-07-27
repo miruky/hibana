@@ -1,0 +1,316 @@
+{
+  "schemaVersion": "1.0.0",
+  "catalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+  "currentStageTsSha256": "16907ba0ce62f53f94f5608b122ee88c14ee24d25fae4f11b64948abd0381e25",
+  "representativeStageCount": 7,
+  "representativeLandmarkCount": 14,
+  "semanticFields": [
+    "id",
+    "districtKind",
+    "collisionTemplate",
+    "width",
+    "depth",
+    "height"
+  ],
+  "status": "PASS",
+  "breakingDifferenceCount": 0,
+  "nonBreakingCanonicalAdditions": [
+    "visualEnvelopeM",
+    "conceptLabel",
+    "visualSignature",
+    "geometryGrammar",
+    "facade.nonGlassAlternatives",
+    "stage-specific LOD rules",
+    "legacyVista uncounted policy",
+    "catalog SHA"
+  ],
+  "stages": [
+    {
+      "stageId": "kairou",
+      "current": [
+        {
+          "id": "kairou-meridian-hypostyle-sanctuary",
+          "districtKind": "cathedral",
+          "collisionTemplate": "courtyard",
+          "width": 114,
+          "depth": 74,
+          "height": 38
+        },
+        {
+          "id": "kairou-windcrown-caravan-observatory",
+          "districtKind": "fortress",
+          "collisionTemplate": "vertical",
+          "width": 88,
+          "depth": 80,
+          "height": 54
+        }
+      ],
+      "generated": [
+        {
+          "id": "kairou-meridian-hypostyle-sanctuary",
+          "districtKind": "cathedral",
+          "collisionTemplate": "courtyard",
+          "width": 114,
+          "depth": 74,
+          "height": 38
+        },
+        {
+          "id": "kairou-windcrown-caravan-observatory",
+          "districtKind": "fortress",
+          "collisionTemplate": "vertical",
+          "width": 88,
+          "depth": 80,
+          "height": 54
+        }
+      ],
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "chikurin",
+      "current": [
+        {
+          "id": "chikurin-nine-canopy-temple",
+          "districtKind": "pagoda",
+          "collisionTemplate": "vertical",
+          "width": 94,
+          "depth": 78,
+          "height": 60
+        },
+        {
+          "id": "chikurin-bamboo-scholar-citadel",
+          "districtKind": "villa",
+          "collisionTemplate": "courtyard",
+          "width": 110,
+          "depth": 70,
+          "height": 44
+        }
+      ],
+      "generated": [
+        {
+          "id": "chikurin-nine-canopy-temple",
+          "districtKind": "pagoda",
+          "collisionTemplate": "vertical",
+          "width": 94,
+          "depth": 78,
+          "height": 60
+        },
+        {
+          "id": "chikurin-bamboo-scholar-citadel",
+          "districtKind": "villa",
+          "collisionTemplate": "courtyard",
+          "width": 110,
+          "depth": 70,
+          "height": 44
+        }
+      ],
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "setsugen",
+      "current": [
+        {
+          "id": "setsugen-borealis-tripod-arcology",
+          "districtKind": "tower",
+          "collisionTemplate": "bridge",
+          "width": 90,
+          "depth": 80,
+          "height": 58
+        },
+        {
+          "id": "setsugen-aurora-data-cathedral",
+          "districtKind": "terminal",
+          "collisionTemplate": "hall",
+          "width": 108,
+          "depth": 60,
+          "height": 44
+        }
+      ],
+      "generated": [
+        {
+          "id": "setsugen-borealis-tripod-arcology",
+          "districtKind": "tower",
+          "collisionTemplate": "bridge",
+          "width": 90,
+          "depth": 80,
+          "height": 58
+        },
+        {
+          "id": "setsugen-aurora-data-cathedral",
+          "districtKind": "terminal",
+          "collisionTemplate": "hall",
+          "width": 108,
+          "depth": 60,
+          "height": 44
+        }
+      ],
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "kouwan",
+      "current": [
+        {
+          "id": "kouwan-breakwater-ship-lift-basilica",
+          "districtKind": "terminal",
+          "collisionTemplate": "bridge",
+          "width": 134,
+          "depth": 66,
+          "height": 60
+        },
+        {
+          "id": "kouwan-umiho-exchange-tower",
+          "districtKind": "tower",
+          "collisionTemplate": "vertical",
+          "width": 98,
+          "depth": 84,
+          "height": 72
+        }
+      ],
+      "generated": [
+        {
+          "id": "kouwan-breakwater-ship-lift-basilica",
+          "districtKind": "terminal",
+          "collisionTemplate": "bridge",
+          "width": 134,
+          "depth": 66,
+          "height": 60
+        },
+        {
+          "id": "kouwan-umiho-exchange-tower",
+          "districtKind": "tower",
+          "collisionTemplate": "vertical",
+          "width": 98,
+          "depth": 84,
+          "height": 72
+        }
+      ],
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "sakyuu",
+      "current": [
+        {
+          "id": "sakyuu-sunken-crawler-vault",
+          "districtKind": "refinery",
+          "collisionTemplate": "hall",
+          "width": 138,
+          "depth": 76,
+          "height": 40
+        },
+        {
+          "id": "sakyuu-helios-drill-crown",
+          "districtKind": "tower",
+          "collisionTemplate": "vertical",
+          "width": 86,
+          "depth": 72,
+          "height": 78
+        }
+      ],
+      "generated": [
+        {
+          "id": "sakyuu-sunken-crawler-vault",
+          "districtKind": "refinery",
+          "collisionTemplate": "hall",
+          "width": 138,
+          "depth": 76,
+          "height": 40
+        },
+        {
+          "id": "sakyuu-helios-drill-crown",
+          "districtKind": "tower",
+          "collisionTemplate": "vertical",
+          "width": 86,
+          "depth": 72,
+          "height": 78
+        }
+      ],
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "z04",
+      "current": [
+        {
+          "id": "z04-severed-rose-abbey",
+          "districtKind": "abbey",
+          "collisionTemplate": "abbey",
+          "width": 124,
+          "depth": 100,
+          "height": 72
+        },
+        {
+          "id": "z04-ossuary-bell-keep",
+          "districtKind": "cathedral",
+          "collisionTemplate": "vertical",
+          "width": 94,
+          "depth": 84,
+          "height": 80
+        }
+      ],
+      "generated": [
+        {
+          "id": "z04-severed-rose-abbey",
+          "districtKind": "abbey",
+          "collisionTemplate": "abbey",
+          "width": 124,
+          "depth": 100,
+          "height": 72
+        },
+        {
+          "id": "z04-ossuary-bell-keep",
+          "districtKind": "cathedral",
+          "collisionTemplate": "vertical",
+          "width": 94,
+          "depth": 84,
+          "height": 80
+        }
+      ],
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "takadai",
+      "current": [
+        {
+          "id": "takadai-celestine-tidal-abbey",
+          "districtKind": "abbey",
+          "collisionTemplate": "abbey",
+          "width": 124,
+          "depth": 100,
+          "height": 70
+        },
+        {
+          "id": "takadai-dawnkeep-crown-citadel",
+          "districtKind": "fortress",
+          "collisionTemplate": "courtyard",
+          "width": 96,
+          "depth": 86,
+          "height": 76
+        }
+      ],
+      "generated": [
+        {
+          "id": "takadai-celestine-tidal-abbey",
+          "districtKind": "abbey",
+          "collisionTemplate": "abbey",
+          "width": 124,
+          "depth": 100,
+          "height": 70
+        },
+        {
+          "id": "takadai-dawnkeep-crown-citadel",
+          "districtKind": "fortress",
+          "collisionTemplate": "courtyard",
+          "width": 96,
+          "depth": 86,
+          "height": 76
+        }
+      ],
+      "semanticEqual": true,
+      "differences": []
+    }
+  ]
+}

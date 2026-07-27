@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0.0",
+  "catalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+  "normalization": "recursive-key-sort UTF-8 JSON without whitespace; omit top-level catalogSha256",
+  "stageCount": 31,
+  "landmarkCount": 62,
+  "generatedFiles": [
+    "src/game/generated/stage-landmarks.generated.ts",
+    "tools/blender/generated/stage-world.blender.generated.json"
+  ]
+}

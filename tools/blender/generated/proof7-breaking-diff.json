@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "2.0.0-solver-prototype",
+  "catalogSha256": "b8bb0fc5ef3ab0399c8137b34a63c118c7a219eb8fe4af059ccc30b914dacf3f",
+  "solverSha256": "18269344fd2c96e58fa2f65297425ffedd8b39fe18deb8863d96215e575d5763",
+  "currentStageTsSha256": "16907ba0ce62f53f94f5608b122ee88c14ee24d25fae4f11b64948abd0381e25",
+  "status": "PASS",
+  "representativeStageCount": 7,
+  "representativeLandmarkCount": 14,
+  "semanticFields": [
+    "id",
+    "districtKind",
+    "collisionTemplate",
+    "width",
+    "depth",
+    "height"
+  ],
+  "breakingDifferenceCount": 0,
+  "differences": [],
+  "stages": [
+    {
+      "stageId": "kairou",
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "chikurin",
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "setsugen",
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "kouwan",
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "sakyuu",
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "z04",
+      "semanticEqual": true,
+      "differences": []
+    },
+    {
+      "stageId": "takadai",
+      "semanticEqual": true,
+      "differences": []
+    }
+  ]
+}
