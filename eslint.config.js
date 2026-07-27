@@ -21,7 +21,12 @@ export default tseslint.config(
   prettier,
   {
     rules: {
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      // ignoreRestSiblings は `const { omit: _x, ...rest } = obj` でキーを除外する
+      // 定型句のためのもの。argsIgnorePattern は関数引数にしか効かない。
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
     },
   },
   // dev専用のE2E/スクリプトハーネス(plain .mjs、Node+ブラウザ両globalsを使う)。
